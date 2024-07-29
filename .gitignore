@@ -2,10 +2,9 @@
 venv/
 /PythonWorkingScripts_Output/*.xlsx
 /PythonWorkingScripts_Output/*.xls
-/SCRIPTS/COMMON/io_user_directory.py
 /PythonWorkingScripts_Output/*
+/PythonWorkingScripts_InputData/Assessment/applicant_report/downloaded/downloadedfile.xlsx
 __pycache__/
 *.pyc
-/chromedriver.exe
 /SCRIPTS/CRPO_COMMON/credentials.py
 /SCRIPTS/COMMON/dbconnection.py
