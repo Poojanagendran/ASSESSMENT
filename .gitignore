@@ -4,6 +4,7 @@ venv/
 /PythonWorkingScripts_Output/*.xls
 /PythonWorkingScripts_Output/*
 /PythonWorkingScripts_InputData/Assessment/applicant_report/downloaded/downloadedfile.xlsx
+PythonWorkingScripts_InputData/Assessment/applicant_report/downloaded/downloadedfile.xlsx
 __pycache__/
 *.pyc
 /SCRIPTS/CRPO_COMMON/credentials.py
