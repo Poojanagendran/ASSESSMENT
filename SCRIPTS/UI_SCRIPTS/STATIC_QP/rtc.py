@@ -4,12 +4,14 @@ from SCRIPTS.COMMON.write_excel_new import *
 from SCRIPTS.COMMON.read_excel import *
 from SCRIPTS.COMMON.io_path import *
 from SCRIPTS.CRPO_COMMON.crpo_common import *
-# from SCRIPTS.CRPO_COMMON.credentials import *
+from SCRIPTS.DB_DELETE.db_cleanup import *
 
 
 class OnlineAssessment:
 
     def __init__(self):
+        # data clean up is important, b'coz we need to create a candidate everytime to check the create is working fine.
+        data_clean_obj.static_ui_automation_delete()
         self.row = 1
         write_excel_object.save_result(output_path_ui_rtc_static)
         header = ["UI automation"]

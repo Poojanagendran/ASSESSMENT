@@ -1,17 +1,19 @@
 import xlsxwriter
 from SCRIPTS.COMMON.read_excel import *
 from SCRIPTS.COMMON.io_path import *
-import requests
-import json
-import datetime
-from SCRIPTS.CRPO_COMMON.credentials import *
 from SCRIPTS.CRPO_COMMON.crpo_common import *
 from SCRIPTS.ASSESSMENT_COMMON.assessment_common import *
-
+from SCRIPTS.DB_DELETE.db_cleanup import *
 
 class SecurityCheck:
 
     def __init__(self):
+        data_clean_obj.delete_ssrf_assessment_test_users()
+        data_clean_obj.delete_ssrf_template()
+        data_clean_obj.delete_ssrf_job()
+        data_clean_obj.delete_ssrf_vendor_integration()
+        data_clean_obj.delete_ssrf_candidate()
+        data_clean_obj.delete_ssrf_questions()
         requests.packages.urllib3.disable_warnings()
         self.started = datetime.datetime.now()
         self.started = self.started.strftime("%Y-%M-%d-%H-%M-%S")

@@ -1,22 +1,19 @@
 import xlsxwriter
-import datetime
 from SCRIPTS.COMMON.read_excel import *
-from SCRIPTS.CRPO_COMMON.credentials import *
 from SCRIPTS.CRPO_COMMON.crpo_common import *
 from SCRIPTS.ASSESSMENT_COMMON.assessment_common import *
 from SCRIPTS.COMMON.io_path import *
 import time
+from SCRIPTS.DB_DELETE.db_cleanup import *
 
 
 class ChainingOfTests:
 
     def __init__(self):
+        data_clean_obj.delete_assessment_test_users_for_3tests_chaining()
         self.test_login_informations = {}
         self.started = datetime.datetime.now()
         self.started = self.started.strftime("%Y-%m-%d-%H-%M-%S")
-        # self.write_excel = xlsxwriter.Workbook(
-        #     'F:\\automation\\PythonWorkingScripts_Output'
-        #     '\\Assessment\\3tests_Chaining_Automation - ' + self.started + '.xls')
         self.write_excel = xlsxwriter.Workbook(output_path_3tests_chaining + self.started + '.xls')
 
         self.ws = self.write_excel.add_worksheet()
