@@ -11,25 +11,25 @@ class CrpoCommon:
 
     @staticmethod
     def login_to_crpo(login_name, password, tenant):
-        header = {"content-type": "application/json"}
+        header = {"content-type": "application/json","App-Server": "py310app"}
         data = {"LoginName": login_name, "Password": password, "TenantAlias": tenant, "UserName": login_name}
         response = requests.post(crpo_common_obj.domain + "/py/common/user/login_user/", headers=header,
                                  data=json.dumps(data), verify=False)
         login_response = response.json()
-        headers = {"content-type": "application/json", "APP-NAME": "CRPO", "X-APPLMA": "true",
+        headers = {"content-type": "application/json", "APP-NAME": "CRPO", "X-APPLMA": "true", "App-Server": "py310app",
                    "X-AUTH-TOKEN": login_response.get("Token")}
         print(headers)
         return headers
 
     @staticmethod
     def eu_login_to_crpo(login_name, password, tenant):
-        header = {"content-type": "application/json"}
+        header = {"content-type": "application/json","App-Server": "py310app"}
         data = {"LoginName": login_name, "Password": password, "TenantAlias": tenant, "UserName": login_name}
         response = requests.post(crpo_common_obj.eu_domain + "/py/common/user/login_user/", headers=header,
                                  data=json.dumps(data), verify=False)
         login_response = response.json()
 
-        headers = {"content-type": "application/json", "APP-NAME": "CRPO", "X-APPLMA": "true",
+        headers = {"content-type": "application/json", "APP-NAME": "CRPO", "X-APPLMA": "true","App-Server": "py310app",
                    "X-AUTH-TOKEN": login_response.get("Token")}
         print(headers)
         return headers
