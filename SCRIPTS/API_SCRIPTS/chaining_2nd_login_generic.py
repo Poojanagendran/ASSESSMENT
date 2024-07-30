@@ -1,15 +1,17 @@
 import xlsxwriter
 from SCRIPTS.COMMON.read_excel import *
 from SCRIPTS.ASSESSMENT_COMMON.assessment_common import *
-from SCRIPTS.CRPO_COMMON.credentials import *
 from SCRIPTS.CRPO_COMMON.crpo_common import *
 from SCRIPTS.COMMON.io_path import *
 import time
+from SCRIPTS.DB_DELETE.db_cleanup import *
 
 
 class ChainingOfTwoTests:
 
     def __init__(self):
+        # data clean up is important, b'coz we need to create a candidate everytime to check the create is working fine.
+        data_clean_obj.delete_assessment_test_users_for_2testschaining()
         self.started = datetime.datetime.now()
         self.started = self.started.strftime("%Y-%m-%d-%H-%M-%S")
         # self.write_excel = xlsxwriter.Workbook(
@@ -131,8 +133,6 @@ class ChainingOfTwoTests:
         self.ws.write(row_value, 26, excel_data.get('expectedSecondTestId'), self.black_color)
         self.ws.write(row_value, 27, second_login_nexttest_infos.get('second_login_test_id'), self.color)
 
-
-
         self.compare_data(excel_data.get('expectedSecondTestType'),
                           second_login_nexttest_infos.get('second_time_login_t2_test_type'))
         self.ws.write(row_value, 28, excel_data.get('expectedSecondTestType'), self.black_color)
@@ -225,8 +225,8 @@ for data in excel_data:
 
     domain = assessment_common_obj.decide_domain(type_of_test=data.get('firstTestIsTypeOf'))
     login_details = assessment_common_obj.login_to_test_v3(login_name=data.get('loginName'),
-                                                        password=data.get('password'),
-                                                        tenant='automation', domain=domain)
+                                                           password=data.get('password'),
+                                                           tenant='automation', domain=domain)
     # print(login_details)
 
     submit_token = assessment_common_obj.submit_test_result(assessment_token=login_details.get('login_token'),
@@ -237,12 +237,13 @@ for data in excel_data:
         if data.get('firstTestIsTypeOf') == 'VET' and data.get('IsCallbackRequired') == 'Yes':
             # print(data.get('scoreCallBack'))
             # print(type(data.get('scoreCallBack')))
-            assessment_common_obj.pearson_call_backs(int(data.get('testUserId')), data.get('scoreCallBack'), 'AUTOMATION')
+            assessment_common_obj.pearson_call_backs(int(data.get('testUserId')), data.get('scoreCallBack'),
+                                                     'AUTOMATION')
 
         # Below condition is to fetch score for non Hirepro and Non VET tests Currently Talentlens is not in use
         elif data.get('firstTestIsTypeOf') != 'VET' or data.get('firstTestIsTypeOf') != 'HP':
             crpo_common_obj.initiate_vendor_score(crpo_headers, data.get('candidateId'),
-                                                        int(data.get('primaryTestId')))
+                                                  int(data.get('primaryTestId')))
             if data.get('firstTestIsTypeOf') == 'TALENTLENS':
                 time.sleep(60)
             else:
@@ -294,8 +295,8 @@ for data in excel_data:
 
         print('T2 Login via T1 Credentials')
         second_login_stat = assessment_common_obj.login_to_test_v3(login_name=data.get('loginName'),
-                                                                password=data.get('password'), tenant='automation',
-                                                                domain=domain)
+                                                                   password=data.get('password'), tenant='automation',
+                                                                   domain=domain)
 
         second_login_infos = second_login_stat
         if second_login_stat.get('login_response').get('status') == 'KO':
@@ -348,7 +349,6 @@ for data in excel_data:
         chaining_obj.final_report(rowsize, next_test_details, data, next_tu_infos1, second_login_infos)
     else:
         print("Either unable to submit the test or Submit token is not available")
-
 
 ended = datetime.datetime.now()
 ended = "Ended:- %s" % ended.strftime("%Y-%m-%d-%H-%M-%S")

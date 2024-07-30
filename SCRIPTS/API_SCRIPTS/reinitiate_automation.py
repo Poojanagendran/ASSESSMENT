@@ -4,10 +4,12 @@ from SCRIPTS.CRPO_COMMON.credentials import *
 from SCRIPTS.CRPO_COMMON.crpo_common import *
 from SCRIPTS.ASSESSMENT_COMMON.assessment_common import *
 from SCRIPTS.COMMON.io_path import *
+from SCRIPTS.DB_DELETE.db_cleanup import *
 
 
 class ReInitiateAutomation:
     def __init__(self):
+        data_clean_obj.delete_assessment_test_users_for_reinitateautomation()
         self.row_size = 2
         write_excel_object.save_result(output_path_reinitiate_automation)
         header = ["Reinitiate relogin automation"]

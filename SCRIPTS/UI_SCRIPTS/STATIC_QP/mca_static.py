@@ -2,11 +2,14 @@ from SCRIPTS.UI_COMMON.assessment_ui_common_v2 import *
 from SCRIPTS.UI_SCRIPTS.assessment_data_verification import *
 from SCRIPTS.COMMON.read_excel import *
 from SCRIPTS.COMMON.io_path import *
+from SCRIPTS.DB_DELETE.db_cleanup import *
 
 
 class OnlineAssessment:
 
     def __init__(self):
+        # data clean up is important, b'coz we need to create a candidate everytime to check the create is working fine.
+        data_clean_obj.mca_static_automation_delete()
         self.url = amsin_at_assessment_url
         self.path = chrome_driver_path
     def mca_assessment(self, current_excel_data):

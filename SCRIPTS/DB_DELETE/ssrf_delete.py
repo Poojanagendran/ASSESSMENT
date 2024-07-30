@@ -8,7 +8,7 @@ class DeleteSSRFData:
         print(datetime.datetime.now())
 
     @staticmethod
-    def delete_assessment_test_users():
+    def delete_ssrf_assessment_test_users():
         db_connection = ams_db_connection()
         cursor = db_connection.cursor()
         tuser_scores = 'delete from candidate_scores where testuser_id in ' \
@@ -41,7 +41,7 @@ class DeleteSSRFData:
         db_connection.close()
 
     @staticmethod
-    def delete_vendor_integration():
+    def delete_ssrf_vendor_integration():
         db_connection = ams_db_connection()
         cursor = db_connection.cursor()
         delete_vendor_configurations = 'delete from assessment_vendor_integration where vendor_id=8830;'
@@ -50,7 +50,7 @@ class DeleteSSRFData:
         db_connection.close()
 
     @staticmethod
-    def delete_template():
+    def delete_ssrf_template():
         db_connection = ams_db_connection()
         cursor = db_connection.cursor()
         delete_vendor_configurations = 'delete from templates where template_name = \'SSRF_Template\' and  tenant_id=1787;'
@@ -59,7 +59,7 @@ class DeleteSSRFData:
         db_connection.close()
 
     @staticmethod
-    def delete_job():
+    def delete_ssrf_job():
         db_connection = ams_db_connection()
         cursor = db_connection.cursor()
         delete_vendor_configurations = 'delete from jobs where job_name=\'SSRF_Job2\' and tenant_id=1787;'
@@ -68,7 +68,7 @@ class DeleteSSRFData:
         db_connection.close()
 
     @staticmethod
-    def delete_candidate():
+    def delete_ssrf_candidate():
         try:
             db_connection = ams_db_connection()
             cursor = db_connection.cursor()
@@ -111,7 +111,7 @@ class DeleteSSRFData:
             print ("Check wheather the candidate is available or not")
 
     @staticmethod
-    def delete_questions():
+    def delete_ssrf_questions():
         try:
             db_connection = ams_db_connection()
             cursor = db_connection.cursor()
@@ -189,11 +189,11 @@ class DeleteSSRFData:
 
 
 del_data = DeleteSSRFData()
-del_data.delete_assessment_test_users()
-del_data.delete_template()
-del_data.delete_job()
-del_data.delete_vendor_integration()
-del_data.delete_candidate()
-del_data.delete_questions()
+del_data.delete_ssrf_assessment_test_users()
+del_data.delete_ssrf_template()
+del_data.delete_ssrf_job()
+del_data.delete_ssrf_vendor_integration()
+del_data.delete_ssrf_candidate()
+del_data.delete_ssrf_questions()
 del_data.delete_assessment_test_users_for_reinitateautomation()
 print (datetime.datetime.now())

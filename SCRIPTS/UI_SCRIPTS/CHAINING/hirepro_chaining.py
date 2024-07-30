@@ -1,15 +1,16 @@
 from SCRIPTS.UI_COMMON.assessment_ui_common_v2 import *
 from SCRIPTS.COMMON.io_path import *
-import os
-import time
 from SCRIPTS.UI_SCRIPTS.assessment_data_verification import *
 from SCRIPTS.COMMON.read_excel import *
 import xlsxwriter
+from SCRIPTS.DB_DELETE.db_cleanup import *
 
 
 class HireproChainingOfTwoTests:
 
     def __init__(self):
+        # data clean up is important, b'coz we need to create a candidate everytime to check the create is working fine.
+        data_clean_obj.hirepro_chaining_delete()
         time = datetime.datetime.now()
         self.date = time.strftime('%y_%m_%d')
         # self.url = "https://amsin.hirepro.in/assessment/#/assess/login/eyJhbGlhcyI6ImF1dG9tYXRpb24ifQ=="
