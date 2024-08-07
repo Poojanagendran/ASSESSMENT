@@ -1,66 +1,61 @@
-import tkinter as tk
-from tkinter import ttk
+a = {"atsConfig": {"jobId": 21, "eventId": 21}}
+b = {"sanitiseTestConfig": {"featureConfig": {"redisKeyExpiryInSeconds": 900},
+                            "submitPasswordDisabled": {"isEnabled": true, "durationInSeconds": 5000},
+                            "vendorInitiateAutomation": {"isEnabled": true},
+                            "submitPasswordNeverExpired": {"isEnabled": true, "durationInSeconds": 5000},
+                            "nonVendorInitiateAutomation": {"isEnabled": true,
+                                                            "performInitiateAutomationAfterSeconds": 900,
+                                                            "secondsElapsedFromLastActivityByTestUser": 259200},
+                            "scoreFetchInitiateAutomation": {"isEnabled": true,
+                                                             "attendingTuElapsedDurationInSeconds": 2000},
+                            "scoreFetchReInitiateAutomation": {"isEnabled": true},
+                            "passwordExpiredToPasswordDisabled": {"isEnabled": true, "durationInSeconds": 5000}}}
 
-# Domain dictionary
-domains = {
-    'ams': {
-        'domain': 'https://ams.hirepro.in',
-        'pearson_domain': 'https://vet.hirepro.in',
-        'eu_domain': 'https://euapp.hirepro.ai'
-    },
-    'live': {
-        'domain': 'https://ams.hirepro.in',
-        'pearson_domain': 'https://vet.hirepro.in',
-        'eu_domain': 'https://euapp.hirepro.ai'
-    },
-    'betaams': {
-        'domain': 'https://betaams.hirepro.in',
-        'pearson_domain': 'https://betavet.hirepro.in',
-        'eu_domain': 'https://betavet.hirepro.in'
-    },
-    'beta': {
-        'domain': 'https://betaams.hirepro.in',
-        'pearson_domain': 'https://betavet.hirepro.in',
-        'eu_domain': 'https://betavet.hirepro.in'
-    },
-    'amsin': {
-        'domain': 'https://amsin.hirepro.in',
-        'pearson_domain': 'https://pearsonstg.hirepro.in',
-        'eu_domain': 'https://euamsin.hirepro.in'
-    },
-    'mumbai': {
-        'domain': 'https://amsin.hirepro.in',
-        'pearson_domain': 'https://pearsonstg.hirepro.in',
-        'eu_domain': 'https://euamsin.hirepro.in'
-    }
+c = {
+    "featureConfig":
+        {
+            "testUserRedisKeyExpiryInSeconds": 120,
+            "tenantRedisKeyExpiryInSeconds": 180,
+            "testFilters": {
+                "testActiveThreshHoldInDays": 10
+            },
+            "testUserFilters": {
+                "loginThreshHoldInDays": 30
+
+            }
+        },
+    "vendorInitiateAutomation":
+        {
+            "isEnabled": true
+        },
+    "scoreFetchReInitiateAutomation":
+        {
+            "isEnabled": true
+        },
+    "scoreFetchInitiateAutomation":
+        {
+            "isEnabled": true,
+            "attendingTuElapsedDurationInSeconds": 180
+        },
+    "passwordExpiredToPasswordDisabled":
+        {
+            "isEnabled": true,
+            "durationInSeconds": 60
+        },
+    "submitPasswordNeverExpired":
+        {
+            "isEnabled": true,
+            "durationInSeconds": 180
+        },
+    "submitPasswordDisabled":
+        {
+            "isEnabled": true,
+            "durationInSeconds": 60
+        },
+    "nonVendorInitiateAutomation":
+        {
+            "isEnabled": true,
+            "performInitiateAutomationAfterSeconds": 60,
+            "secondsElapsedFromLastActivityByTestUser": 600
+        }
 }
-
-# Function to update text boxes
-def update_values():
-    env = env_combo.get().strip().lower()
-    if env in domains:
-        domain_info = domains[env]
-        domain = domain_info['domain']
-        pearson_domain = domain_info['pearson_domain']
-        eu_domain = domain_info['eu_domain']
-
-    else:
-        domain = "Invalid"
-        pearson_domain = "Invalid"
-        eu_domain = "Invalid"
-
-# Initialize main window
-root = tk.Tk()
-root.title("Environment Domain Checker")
-
-# Environment dropdown
-ttk.Label(root, text="Select Environment:").grid(column=0, row=0, padx=10, pady=10)
-env_combo = ttk.Combobox(root, values=list(domains.keys()), state="readonly")
-env_combo.grid(column=1, row=0, padx=10, pady=10)
-ttk.Button(root, text="Submit", command=update_values).grid(column=2, row=0, padx=10, pady=10)
-
-# Run the application
-root.mainloop()
-print(root.domain)
-print(root.pearson_domain)
-print(root.eu_domain)

@@ -153,8 +153,7 @@ class AssessmentCommon:
     def initiate_automation(submit_token, cid, test_id, domain):
         context_id = None
         next_test_info = None
-        # url = domain + 'testuser/api/v1/initiate_automation/'
-        url = domain + 'testuser/api/v2/initiate_automation/'
+        url = domain + '/py/assessment/testuser/api/v2/initiate_automation/'
         data = {"candidateId": int(cid), "testId": test_id, "debugTimeStamp": "2020-07-14T07:32:54.904Z"}
         response = requests.post(url,
                                  headers=submit_token,
@@ -207,8 +206,7 @@ class AssessmentCommon:
                 domain = proxy_url.split('/')
                 domain = domain[2]
                 host = previous_domain.split('/')
-                host = host[4]
-                next_test_domain_and_host = 'https://' + domain + '/py/' + host + '/'
+                next_test_domain_and_host = 'https://' + domain
             else:
                 proxy_url = previous_domain
                 next_test_domain_and_host = previous_domain
@@ -249,8 +247,7 @@ class AssessmentCommon:
 
         if data.get('proxyUrl'):
             host = domain.split('/')
-            host = host[4]
-            domain = data.get('proxyUrl') + '/py/' + host + '/'
+            domain = data.get('proxyUrl')
 
         second_login_data = {'second_login_cid': data.get('candidateId'), 'second_login_test_id': data.get('testId'),
                              'second_test_login_id': data.get('loginId'), 'second_test_password': data.get('password'),
