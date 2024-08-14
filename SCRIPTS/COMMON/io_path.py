@@ -24,6 +24,8 @@ started = datetime.datetime.now()
 started = started.strftime("%d-%m-%Y")
 
 # input paths
+input_path_assessmentdocket = input_common_dir + r'/Assessment/assessment_docket/input_assessment_docket.xlsx'
+input_path_assessmentdocket_downloaded = input_common_dir + r'/Assessment/assessment_docket/downloaded'
 input_path_allowed_extension = input_common_dir + r'/allowed_extensions/allowed_extensions_inputfile.xls'
 input_path_suspicious_list = input_common_dir + '/MURALITEAM/sep8.xls'
 input_path_allowed_extension_files = input_common_dir + r'/allowed_extensions/%s'
@@ -79,6 +81,7 @@ input_infra_strict_domain_validations = input_common_dir + r"/INFRA/strict_domai
 input_adhoc_profile_validations = input_common_dir + r"/INFRA/adhoc_profile.xls"
 
 # output paths
+output_path_assessmentdocket = output_common_dir + r'/Assessment/assessment_docket/output_assessment_docket.xlsx'
 output_path_allowed_extension = output_common_dir + r'/allowed_extensions/API_allowed_extensions'
 output_path_suspicious_candidates = output_common_dir + r'/allowed_extensions/suspicious(' + started + ').xlsx'
 output_path_applicant_report = output_common_dir + r'/Assessment/report/API_applicantreport'
