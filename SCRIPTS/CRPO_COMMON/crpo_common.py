@@ -46,6 +46,14 @@ class CrpoCommon:
         return response.json()
 
     @staticmethod
+    def get_cand_src_code_and_attachments(token, request_payload):
+                response = requests.post(
+                        crpo_common_obj.domain + "/py/assessment/report/api/v1/get_cand_src_code_and_attachments/",
+                        headers = token, data = json.dumps(request_payload, default=str), verify = False)
+                resp_dict = json.loads(response.content)
+
+                return resp_dict
+    @staticmethod
     def force_evaluate_proctoring(token, tu_ids):
         request = {
             "testUserIds": tu_ids, "isForce": True}
