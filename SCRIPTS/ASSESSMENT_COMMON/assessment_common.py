@@ -14,7 +14,7 @@ class AssessmentCommon:
 
     @staticmethod
     def login_to_test(login_name, password, tenant):
-        header = {"content-type": "application/json", "X-APPLMA": "true", "APP-NAME": "onlineassessment"}
+        header = {"content-type": "application/json", "X-APPLMA": "true", "APP-NAME": "onlineassessment","App-Server": "py310app"}
         data = {"LoginName": login_name, "Password": password, "TenantAlias": tenant}
         response = requests.post(assessment_common_obj.main_domain + "/py/assessment/htmltest/api/v2/login_to_test/",
                                  headers=header,
@@ -42,7 +42,7 @@ class AssessmentCommon:
     @staticmethod
     def login_to_test_v2(login_name, password, tenant, domain):
         print(login_name, password, domain)
-        header = {"content-type": "application/json", "APP-NAME": "onlineassessment", "X-APPLMA": "true"}
+        header = {"content-type": "application/json", "APP-NAME": "onlineassessment", "X-APPLMA": "true","App-Server": "py310app"}
         data = {"LoginName": login_name, "Password": password, "TenantAlias": tenant}
         login_url = domain + '/py/assessment/htmltest/api/v2/login_to_test/'
         response = requests.post(login_url, headers=header, data=json.dumps(data), verify=False)
@@ -153,8 +153,7 @@ class AssessmentCommon:
     def initiate_automation(submit_token, cid, test_id, domain):
         context_id = None
         next_test_info = None
-        # url = domain + 'testuser/api/v1/initiate_automation/'
-        url = domain + 'testuser/api/v2/initiate_automation/'
+        url = domain + '/py/assessment/testuser/api/v2/initiate_automation/'
         data = {"candidateId": int(cid), "testId": test_id, "debugTimeStamp": "2020-07-14T07:32:54.904Z"}
         response = requests.post(url,
                                  headers=submit_token,
@@ -207,8 +206,7 @@ class AssessmentCommon:
                 domain = proxy_url.split('/')
                 domain = domain[2]
                 host = previous_domain.split('/')
-                host = host[4]
-                next_test_domain_and_host = 'https://' + domain + '/py/' + host + '/'
+                next_test_domain_and_host = 'https://' + domain
             else:
                 proxy_url = previous_domain
                 next_test_domain_and_host = previous_domain
@@ -234,7 +232,7 @@ class AssessmentCommon:
     @staticmethod
     def next_test_info_for_2nd_login(login_name, password, tenant, domain):
         second_login_data = {}
-        header = {"content-type": "application/json", "APP-NAME": "onlineassessment", "X-APPLMA": "true"}
+        header = {"content-type": "application/json", "APP-NAME": "onlineassessment", "X-APPLMA": "true","App-Server": "py310app"}
         data = {"loginName": login_name, "password": password, "tenantAlias": tenant,
                 "debugTimeStamp": "2020-12-02T13:32:30.749Z"}
         login_url = domain + '/py/assessment/htmltest/api/v1/test-user-next_test/'
@@ -249,8 +247,7 @@ class AssessmentCommon:
 
         if data.get('proxyUrl'):
             host = domain.split('/')
-            host = host[4]
-            domain = data.get('proxyUrl') + '/py/' + host + '/'
+            domain = data.get('proxyUrl')
 
         second_login_data = {'second_login_cid': data.get('candidateId'), 'second_login_test_id': data.get('testId'),
                              'second_test_login_id': data.get('loginId'), 'second_test_password': data.get('password'),
@@ -260,7 +257,7 @@ class AssessmentCommon:
     @staticmethod
     def login_to_test_v3(login_name, password, tenant, domain):
         print(login_name, password, domain)
-        header = {"content-type": "application/json", "X-APPLMA": "true"}
+        header = {"content-type": "application/json", "X-APPLMA": "true","App-Server": "py310app"}
         data = {"LoginName": login_name, "Password": password, "TenantAlias": tenant}
         login_url = domain + '/py/assessment/htmltest/api/v2/login_to_test/'
         response = requests.post(login_url, headers=header, data=json.dumps(data), verify=False)

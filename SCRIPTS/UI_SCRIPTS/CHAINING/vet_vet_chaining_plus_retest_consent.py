@@ -1,22 +1,19 @@
 from SCRIPTS.UI_COMMON.assessment_ui_common_v2 import *
 from SCRIPTS.ASSESSMENT_COMMON.assessment_common import *
 from SCRIPTS.COMMON.io_path import *
-from SCRIPTS.CRPO_COMMON.credentials import *
-from SCRIPTS.CRPO_COMMON.crpo_common import *
-import os
-import time
 from SCRIPTS.UI_SCRIPTS.assessment_data_verification import *
 from SCRIPTS.COMMON.read_excel import *
 import xlsxwriter
+from SCRIPTS.DB_DELETE.db_cleanup import *
 
 
 class VetChaining:
 
     def __init__(self):
+        # data clean up is important, b'coz we need to create a candidate everytime to check the create is working fine.
+        data_clean_obj.vet_ui_chaining_delete()
         time = datetime.datetime.now()
         self.date = time.strftime('%y_%m_%d')
-        # self.url = "https://amsin.hirepro.in/assessment/#/assess/login/eyJhbGlhcyI6ImF1dG9tYXRpb24ifQ=="
-        # self.path = r"F:\qa_automation\automation\chromedriver.exe"
         self.started = time.strftime("%Y-%M-%d-%H-%M-%S")
         self.row_size = 2
         self.write_excel = xlsxwriter.Workbook(output_path_ui_vet_vet_chaining)

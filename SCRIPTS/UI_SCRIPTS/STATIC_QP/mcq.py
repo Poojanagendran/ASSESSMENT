@@ -1,8 +1,8 @@
 from SCRIPTS.UI_COMMON.assessment_ui_common_v2 import *
-import time
 from SCRIPTS.UI_SCRIPTS.assessment_data_verification import *
 from SCRIPTS.COMMON.read_excel import *
 from SCRIPTS.COMMON.io_path import *
+from SCRIPTS.DB_DELETE.db_cleanup import *
 
 
 class OnlineAssessment:
@@ -10,6 +10,8 @@ class OnlineAssessment:
     def __init__(self):
         self.url = amsin_at_assessment_url
         self.path = chrome_driver_path
+        # data clean up is important, b'coz we need to create a candidate everytime to check the create is working fine.
+        data_clean_obj.static_ui_automation_delete()
 
     def mcq_assessment(self, current_excel_data):
         self.browser = assess_ui_common_obj.initiate_browser(self.url, self.path)

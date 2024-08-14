@@ -1,15 +1,17 @@
 import xlsxwriter
 from SCRIPTS.COMMON.read_excel import *
 from SCRIPTS.COMMON.io_path import *
-import datetime
 from SCRIPTS.CRPO_COMMON.crpo_common import *
 from SCRIPTS.ASSESSMENT_COMMON.assessment_common import *
-from SCRIPTS.COMMON.dbconnection import *
+from SCRIPTS.DB_DELETE.db_cleanup import *
 
 
 class SecurityCheck:
 
     def __init__(self):
+        # data clean up is important, b'coz we need to create a candidate everytime to check the create is working fine.
+        data_clean_obj.encryption_delete()
+
         requests.packages.urllib3.disable_warnings()
         self.started = datetime.datetime.now()
         self.started = self.started.strftime("%Y-%M-%d-%H-%M-%S")
@@ -69,24 +71,27 @@ class SecurityCheck:
         create_candidate_req = {
             "PersonalDetails": {"FirstName": excel_data.get('firstName'), "MiddleName": excel_data.get('middleName'),
                                 "LastName": excel_data.get('lastName'),
-                                "PassportNo": excel_data.get('passport'), "Mobile1": str(int(excel_data.get('mobileNumber'))),
+                                "PassportNo": excel_data.get('passport'),
+                                "Mobile1": str(int(excel_data.get('mobileNumber'))),
                                 "PanNo": excel_data.get('panCard'), "DateOfBirth": "2021-12-21T18:30:00.000Z",
-                                "PhoneOffice": str(excel_data.get('phoneOffice')), "Email2": excel_data.get('alternateEmailId'),
+                                "PhoneOffice": str(excel_data.get('phoneOffice')),
+                                "Email2": excel_data.get('alternateEmailId'),
                                 "Email1": excel_data.get('emailId'), "CurrencyType": None,
                                 "USN": excel_data.get('usn'), "AadhaarNo": str(int(excel_data.get('aadharNumber')))},
             "SourceDetails": {"SourceId": "3638"}}
         cid = crpo_common_obj.create_candidate_v2(self.crpo_headers, create_candidate_req)
         candidate_details = crpo_common_obj.get_candidate_by_id(self.crpo_headers, cid)
-        request =  request = {"questionType": 7, "difficultyLevel": 1, "subCategoryId": 3928, "categoryId": 3922,
-                   "htmlString": excel_data.get('questionQuestionString'), "questionStr": excel_data.get('questionQuestionString'),
-                   "subTopicId": None, "authorId": 14390, "isRevised": False, "notes": "Notes1",
-                   "subTopicUnitId": None,
-                   "statusId": 2622, "questionFlag": 1,
-                   "answers": [{"htmlString": excel_data.get("questionCorrectAnswer"), "correctAnswer": "A"}],
-                   "answerChoices": [{"htmlString": excel_data.get("answerHtmlString"), "choice": "A"},
-                                     {"htmlString": excel_data.get("answerHtmlString"), "choice": "B"},
-                                     {"htmlString": excel_data.get("answerHtmlString"), "choice": "C"},
-                                     {"htmlString": excel_data.get("answerHtmlString"), "choice": "D"}]}
+        request = request = {"questionType": 7, "difficultyLevel": 1, "subCategoryId": 3928, "categoryId": 3922,
+                             "htmlString": excel_data.get('questionQuestionString'),
+                             "questionStr": excel_data.get('questionQuestionString'),
+                             "subTopicId": None, "authorId": 14390, "isRevised": False, "notes": "Notes1",
+                             "subTopicUnitId": None,
+                             "statusId": 2622, "questionFlag": 1,
+                             "answers": [{"htmlString": excel_data.get("questionCorrectAnswer"), "correctAnswer": "A"}],
+                             "answerChoices": [{"htmlString": excel_data.get("answerHtmlString"), "choice": "A"},
+                                               {"htmlString": excel_data.get("answerHtmlString"), "choice": "B"},
+                                               {"htmlString": excel_data.get("answerHtmlString"), "choice": "C"},
+                                               {"htmlString": excel_data.get("answerHtmlString"), "choice": "D"}]}
         qid = crpo_common_obj.create_question(self.crpo_headers, request)
         question_details = crpo_common_obj.get_question_for_id(self.crpo_headers, qid)
         question_string = question_details['data']['questionStr']
@@ -94,7 +99,7 @@ class SecurityCheck:
         answer_choice = question_details['data']['answerChoices'][0]['htmlString']
         correct_answers = question_details['data']['answers'][0]['htmlString']
         candidate_personal_details_query = 'select candidate_name,first_name, middle_name,last_name, email1,email2,mobile1,phone_office,' \
-                                           'pan_card,passport,usn,aadhaar_no from candidates where id=%d;' %cid
+                                           'pan_card,passport,usn,aadhaar_no from candidates where id=%d;' % cid
         print(candidate_personal_details_query)
         connection = ams_db_connection()
         cursor = connection.cursor()
@@ -230,6 +235,5 @@ encryption_obj.ws.write(0, 4, "Total_Testcase_Count:- 138", encryption_obj.black
 encryption_obj.ws.write(2, 1, encryption_obj.over_all_status, encryption_obj.over_all_status_color)
 encryption_obj.ws.write(3, 1, encryption_obj.over_all_status, encryption_obj.over_all_status_color)
 encryption_obj.ws.write(4, 1, encryption_obj.over_all_status, encryption_obj.over_all_status_color)
-
 
 encryption_obj.write_excel.close()
