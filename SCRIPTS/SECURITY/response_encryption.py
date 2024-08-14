@@ -3,7 +3,6 @@ from SCRIPTS.COMMON.read_excel import *
 from SCRIPTS.CRPO_COMMON.crpo_common import *
 from SCRIPTS.CRPO_COMMON.credentials import *
 from SCRIPTS.COMMON.io_path import *
-# from SCRIPTS.COMMON.environment import *
 
 
 class ResponseEncryption:
