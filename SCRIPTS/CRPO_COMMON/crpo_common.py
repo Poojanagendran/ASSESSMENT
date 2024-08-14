@@ -11,7 +11,7 @@ class CrpoCommon:
 
     @staticmethod
     def login_to_crpo(login_name, password, tenant):
-        header = {"content-type": "application/json","App-Server": "py310app"}
+        header = {"content-type": "application/json", "App-Server": "py310app"}
         data = {"LoginName": login_name, "Password": password, "TenantAlias": tenant, "UserName": login_name}
         response = requests.post(crpo_common_obj.domain + "/py/common/user/login_user/", headers=header,
                                  data=json.dumps(data), verify=False)
@@ -23,13 +23,13 @@ class CrpoCommon:
 
     @staticmethod
     def eu_login_to_crpo(login_name, password, tenant):
-        header = {"content-type": "application/json","App-Server": "py310app"}
+        header = {"content-type": "application/json", "App-Server": "py310app"}
         data = {"LoginName": login_name, "Password": password, "TenantAlias": tenant, "UserName": login_name}
         response = requests.post(crpo_common_obj.eu_domain + "/py/common/user/login_user/", headers=header,
                                  data=json.dumps(data), verify=False)
         login_response = response.json()
 
-        headers = {"content-type": "application/json", "APP-NAME": "CRPO", "X-APPLMA": "true","App-Server": "py310app",
+        headers = {"content-type": "application/json", "APP-NAME": "CRPO", "X-APPLMA": "true", "App-Server": "py310app",
                    "X-AUTH-TOKEN": login_response.get("Token")}
         print(headers)
         return headers
@@ -46,13 +46,14 @@ class CrpoCommon:
         return response.json()
 
     @staticmethod
-    def get_cand_src_code_and_attachments(token, request_payload):
-                response = requests.post(
-                        crpo_common_obj.domain + "/py/assessment/report/api/v1/get_cand_src_code_and_attachments/",
-                        headers = token, data = json.dumps(request_payload, default=str), verify = False)
-                resp_dict = json.loads(response.content)
+    def download_assessment_docket(token, request_payload):
+        response = requests.post(
+            crpo_common_obj.domain + "/py/assessment/report/api/v1/get_cand_src_code_and_attachments/",
+            headers=token, data=json.dumps(request_payload, default=str), verify=False)
+        resp_dict = json.loads(response.content)
 
-                return resp_dict
+        return resp_dict
+
     @staticmethod
     def force_evaluate_proctoring(token, tu_ids):
         request = {
