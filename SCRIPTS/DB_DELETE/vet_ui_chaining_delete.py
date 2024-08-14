@@ -16,20 +16,20 @@ class delete_ssrf_data:
         tuser_scores = 'delete from candidate_scores where testuser_id in ' \
                        '(select tu.id from test_users tu inner join tests t on t.id = tu.test_id ' \
                        'where test_id in(10036,10037)' \
-                       ' and login_time is not null and t.tenant_id in (159,1786));'
+                       ' and login_time is not null and t.tenant_id in (159,1787));'
         print(tuser_scores)
         cursor.execute(tuser_scores)
         tuser_login_infos = 'delete from test_user_login_infos where testuser_id in ' \
                             '(select tu.id from test_users tu inner join tests t on t.id = tu.test_id ' \
                             'where test_id in(10036,10037) ' \
-                            'and login_time is not null and t.tenant_id in (159,1786));'
+                            'and login_time is not null and t.tenant_id in (159,1787));'
         print(tuser_login_infos)
         cursor.execute(tuser_login_infos)
 
         tuser_proctoring_infos = 'delete from test_user_proctor_details where testuser_id in ' \
                                  '(select tu.id from test_users tu inner join tests t on t.id = tu.test_id ' \
                                  'where test_id in(10036,10037) ' \
-                                 'and login_time is not null and t.tenant_id in (159,1786));'
+                                 'and login_time is not null and t.tenant_id in (159,1787));'
         print(tuser_proctoring_infos)
         cursor.execute(tuser_proctoring_infos)
 
