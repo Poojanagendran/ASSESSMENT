@@ -1,6 +1,8 @@
 .idea/
 venv/
 /PythonWorkingScripts_InputData/Assessment/applicant_report/downloaded/downloadedfile.xlsx
+/PythonWorkingScripts_InputData/Assessment/assessment_docket/*.txt
+/PythonWorkingScripts_InputData/Assessment/assessment_docket/*.zip
 __pycache__/
 *.pyc
 /PythonWorkingScripts_Output/*.xls
