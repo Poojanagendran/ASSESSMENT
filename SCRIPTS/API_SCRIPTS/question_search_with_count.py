@@ -43,7 +43,7 @@ class QuestionSearch:
         # 35.154.213.175
         # 35.154.36.218
         self.conn = mysql.connector.connect(host='35.154.213.175',
-                                            database='qa_testing',
+                                            database='appserver_core',
                                             user='muthu',
                                             password='Muthu@123')
         self.cursor = self.conn.cursor()
@@ -169,16 +169,11 @@ class QuestionSearch:
 
         elif req.get('search').get('isNotesAvailable') == False:
             where_str += " and q.notes is null "
-
-
         else:
             where_str += " "
-
         self.final_qur = ""
         if where_str:
             self.final_qur = select_str + " where " + where_str + ";"
-            # print (self.final_qur)
-
         if self.final_qur:
             try:
                 self.amsdbconnection()

@@ -7,7 +7,7 @@ from SCRIPTS.COMMON.environment import *
 
 class CodingCompiler:
     def __init__(self):
-        self.main_domain = env_obj.domain + '/py/assessment/'
+        self.main_domain = env_obj.domain
         requests.packages.urllib3.disable_warnings()
         self.started = datetime.datetime.now()
         self.started = self.started.strftime("%Y-%M-%d-%H-%M-%S")
