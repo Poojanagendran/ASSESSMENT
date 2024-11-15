@@ -26,6 +26,21 @@ class AssessmentUICommon:
         # chrome option is needed in VET cases - ( its handling permissions like mic access)
         chrome_options = Options()
         chrome_options.add_argument("--use-fake-ui-for-media-stream")
+        # chrome_options.add_argument("--headless")  # Enable headless mode
+        # chrome_options.add_argument("--disable-gpu")  # Recommended to prevent GPU errors in headless mode
+        # chrome_options.add_argument("--no-sandbox")  # Bypass OS security model, necessary for some systems
+        # chrome_options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
+        self.driver = webdriver.Chrome(executable_path=path, chrome_options=chrome_options)
+        self.driver.get(url)
+        self.driver.implicitly_wait(10)
+        self.driver.maximize_window()
+        self.driver.switch_to.window(self.driver.window_handles[1])
+        return self.driver
+
+    def initiate_browser1(self, url, path):
+        # chrome option is needed in VET cases - ( its handling permissions like mic access)
+        chrome_options = Options()
+        chrome_options.add_argument("--use-fake-ui-for-media-stream")
         self.driver = webdriver.Chrome(executable_path=path, chrome_options=chrome_options)
         self.driver.get(url)
         self.driver.implicitly_wait(10)

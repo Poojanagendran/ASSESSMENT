@@ -271,6 +271,19 @@ class CrpoCommon:
         return candidate_details
 
     @staticmethod
+    def get_all_event(token):
+        request = {"Paging": {"MaxResults": 20, "PageNumber": 1, "IsCountRequired": True}, "isAllEventRequired": False,
+                   "Sort": 0, "Order": 0, "Search": None,
+                   "flags": {"isAllEventOwnersRequired": False, "isEventCollegesRequired": True,
+                             "isEventActivityCountRequired": False, "isEventApplicantCountRequired": True}, "Status": 1}
+        response = requests.post(crpo_common_obj.domain + "/py/crpo/event/api/v1/getAllEvent/",
+                                 headers=token,
+                                 data=json.dumps(request, default=str), verify=False)
+        candidate_details = response.json()
+
+        return candidate_details
+
+    @staticmethod
     def create_question(token, request):
         response = requests.post(crpo_common_obj.domain + "/py/assessment/authoring/api/v1/createQuestion/",
                                  headers=token, data=json.dumps(request), verify=False)
@@ -411,6 +424,9 @@ class CrpoCommon:
                                  headers=token,
                                  data=json.dumps(request, default=str), verify=False)
         resp = json.loads(response.content)
+        print(s3_persistent_url)
+        print("Is Server by ECS - Loginto test v2", response.headers.get('x-ecsnode'))
+        print("Is Server by ECS - Loginto test v2", response.headers.get('x-isecs'))
         return resp
 
     @staticmethod

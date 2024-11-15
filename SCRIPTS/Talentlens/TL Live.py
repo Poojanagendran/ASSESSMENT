@@ -337,6 +337,8 @@ Live = {"data": [{"productId": "prd:dat-next-generation:numerical-calculations:1
     ,
                  {"productId": "prd:spanish-test:e9e97efa-d2a9-4894-bc82-2403817ab28a", "title": "Spanish Test",
                   "norms": {"defaults": [], "items": []}, "languages": {"default": "en", "items": ["en", "es"]}},
+
+
                  {"productId": "prd:dat-numerical-sequences:68bc7c51-d103-40c2-90ed-ace33e1b9add",
                   "title": "DAT Numerical Sequences", "norms": {"defaults": [], "items": [
                      {"normId": "nrm:generic-norm:0001eba7-88c6-4fb7-a5a5-ae5ce5fcc3c8", "label": "generic norm"}]},
@@ -353,6 +355,8 @@ Live = {"data": [{"productId": "prd:dat-next-generation:numerical-calculations:1
                       "label": "FR - Inferieur ou égal à Bac plus 2"},
                      {"normId": "nrm:FR - Population générale:4b4c5406-6a58-489e-9314-fcc29983d72c",
                       "label": "FR - Population générale"}]}, "languages": {"default": "fr-FR", "items": ["fr-FR"]}},
+
+
                  {"productId": "prd:english-placement-test:f669b408-f9e0-4b60-972e-4ac22ae40c7e",
                   "title": "English Placement Test", "norms": {"defaults": [], "items": []},
                   "languages": {"default": "en", "items": ["en", "pt_BR", "es"]}},

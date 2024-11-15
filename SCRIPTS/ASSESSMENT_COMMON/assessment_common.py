@@ -48,6 +48,7 @@ class AssessmentCommon:
         response = requests.post(login_url, headers=header, data=json.dumps(data), verify=False)
         print("Is Server by ECS - Loginto test v2", response.headers.get('X-ServedByEcs'))
         login_response = response.json()
+        print(login_response)
         login_token = {}
         are_you_able_to_login = 'No'
         test_type = 'EMPTY'
