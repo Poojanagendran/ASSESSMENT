@@ -473,5 +473,26 @@ class CrpoCommon:
         auth_user_v2 = response.json()
         return auth_user_v2
 
+    @staticmethod
+    def generating_backend_token(integration_id, client_id, client_secret):
+        header = {"content-type": "application/json"}
+        data = {"client_id": client_id, "client_secret": client_secret}
+        url = crpo_common_obj.domain + "/py/oauth2/" + integration_id + "/access_token/"
+        print(url)
+        response = requests.post(url, headers=header, data=json.dumps(data), verify=False)
+        login_response = response.json()
+        headers = {"content-type": "application/json", "APP-NAME": "CRPO", "X-APPLMA": "true", "App-Server": "py310app",
+                   "Authorization": "bearer " + login_response.get("access_token")}
+        print(headers)
+        return headers
+
+    @staticmethod
+    def download_assessment_docket(token, request_payload):
+        response = requests.post(
+            crpo_common_obj.domain + "/py/assessment/report/api/v1/get_cand_src_code_and_attachments/",
+            headers=token, data=json.dumps(request_payload, default=str), verify=False)
+        resp_dict = json.loads(response.content)
+
+        return resp_dict
 
 crpo_common_obj = CrpoCommon()
