@@ -10,7 +10,7 @@ class MettlAutomation:
 
     def __init__(self):
         self.url = "https://amsin.hirepro.in/assessment/#/assess/login/eyJhbGlhcyI6ImF1dG9tYXRpb24ifQ=="
-        self.path = r"F:\qa_automation\chromedriver.exe"
+        self.path = chrome_driver_path
         write_excel_object.save_result(output_path_ui_mettl)
         # 0th Row Header
         header = ['Mettl']
