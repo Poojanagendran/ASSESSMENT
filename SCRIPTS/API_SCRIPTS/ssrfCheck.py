@@ -4,6 +4,8 @@ from SCRIPTS.COMMON.io_path import *
 from SCRIPTS.CRPO_COMMON.crpo_common import *
 from SCRIPTS.ASSESSMENT_COMMON.assessment_common import *
 from SCRIPTS.DB_DELETE.db_cleanup import *
+from SCRIPTS.COMMON.parallel_execution import *
+
 
 class SecurityCheck:
 
@@ -46,8 +48,14 @@ class SecurityCheck:
         self.ws.write(1, 6, "Expected Status", self.black_color)
         self.ws.write(1, 7, "Actual Status", self.black_color)
 
-    def security_check(self, api, request, expected_status, api_module, crpo_header, cand_header, assess_header,
-                       tc_desc, src_header):
+
+    def security_check(self, crpo_header, cand_header, assess_header, src_header, data):
+        api = data.get('api')
+        request = data.get('payLoad')
+        expected_status = data.get('expectedStatus')
+        api_module = data.get('apiModule')
+        tc_desc = data.get('testCaseDescription')
+
         try:
             print(api_module)
             if api_module == 'Assessment':
@@ -127,10 +135,10 @@ assessment_headers = AssessmentCommon.login_to_test(login_name='Automation891612
                                                     tenant='automation')
 assessment_headers = {"content-type": "application/json", "X-AUTH-TOKEN": assessment_headers.get("Token"),
                       "X-APPLMA": "true"}
-for iter in security_data_excel:
-    security_obj.security_check(iter.get('api'), iter.get('payLoad'), iter.get('expectedStatus'), iter.get('apiModule'),
-                                crpo_headers, candidate_headers, assessment_headers, iter.get('testCaseDescription'),
-                                source_headers)
+thread_context_for_ssrf_check(security_obj.security_check, crpo_headers, candidate_headers, assessment_headers,
+                              source_headers, security_data_excel)
+# for data in security_data_excel:
+#     security_obj.security_check(crpo_headers, candidate_headers, assessment_headers, source_headers, data)
 
 ended = datetime.datetime.now()
 ended = "Ended:- %s" % ended.strftime("%Y-%M-%d-%H-%M-%S")

@@ -87,6 +87,72 @@ class AssessmentUICommon:
             print("I agree is not visible")
             print(e)
 
+    def focus_to_model_window(self):
+        try:
+            time.sleep(1)
+            model_header = WebDriverWait(self.driver, self.delay).until(
+                EC.presence_of_element_located((By.CLASS_NAME, 'dropdown')))
+            # self.driver.find_element(By.XPATH, "//*[@class='modal-header']").click()
+            model_header.click()
+        except Exception as e:
+            print("model window is not visible")
+            print(e)
+
+    def about_online_proctoring(self):
+        try:
+            time.sleep(1)
+            # about_online_proctoring = WebDriverWait(self.driver, self.delay).until(
+            #     EC.presence_of_element_located((By.CLASS_NAME, 'chk')))
+            # is_selected = about_online_proctoring.is_selected()
+            # if not is_selected:
+            #     about_online_proctoring.click()
+            #     is_selected = True
+            # checkbox = self.driver.find_element(By.NAME, "chkProctorTermCondition")
+            checkbox = WebDriverWait(self.driver, 30).until(
+                EC.visibility_of_element_located((By.ID, "termsChk"))
+            )
+
+            # Scroll the checkbox into view
+            # self.driver.execute_script("arguments[0].scrollIntoView(true);", checkbox)
+
+            # Click on the checkbox
+            # checkbox.click()
+            self.driver.execute_script("arguments[0].click();", checkbox)
+
+            click_next = WebDriverWait(self.driver, self.delay).until(
+                EC.presence_of_element_located((By.NAME, 'btnProctorNext')))
+            click_next.click()
+        # return is_selected
+
+        except Exception as e:
+            print("about_online_proctoring I agree is not visible")
+            print(e)
+
+    def assessment_terms_and_conditions(self):
+        try:
+            # time.sleep(1)
+            i_agree_to_terms_and_conditions = WebDriverWait(self.driver, self.delay).until(
+                EC.presence_of_element_located((By.ID, 'termsChk')))
+            is_selected = i_agree_to_terms_and_conditions.is_selected()
+            if not is_selected:
+                i_agree_to_terms_and_conditions.click()
+                is_selected = True
+            i_fully_understand = WebDriverWait(self.driver, self.delay).until(
+                EC.presence_of_element_located((By.ID, 'termsChk2')))
+            is_selected1 = i_fully_understand.is_selected()
+            if not is_selected1:
+                i_fully_understand.click()
+                is_selected = True
+            click_next = WebDriverWait(self.driver, self.delay).until(
+                EC.presence_of_element_located((By.NAME, 'btnProctorNext')))
+            click_next.click()
+
+            return is_selected
+
+        except Exception as e:
+            print("Terms and conditions I agree is not visible")
+            print(e)
+
     def selfie_page(self):
 
         try:
