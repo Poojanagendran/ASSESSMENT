@@ -75,6 +75,9 @@ input_path_ui_rtc_static = input_common_dir + r'\UI\Assessment\rtc_static.xls'
 input_path_ui_marking_schema = input_common_dir + r'\UI\Assessment\test_marking.xls'
 input_path_ui_self_assessment = input_common_dir + r'\UI\Assessment\self_assessment.xls'
 # input_path_ui_fib_marking_schema = input_common_dir + 'UI\\Assessment\\test_marking_fib.xls'
+input_path_response_encryption = input_common_dir + r'/Security/response_encryption.xls'
+input_path_xss_encoding = input_common_dir + r'/Security/xss_char_encoding.xls'
+input_path_rate_control = input_common_dir + r'/Security/ratecontrol.xls'
 
 # INFRA
 input_infra_strict_domain_validations = input_common_dir + r"\INFRA\strict_domain.xls"
@@ -158,6 +161,9 @@ output_path_ui_psych_marking_schema = output_common_dir + r'\UI\UI_Static_psych_
 output_path_ui_mca_marking_schema = output_common_dir + r'\UI\UI_Static_mca_Marking'
 output_path_ui_fib_marking_schema = output_common_dir + r'\UI\UI_Static_fib_Marking'
 output_path_ui_self_assessment = output_common_dir + r'\UI\UI_self_assessment'
+output_path_response_encryption = output_common_dir + r'/SECURITY/response_encryption.xls'
+output_path_xss = output_common_dir + r'/SECURITY/xss_char_encoding'
+output_path_rate_control = output_common_dir + r'/SECURITY/rate_control'
 
 # INFRA
 output_path_infra_strict_domain = output_common_dir + r'\INFRA\API_infra_strict_domain'

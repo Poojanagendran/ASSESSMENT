@@ -13,6 +13,18 @@ def thread_context(invoking_object_and_function, token, excel_data):
                 print(f"Error processing {data.get('fileName')}: {e}")
 
 
+def thread_context_for_ui(invoking_object_and_function, excel_data):
+    # if login token is required use below
+    with ThreadPoolExecutor() as executor:
+        futures = {executor.submit(invoking_object_and_function, data): data for data in excel_data}
+        for future in as_completed(futures):
+            data = futures[future]
+            try:
+                future.result()  # This will raise an exception if the function call raised one
+            except Exception as e:
+                print(f"Error processing {data.get('fileName')}: {e}")
+
+
 def thread_context_for_ssrf_check(invoking_object_function, crpo_headers, candidate_headers, assessment_headers,
                                   source_headers, excel_data):
     # if login token is not required use below

@@ -495,4 +495,81 @@ class CrpoCommon:
 
         return resp_dict
 
+    @staticmethod
+    def generating_ui_token(integration_id, client_id, admin_token, cid, event_id, job_id):
+        header = {"content-type": "application/json", "isClientUpdatedWithCaptcha": "true"}
+        data = {"client_id": client_id}
+        url = crpo_common_obj.domain + "/py/oauth2/" + integration_id + "/access_token/"
+        print(url)
+        response = requests.post(url, headers=header, data=json.dumps(data), verify=False)
+        login_response = response.json()
+        print(login_response)
+        data_get_hash = {"candidateId": cid, "eventId": event_id, "jobId": job_id}
+        get_hash_url = crpo_common_obj.domain + "/py/crpo/assessment/slotmgmt/recruiter/api/v1/getHash/"
+        get_hash_resp = requests.post(get_hash_url, headers=admin_token, data=json.dumps(data_get_hash), verify=False)
+        get_hash_response = get_hash_resp.json()
+        hash = get_hash_response['data']['hash']
+        print(get_hash_response)
+
+        data_verify_hash = {"data": "candidate=" + str(cid) + "&event=" + str(event_id) + "&job=" + str(job_id), "hash": hash}
+        verify_hash_url = crpo_common_obj.domain + "/py/crpo/assessment/slotmgmt/candidate/api/v1/verifyHash/"
+        verify_hash_resp = requests.post(verify_hash_url, headers=admin_token, data=json.dumps(data_verify_hash), verify=False)
+        get_hash_response = verify_hash_resp.json()
+        return login_response
+
+    @staticmethod
+    def generating_slots(token, event_id):
+        data = {"eventId": event_id}
+        url = crpo_common_obj.domain + "/py/crpo/assessment/slotmgmt/candidate/api/v1/getAllSlots/"
+        print(url)
+        response = requests.post(url, headers=token, data=json.dumps(data), verify=False)
+        slot_response = response.json()
+        return slot_response
+
+    @staticmethod
+    def get_app_preference_generic(token, request):
+        response = requests.post(crpo_common_obj.domain + "/py/common/common_app_utils/api/v1/getAppPreference/",
+                                 headers=token, data=json.dumps(request, default=str), verify=False)
+        # print(response.headers.get('X-APP_NODE'))
+        app_preference = response.json()
+        return app_preference
+
+    @staticmethod
+    def update_api_audit(token, req):
+        response = requests.post(crpo_common_obj.domain + "/py/hirepro_admin/api_audit_config/update_api_audit_config/",
+                                 headers=token,
+                                 data=json.dumps(req), verify=False)
+        print(response)
+        return response
+
+    @staticmethod
+    def update_tenant_config(token, tenant_id, encr):
+        request = {"id": tenant_id, "tenant": {
+            "additionalConfig": {"isEuTenant": False, "payloadEncryptionConfig": {"isResponseEncrypted": encr},
+                                 "bucketConfig": {}, "samlDomain": ""}}, "masterConfiguration": {"loginStrategy": ""}}
+        print(request)
+        response = requests.post(crpo_common_obj.domain + "/py/hirepro_admin/tenant/api/v1/update/",
+                                 headers=token,
+                                 data=json.dumps(request, default=str), verify=False)
+        print(response)
+        return response
+
+    @staticmethod
+    def clear_tenant_cache(token, tenant):
+        request = {"aliasList": [tenant]}
+        response = requests.post(crpo_common_obj.domain + "/py/common/api/v1/ctic/",
+                                 headers=token,
+                                 data=json.dumps(request, default=str), verify=False)
+        print("This is clear tenant cache")
+        print(response)
+        return response.json()
+
+    @staticmethod
+    def security_login_to_crpo(login_name, password, tenant):
+        header = {"content-type": "application/json", "X-APPLMA": "true", "App-Server": "py310app"}
+        data = {"LoginName": login_name, "Password": password, "TenantAlias": tenant, "UserName": login_name}
+        response = requests.post(crpo_common_obj.domain + "/py/common/user/v2/login_user/", headers=header,
+                                 data=json.dumps(data), verify=False)
+        return response.content
+
 crpo_common_obj = CrpoCommon()
