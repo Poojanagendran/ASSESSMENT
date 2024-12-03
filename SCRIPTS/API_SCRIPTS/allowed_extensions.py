@@ -14,7 +14,7 @@ class AllowedFileExtensions:
                                    ".xlw", ".ppt", ".pot", ".pps", ".pptx", ".pptm", ".potx", ".potm", ".ppam", ".ppsx",
                                    ".ppsm", ".sldx", ".sldm", ".zip", ".rar", ".7z", ".gz", ".jpeg", ".jpg", ".gif",
                                    ".png", ".msg", ".txt", ".mp4", ".mvw", ".3gp", ".sql", ".webm", ".csv", ".odt",
-                                   ".json", ".ods", ".ogg", ".p12"]  # (Same as your original list)
+                                   ".json", ".ods", ".ogg", ".p12"]
         requests.packages.urllib3.disable_warnings()
         self.row_size = 2
         write_excel_object.save_result(output_path_allowed_extension)
