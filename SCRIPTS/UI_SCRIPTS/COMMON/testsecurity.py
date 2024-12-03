@@ -5,7 +5,6 @@ from SCRIPTS.COMMON.io_path import *
 
 
 class TestSecurity:
-
     def __init__(self):
         self.row = 1
         write_excel_object.save_result(output_path_ui_test_security)

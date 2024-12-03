@@ -502,8 +502,9 @@ class CrpoCommon:
         url = crpo_common_obj.domain + "/py/oauth2/" + integration_id + "/access_token/"
         print(url)
         response = requests.post(url, headers=header, data=json.dumps(data), verify=False)
-        login_response = response.json()
-        print(login_response)
+        access_token = response.json()
+        print(access_token)
+
         data_get_hash = {"candidateId": cid, "eventId": event_id, "jobId": job_id}
         get_hash_url = crpo_common_obj.domain + "/py/crpo/assessment/slotmgmt/recruiter/api/v1/getHash/"
         get_hash_resp = requests.post(get_hash_url, headers=admin_token, data=json.dumps(data_get_hash), verify=False)
@@ -514,8 +515,10 @@ class CrpoCommon:
         data_verify_hash = {"data": "candidate=" + str(cid) + "&event=" + str(event_id) + "&job=" + str(job_id), "hash": hash}
         verify_hash_url = crpo_common_obj.domain + "/py/crpo/assessment/slotmgmt/candidate/api/v1/verifyHash/"
         verify_hash_resp = requests.post(verify_hash_url, headers=admin_token, data=json.dumps(data_verify_hash), verify=False)
-        get_hash_response = verify_hash_resp.json()
-        return login_response
+        verify_hash_response = verify_hash_resp.json()
+        print(verify_hash_response)
+        ui_token = {"authorization": "bearer " + access_token.get('access_token')}
+        return ui_token
 
     @staticmethod
     def generating_slots(token, event_id):

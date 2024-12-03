@@ -675,6 +675,16 @@ class DataCleanUp:
         except Exception as e:
             print(e)
 
+    @staticmethod
+    def rate_control_delete():
+        db_connection = ams_db_connection_for_core2517()
+        cursor = db_connection.cursor()
+        query = "delete from candidates where hp_dec(candidate_name) = '<script>alert(1)</script>' and tenant_id=2517;"
+        print(query)
+        cursor.execute(query)
+        db_connection.commit()
+        db_connection.close()
+
 
 data_clean_obj = DataCleanUp()
 # del_data.delete_assessment_test_users()
