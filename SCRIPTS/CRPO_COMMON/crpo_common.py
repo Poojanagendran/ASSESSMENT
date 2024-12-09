@@ -512,9 +512,11 @@ class CrpoCommon:
         hash = get_hash_response['data']['hash']
         print(get_hash_response)
 
-        data_verify_hash = {"data": "candidate=" + str(cid) + "&event=" + str(event_id) + "&job=" + str(job_id), "hash": hash}
+        data_verify_hash = {"data": "candidate=" + str(cid) + "&event=" + str(event_id) + "&job=" + str(job_id),
+                            "hash": hash}
         verify_hash_url = crpo_common_obj.domain + "/py/crpo/assessment/slotmgmt/candidate/api/v1/verifyHash/"
-        verify_hash_resp = requests.post(verify_hash_url, headers=admin_token, data=json.dumps(data_verify_hash), verify=False)
+        verify_hash_resp = requests.post(verify_hash_url, headers=admin_token, data=json.dumps(data_verify_hash),
+                                         verify=False)
         verify_hash_response = verify_hash_resp.json()
         print(verify_hash_response)
         ui_token = {"authorization": "bearer " + access_token.get('access_token')}
@@ -574,5 +576,14 @@ class CrpoCommon:
         response = requests.post(crpo_common_obj.domain + "/py/common/user/v2/login_user/", headers=header,
                                  data=json.dumps(data), verify=False)
         return response.content
+
+    @staticmethod
+    def get_tu_proc_screen_data(token, payload):
+        response = requests.post(crpo_common_obj.domain + "/py/assessment/testuser/api/v1/get_tu_proc_screen_data/",
+                                 headers=token,
+                                 data=json.dumps(payload, default=str), verify=False)
+        proctored_data = response.json()
+        return proctored_data
+
 
 crpo_common_obj = CrpoCommon()
