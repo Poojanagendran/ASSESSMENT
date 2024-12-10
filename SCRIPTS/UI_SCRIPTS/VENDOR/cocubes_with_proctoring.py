@@ -1,5 +1,5 @@
 from SCRIPTS.COMMON.io_path import *
-from SCRIPTS.COMMON.writeExcel import write_excel_object
+from SCRIPTS.COMMON.write_excel_new import *
 from SCRIPTS.UI_COMMON.assessment_ui_common_v2 import *
 from SCRIPTS.CRPO_COMMON.credentials import *
 from SCRIPTS.UI_SCRIPTS.assessment_data_verification import *
@@ -9,6 +9,7 @@ from SCRIPTS.COMMON.io_path import *
 class CocubesAutomation:
 
     def __init__(self):
+        # self.url = "https://qaassesscocubes.hirepro.in/hprotest/#/assess/login/eyJhbGlhcyI6ImF1dG9tYXRpb24ifQ=="
         self.url = "https://qaassesscocubes.hirepro.in/hprotest/#/assess/login/eyJhbGlhcyI6ImF0In0="
         self.path = chrome_driver_path
         write_excel_object.save_result(output_path_ui_cocubes)
@@ -20,19 +21,24 @@ class CocubesAutomation:
                   'Cocubes Disclaimer', 'Cocubes Startest', 'Group1 Name', 'Next Group Status', 'Group2 Name',
                   'Next Group Status', 'Group3 Name', 'Next Group Status', 'Group4 Name', 'Submit test',
                   'Submission Confirmation', 'Group1 mark', 'Group2 mark', 'Group3 mark', 'Group4 mark',
-                  'Report link', 'Third party status']
+                  'Report link', 'Third party status', 'Candidate proctoring status', 'golden image count',
+                  'snapshots count', 'Recorded audio file size', 'Audio Duration', 'Recorded video file size',
+                  'Video Duration', 'Expected audio file type', 'Actual audio file type',
+                  'Expected video file type', 'Actual video file type', 'Audio S3 file', 'Video s3 file']
         write_excel_object.write_headers_for_scripts(1, 0, header, write_excel_object.black_color_bold)
+        self.row_size = 2
 
     def cocubes_technical(self, login_id, password, tkn, tu_request):
+        testuser_id = tu_request['testUserId']
         overall_color = write_excel_object.green_color
         browser = assess_ui_common_obj.initiate_browser(self.url, self.path)
         login_details = assess_ui_common_obj.ui_login_to_test(login_id, password)
-        # self.browser.get_screenshot_as_file(self.common_path + "\\1_t1_afterlogin.png")
+        # browser.get_screenshot_as_file(self.common_path + "\\1_t1_afterlogin.png")
+        about_online_proctoring = assess_ui_common_obj.about_online_proctoring()
+        assessment_terms_and_conditions = assess_ui_common_obj.assessment_terms_and_conditions()
+        selfie = assess_ui_common_obj.selfie()
         overall_status = 'pass'
         if login_details == 'SUCCESS':
-            focus_to_model_window =assess_ui_common_obj.focus_to_model_window()
-            about_online_proctoring = assess_ui_common_obj.about_online_proctoring()
-            assessment_terms_and_conditions = assess_ui_common_obj.assessment_terms_and_conditions()
             i_agreed = assess_ui_common_obj.select_i_agree()
             if i_agreed:
                 start_test_status = assess_ui_common_obj.start_test_button_status()
@@ -154,195 +160,115 @@ class CocubesAutomation:
                 # group4_name = data[3]['name']
                 group4_mark = int(data[3]['obtainedMarks'])
 
-                write_excel_object.ws.write(2, 0, 'Cocubes Check', write_excel_object.green_color)
+                write_excel_object.compare_results_and_write_vertically('Cocubes Check', None, self.row_size, 0)
+                write_excel_object.compare_results_and_write_vertically(test_id, None, self.row_size, 2)
+                write_excel_object.compare_results_and_write_vertically(candidate_id, None, self.row_size, 3)
+                write_excel_object.compare_results_and_write_vertically(test_userid, None, self.row_size, 4)
+                write_excel_object.compare_results_and_write_vertically('Disclaimer Success', cc_disclaimer[0],
+                                                                        self.row_size, 5, True)
+                write_excel_object.compare_results_and_write_vertically('Start test Success', cc_startest[0],
+                                                                        self.row_size, 6, True)
+                vendor_g1 = '01. English Ability\n00 / 20 attempted'
+                vendor_g2 = '02. Logical Reasoning\n00 / 20 attempted'
+                vendor_g3 = '03. Numerical Ability\n00 / 20 attempted'
+                vendor_g4 = '04. Technical\n00 / 30 attempted'
+                write_excel_object.compare_results_and_write_vertically(vendor_g1, group1[0], self.row_size, 7,
+                                                                        True)
+                write_excel_object.compare_results_and_write_vertically('Next group success', next_group1[0],
+                                                                        self.row_size, 8, True)
+                write_excel_object.compare_results_and_write_vertically(vendor_g2, group2[0],
+                                                                        self.row_size, 9, True)
+                write_excel_object.compare_results_and_write_vertically('Next group success', next_group2[0],
+                                                                        self.row_size, 10, True)
+                write_excel_object.compare_results_and_write_vertically(vendor_g3, group3[0],
+                                                                        self.row_size, 11, True)
+                write_excel_object.compare_results_and_write_vertically('Next group success', next_group3[0],
+                                                                        self.row_size, 12, True)
+                write_excel_object.compare_results_and_write_vertically(vendor_g4, group4[0],
+                                                                        self.row_size, 13, True)
+                write_excel_object.compare_results_and_write_vertically('Submission Successful', submit_test[0],
+                                                                        self.row_size, 14, True)
+                write_excel_object.compare_results_and_write_vertically('Submission Confirmed',
+                                                                        submit_test_confirmation[0],
+                                                                        self.row_size, 15, True)
+                write_excel_object.compare_results_and_write_vertically(None, group1_mark, self.row_size, 16)
+                write_excel_object.compare_results_and_write_vertically(None, group2_mark, self.row_size, 17)
+                write_excel_object.compare_results_and_write_vertically(None, group3_mark, self.row_size, 18)
+                write_excel_object.compare_results_and_write_vertically(None, group4_mark, self.row_size, 19)
 
-                write_excel_object.ws.write(2, 2, '111', write_excel_object.green_color)
-                write_excel_object.ws.write(2, 2, test_id, write_excel_object.green_color)
-                write_excel_object.ws.write(2, 3, candidate_id, write_excel_object.green_color)
-                write_excel_object.ws.write(2, 4, test_userid, write_excel_object.green_color)
+                write_excel_object.compare_results_and_write_vertically(None, report_link, self.row_size, 20)
+                write_excel_object.compare_results_and_write_vertically(None, third_party_status, self.row_size, 21)
+                get_tu_proc_screen_data_payload = {"tuId": testuser_id}
+                proctor_results = crpo_common_obj.get_tu_proc_screen_data(tkn, get_tu_proc_screen_data_payload)
+                candidate_proctoring_status = proctor_results['data']['testUserDetails']['proctorStatus']
+                recorded_urls = proctor_results['data']['getRecordedUrls']
+                proctored_images = proctor_results['data']['getTestUserProcImg']
+                golden_image = 0
+                snapshot_image = 0
+                for images in proctored_images:
+                    if images.get('GoldenImage'):
+                        golden_image = golden_image + 1
+                    else:
+                        snapshot_image = snapshot_image + 1
+                audio_json = recorded_urls[0]['recordedVideo'][0]['recordedMedia']['audio']
+                audio_file_size = audio_json.get('size')
+                audio_s3_file = audio_json.get('s3Url')
+                audio_duration = audio_json.get('duration')
+                video_json = recorded_urls[0]['recordedVideo'][0]['recordedMedia']['video']
+                video_file_size = video_json.get('size')
+                video_s3_file = video_json.get('s3Url')
+                video_duration = video_json.get('duration')
 
-                if cc_disclaimer[0] == 'Disclaimer Success':
-                    color = write_excel_object.green_color
+                write_excel_object.compare_results_and_write_vertically('Proctored', candidate_proctoring_status,
+                                                                        self.row_size, 22, True)
 
-                else:
-                    color = write_excel_object.red_color
-                    overall_color = write_excel_object.red_color
-                    overall_status = 'Fail'
-                write_excel_object.ws.write(2, 5, cc_disclaimer[0], color)
+                write_excel_object.compare_results_and_write_vertically(1, golden_image, self.row_size, 23, True)
 
-                if cc_startest[0] == 'Start test Success':
-                    color = write_excel_object.green_color
+                write_excel_object.compare_results_and_write_vertically(4, snapshot_image, self.row_size, 24, True)
 
-                else:
-                    color = write_excel_object.red_color
-                    overall_color = write_excel_object.red_color
-                    overall_status = 'Fail'
-                write_excel_object.ws.write(2, 6, cc_startest[0], color)
+                write_excel_object.compare_results_and_write_vertically(None, audio_file_size, self.row_size, 25, True)
 
-                if "English Ability" in group1[0]:
-                    color = write_excel_object.green_color
+                write_excel_object.compare_results_and_write_vertically(None, audio_duration, self.row_size, 26, True)
 
-                else:
-                    color = write_excel_object.red_color
-                    overall_color = write_excel_object.red_color
-                    overall_status = 'Fail'
-                write_excel_object.ws.write(2, 7, group1[0], color)
+                write_excel_object.compare_results_and_write_vertically(None, video_file_size, self.row_size, 27, True)
 
-                if next_group1[0] == 'Next group success':
-                    color = write_excel_object.green_color
+                write_excel_object.compare_results_and_write_vertically(None, video_duration, self.row_size, 28, True)
 
-                else:
-                    color = write_excel_object.red_color
-                    overall_color = write_excel_object.red_color
-                    overall_status = 'Fail'
-                write_excel_object.ws.write(2, 8, next_group1[0], color)
+                public_audio_url = audio_s3_file.split('?AWS')[0]
+                audio_filetype = public_audio_url[-4:]
+                public_video_url = video_s3_file.split('?AWS')[0]
+                video_filetype = public_video_url[-4:]
+                write_excel_object.compare_results_and_write_vertically('opus', audio_s3_file, self.row_size, 29)
+                write_excel_object.compare_results_and_write_vertically('webm', audio_s3_file, self.row_size, 31)
+                write_excel_object.compare_results_and_write_vertically(None, audio_s3_file, self.row_size, 33, True)
+                write_excel_object.compare_results_and_write_vertically(None, video_s3_file, self.row_size, 34, True)
 
-                if 'Logical Reasoning' in group2[0]:
-                    color = write_excel_object.green_color
-
-                else:
-                    color = write_excel_object.red_color
-                    overall_color = write_excel_object.red_color
-                    overall_status = 'Fail'
-                write_excel_object.ws.write(2, 9, group2[0], color)
-
-                if next_group2[0] == 'Next group success':
-                    color = write_excel_object.green_color
-
-                else:
-                    color = write_excel_object.red_color
-                    overall_color = write_excel_object.red_color
-                    overall_status = 'Fail'
-                write_excel_object.ws.write(2, 10, next_group2[0], color)
-
-                if 'Numerical Ability' in group3[0]:
-                    color = write_excel_object.green_color
-
-                else:
-                    color = write_excel_object.red_color
-                    overall_color = write_excel_object.red_color
-                    overall_status = 'Fail'
-                write_excel_object.ws.write(2, 11, group3[0], color)
-
-                if next_group3[0] == 'Next group success':
-                    color = write_excel_object.green_color
-
-                else:
-                    color = write_excel_object.red_color
-                    overall_color = write_excel_object.red_color
-                    overall_status = 'Fail'
-                write_excel_object.ws.write(2, 12, next_group3[0], color)
-
-                if 'Technical' in group4[0]:
-                    color = write_excel_object.green_color
-
-                else:
-                    color = write_excel_object.red_color
-                    overall_color = write_excel_object.red_color
-                    overall_status = 'Fail'
-                write_excel_object.ws.write(2, 13, group4[0], color)
-
-                if submit_test[0] == 'Submission Successful':
-                    color = write_excel_object.green_color
-
-                else:
-                    color = write_excel_object.red_color
-                    overall_color = write_excel_object.red_color
-                    overall_status = 'Fail'
-                write_excel_object.ws.write(2, 14, submit_test[0], color)
-
-                if submit_test_confirmation[0] == 'Submission Confirmed':
-                    color = write_excel_object.green_color
-
-                else:
-                    color = write_excel_object.red_color
-                    overall_color = write_excel_object.red_color
-                    overall_status = 'Fail'
-                write_excel_object.ws.write(2, 15, submit_test_confirmation[0], color)
-
-                if group1_mark:
-                    color = write_excel_object.green_color
-
-                else:
-                    color = write_excel_object.red_color
-                    overall_color = write_excel_object.red_color
-                    overall_status = 'Fail'
-                write_excel_object.ws.write(2, 16, group1_mark, color)
-
-                if group2_mark:
-                    color = write_excel_object.green_color
-
-                else:
-                    color = write_excel_object.red_color
-                    overall_color = write_excel_object.red_color
-                    overall_status = 'Fail'
-                write_excel_object.ws.write(2, 17, group2_mark, color)
-
-                if group3_mark:
-                    color = write_excel_object.green_color
-
-                else:
-                    color = write_excel_object.red_color
-                    overall_color = write_excel_object.red_color
-                    overall_status = 'Fail'
-                write_excel_object.ws.write(2, 18, group3_mark, color)
-
-                if group4_mark:
-                    color = write_excel_object.green_color
-
-                else:
-                    color = write_excel_object.red_color
-                    overall_color = write_excel_object.red_color
-                    overall_status = 'Fail'
-                write_excel_object.ws.write(2, 19, group4_mark, color)
-
-                if report_link:
-                    color = write_excel_object.green_color
-
-                else:
-                    color = write_excel_object.red_color
-                    overall_color = write_excel_object.red_color
-                    overall_status = 'Fail'
-                write_excel_object.ws.write(2, 20, report_link, color)
-
-                if third_party_status == 'Completed':
-                    color = write_excel_object.green_color
-
-                else:
-                    color = write_excel_object.red_color
-                    overall_color = write_excel_object.red_color
-                    overall_status = 'Fail'
-                write_excel_object.ws.write(2, 21, third_party_status, color)
-
-        write_excel_object.ws.write(2, 1, overall_status, overall_color)
-        write_excel_object.write_excel.close()
+        write_excel_object.compare_results_and_write_vertically(
+            write_excel_object.current_status, None, self.row_size, 1)
+        self.row_size = self.row_size + 1
 
 
 qs = CocubesAutomation()
 token = crpo_common_obj.login_to_crpo(cred_crpo_admin_at.get('user'), cred_crpo_admin_at.get('password'),
                                       cred_crpo_admin_at.get('tenant'))
 
-# sprint_id = input('Enter Sprint ID')
-# candidate_id = crpo_common_obj.create_candidate(token, sprint_id)
-# print(candidate_id)
-# test_id = 13965
-# event_id = 10639
-# jobrole_id = 30251
-# tag_candidate = crpo_common_obj.tag_candidate_to_test(token, candidate_id, test_id, event_id, jobrole_id)
-# time.sleep(10)
-# test_userid = crpo_common_obj.get_all_test_user(token, candidate_id)
-# print(test_userid)
-# tu_req_payload = {"testUserId": test_userid,
-#                   "requiredFlags": {"fileContentRequired": False, "isQuestionWise": True, "questionTypes": [16, 8],
-#                                     "isGroupSectionWiseMarks": True, "isVendorDetails": True, "isCodingSummary": False}}
-# tu_cred = crpo_common_obj.test_user_credentials(token, test_userid)
-# login_id = tu_cred['data']['testUserCredential']['loginId']
-# password = tu_cred['data']['testUserCredential']['password']
-login_id = "AT139651558544"
-password = "T<*jEwHe"
-tu_req_payload = {"testUserId": 3761358,
+sprint_id = input('Enter Sprint ID')
+candidate_id = crpo_common_obj.create_candidate(token, sprint_id)
+print(candidate_id)
+test_id = 13965
+event_id = 10639
+jobrole_id = 30251
+tag_candidate = crpo_common_obj.tag_candidate_to_test(token, candidate_id, test_id, event_id, jobrole_id)
+time.sleep(20)
+test_userid = crpo_common_obj.get_all_test_user(token, candidate_id)
+print(test_userid)
+tu_req_payload = {"testUserId": test_userid,
                   "requiredFlags": {"fileContentRequired": False, "isQuestionWise": True, "questionTypes": [16, 8],
                                     "isGroupSectionWiseMarks": True, "isVendorDetails": True, "isCodingSummary": False}}
+tu_cred = crpo_common_obj.test_user_credentials(token, test_userid)
+login_id = tu_cred['data']['testUserCredential']['loginId']
+password = tu_cred['data']['testUserCredential']['password']
 print(login_id)
 print(password)
 qs.cocubes_technical(login_id, password, token, tu_req_payload)
+write_excel_object.write_overall_status(testcases_count=1)
