@@ -68,7 +68,7 @@ class AssessmentUICommon:
                                                          '//div[@class="text-center login-error ng-binding ng-scope"]').text
                 login_status = error_message
         except Exception as e:
-            print(e)
+            # print(e)
             login_status = 'SUCCESS'
         return login_status
 
@@ -87,44 +87,65 @@ class AssessmentUICommon:
             print("I agree is not visible")
             print(e)
 
-    def selfie_page(self):
+    # def focus_to_model_window(self):
+    #     try:
+    #         time.sleep(1)
+    #         model_header = WebDriverWait(self.driver, self.delay).until(
+    #             EC.presence_of_element_located((By.CLASS_NAME, 'dropdown')))
+    #         # self.driver.find_element(By.XPATH, "//*[@class='modal-header']").click()
+    #         model_header.click()
+    #     except Exception as e:
+    #         print("model window is not visible")
+    #         print(e)
 
+    def about_online_proctoring(self):
         try:
-
-            tc_status = WebDriverWait(self.driver, 20).until(
-                EC.element_to_be_clickable(
-                    (By.XPATH, "/html/body/div[9]/div/div/div[2]/div[2]/div[2]/div[3]/div/p/label/span")))
-            tc_status.click()
-            self.driver.find_element(By.NAME, 'btnProctorNext').click()
-
-            tc2_chk1 = WebDriverWait(self.driver, 20).until(
-                EC.element_to_be_clickable(
-                    (By.XPATH,
-                     "/html/body/div[9]/div/div/div[2]/div[2]/assessment-terms-and-conditons/div/div/div/ul/li[5]/p/label/span")))
-            tc2_chk1.click()
-            tc2_chk2 = WebDriverWait(self.driver, 2).until(
-                EC.element_to_be_clickable(
-                    (By.XPATH,
-                     "/html/body/div[9]/div/div/div[2]/div[2]/assessment-terms-and-conditons/div/div/div/ul/li[6]/p/label/span[2]")))
-            tc2_chk2.click()
-            self.driver.find_element(By.NAME, 'btnProctorNext').click()
-
-            tc3_status = WebDriverWait(self.driver, 30).until(
-                EC.element_to_be_clickable(
-                    (By.XPATH,
-                     "/html/body/div[9]/div/div/div[2]/div[2]/div/proctor-compatibility/div[2]/div[3]/button")))
-            if tc3_status.is_enabled():
-                tc3_status.click()
-
-            time.sleep(20)
-            self.driver.find_element(By.NAME, 'btnProctorNext').click()
-
-            is_selected = True
-            return is_selected
-
+            self.driver.implicitly_wait(30)
+            i_agree = self.driver.find_element(By.XPATH, "//*[@class ='custom-checkbox font-weight-700']")
+            if i_agree.is_displayed() and i_agree.is_enabled():
+                i_agree.click()
+            else:
+                print("about_online_proctoring I agree is not interactable.")
+            time.sleep(0.5)
+            next_button = self.driver.find_element(By.NAME, "btnProctorNext")
+            next_button.click()
         except Exception as e:
-            print("Error in selfie page")
+            print("about_online_proctoring I agree is not visible")
             print(e)
+
+    def assessment_terms_and_conditions(self):
+        try:
+            time.sleep(5)
+            i_agree_to_terms_and_conditions = self.driver.find_element(By.XPATH,
+                                                                       "//span[text()='I agree to the Assessment Terms & Conditions above.']")
+            i_agree_to_terms_and_conditions.click()
+            i_fully_understand = self.driver.find_element(By.XPATH,
+                                                          "//span[@class='txt-color-red' and contains(text(), 'if I am found to be engaged in any act of fraud')]")
+            i_fully_understand.click()
+            time.sleep(0.5)
+            next_button = self.driver.find_element(By.XPATH, "//button[@name='btnProctorNext']").click()
+        except Exception as e:
+            print("Terms and conditions I agree is not visible")
+            print(e)
+
+    def selfie(self):
+        time.sleep(10)
+        selfie = self.driver.find_element(By.XPATH,
+                                          "//button[@class = 'btn btn-primary center-block ng-scope' and contains(text(), 'Click a Selfie')]")
+        selfie.click()
+        time.sleep(5)
+        proceed_to_next = self.driver.find_element(By.XPATH,
+                                                   "//span[@class='ng-scope' and contains(text(), 'Proceed to test ')]")
+        proceed_to_next.click()
+
+    #Not used now, will use it in futrure if its required to remove any disabled variable
+    def remove_disabled_attribute(self):
+        button = self.driver.find_element(By.XPATH, "//button[@class='btn btn-primary center-block ng-scope']")
+        if button.is_displayed():
+            print("displayed")
+            self.driver.execute_script("arguments[0].removeAttribute('disabled');", button)
+            is_disabled = button.get_attribute("disabled")
+            print("Button is disabled:", is_disabled)
 
     def select_answer_for_the_question(self, answer):
         time.sleep(1)
