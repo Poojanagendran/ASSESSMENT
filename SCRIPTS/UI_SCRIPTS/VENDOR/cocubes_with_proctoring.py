@@ -3,13 +3,11 @@ from SCRIPTS.COMMON.write_excel_new import *
 from SCRIPTS.UI_COMMON.assessment_ui_common_v2 import *
 from SCRIPTS.CRPO_COMMON.credentials import *
 from SCRIPTS.UI_SCRIPTS.assessment_data_verification import *
-from SCRIPTS.COMMON.io_path import *
 
 
 class CocubesAutomation:
 
     def __init__(self):
-        # self.url = "https://qaassesscocubes.hirepro.in/hprotest/#/assess/login/eyJhbGlhcyI6ImF1dG9tYXRpb24ifQ=="
         self.url = "https://qaassesscocubes.hirepro.in/hprotest/#/assess/login/eyJhbGlhcyI6ImF0In0="
         self.path = chrome_driver_path
         write_excel_object.save_result(output_path_ui_cocubes)
@@ -33,7 +31,6 @@ class CocubesAutomation:
         overall_color = write_excel_object.green_color
         browser = assess_ui_common_obj.initiate_browser(self.url, self.path)
         login_details = assess_ui_common_obj.ui_login_to_test(login_id, password)
-        # browser.get_screenshot_as_file(self.common_path + "\\1_t1_afterlogin.png")
         about_online_proctoring = assess_ui_common_obj.about_online_proctoring()
         assessment_terms_and_conditions = assess_ui_common_obj.assessment_terms_and_conditions()
         selfie = assess_ui_common_obj.selfie()

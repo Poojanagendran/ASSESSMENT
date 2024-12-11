@@ -29,7 +29,7 @@ class AllowedFileExtensions:
 
     def validate_files(self, token, excel_input):
         # Validating files and writing results
-        file_path = input_path_allowed_extension_files % (excel_input.get('filePathName'))
+        file_path = Path(input_path_allowed_extension_files % (excel_input.get('filePathName')))
         file_name = excel_input.get('fileName')
         resp = crpo_common_obj.upload_files(token, file_name, file_path)
         actual_status = self.get_actual_status(resp)
