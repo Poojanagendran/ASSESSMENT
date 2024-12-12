@@ -490,5 +490,20 @@ class CrpoCommon:
                                  data=json.dumps(data), verify=False)
         return response.content
 
-
+    @staticmethod
+    def audio_transcript(token, request_payload):
+        response = requests.post(crpo_common_obj.domain + "/py/assessment/report/api/v1/candidatetranscript/",
+                                 headers=token, data=json.dumps(request_payload, default=str), verify=False)
+        resp_dict = json.loads(response.content)
+        return resp_dict
+    def clear_test_results(self,token,request_payload):
+        response = requests.post(crpo_common_obj.domain + "/py/assessment/eval/api/v1/ccsr_eval/",
+                                 headers=token, data=json.dumps(request_payload, default=str), verify=False)
+        resp_dict = json.loads(response.content)
+        return resp_dict
+    def evaluate_candidate(self,token,request_payload):
+        response = requests.post(crpo_common_obj.domain + "/py/assessment/eval/api/v1/eval-online-assessment/",
+                                 headers=token, data=json.dumps(request_payload, default=str), verify=False)
+        resp_dict = json.loads(response.content)
+        return resp_dict
 crpo_common_obj = CrpoCommon()
