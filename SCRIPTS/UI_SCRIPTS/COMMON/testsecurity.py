@@ -55,7 +55,7 @@ class TestSecurity:
                                                                         actual_status, self.row, 7)
                 write_excel_object.compare_results_and_write_vertically(write_excel_object.current_status, None,
                                                                         self.row, 1)
-        self.browser.close()
+        self.browser.quit()
 
 
 print(datetime.datetime.now())
