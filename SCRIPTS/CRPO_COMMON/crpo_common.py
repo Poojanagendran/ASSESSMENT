@@ -565,7 +565,7 @@ class CrpoCommon:
         response = requests.post(crpo_common_obj.domain + "/py/common/api/v1/ctic/",
                                  headers=token,
                                  data=json.dumps(request, default=str), verify=False)
-        print("This is clear tenant cache")
+        print("Tenant cache cleared for", tenant)
         print(response)
         return response.json()
 
