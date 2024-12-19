@@ -22,7 +22,7 @@ class ResponseEncryption:
                     "Expected Behaviour", "Actual Behaviour", "Actual API Response"]
         write_excel_object.write_headers_for_scripts(1, 0, headers1, write_excel_object.black_color_bold)
 
-    def check_payload_encryption(self, token, test_case_data):
+    def check_payload_encryption(self, token, security_tenant_token, test_case_data):
 
         write_excel_object.current_status_color = write_excel_object.green_color
         write_excel_object.current_status = "Pass"
@@ -57,12 +57,13 @@ class ResponseEncryption:
                             "auditPayloadsInS3": False, "requestPayloadSizeConfig": None, "httpMethodsConfig": None,
                             "ipThrottlingConfig": None}
         update_config = crpo_common_obj.update_tenant_config(token, tenant_id, tenant_enc_config)
+        remove_security_cache = crpo_common_obj.clear_tenant_cache(token, 'securityautomation')
         payload_enc = crpo_common_obj.update_api_audit(token, api_audit_config)
-        remove_cache = crpo_common_obj.clear_tenant_cache(token, tenant_alias)
+        # remove_hirepro_cache = crpo_common_obj.clear_tenant_cache(token, 'hirepro')
         res = crpo_common_obj.security_login_to_crpo(cred_crpo_admin_security_automation.get('user'),
                                                      cred_crpo_admin_security_automation.get('password'),
                                                      cred_crpo_admin_security_automation.get('tenant'))
-        print(res)
+        # print(res)
         if "Token" in str(res):
             actual_behaviour = "Not Encrypted"
         else:
@@ -86,15 +87,19 @@ class ResponseEncryption:
 
 
 sec_res_obj = ResponseEncryption()
-login_token = crpo_common_obj.login_to_crpo(cred_crpo_admin_hirepro.get('user'),
-                                            cred_crpo_admin_hirepro.get('password'),
-                                            cred_crpo_admin_hirepro.get('tenant'))
-login_token.pop("X-APPLMA")
-# Reading data from Excel file
+hirepro_token = crpo_common_obj.login_to_crpo(cred_crpo_admin_hirepro.get('user'),
+                                              cred_crpo_admin_hirepro.get('password'),
+                                              cred_crpo_admin_hirepro.get('tenant'))
+security_tenant_token = crpo_common_obj.login_to_crpo(cred_crpo_admin_security_automation.get('user'),
+                                                      cred_crpo_admin_security_automation.get('password'),
+                                                      cred_crpo_admin_security_automation.get('tenant'))
+
+hirepro_token.pop("X-APPLMA")
+security_tenant_token.pop('X-APPLMA')
 excel_read_obj.excel_read(input_path_response_encryption, 0)
 excel_data = excel_read_obj.details
 
 # Validating files and writing results
 for data in excel_data:
-    sec_res_obj.check_payload_encryption(login_token, data)
+    sec_res_obj.check_payload_encryption(hirepro_token, security_tenant_token, data)
 write_excel_object.write_overall_status(testcases_count=2)
