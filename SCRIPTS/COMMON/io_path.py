@@ -25,8 +25,11 @@ started = datetime.datetime.now()
 started = started.strftime("%d-%m-%Y")
 
 # input paths
-input_path_allowed_extension = Path(input_common_dir + r'/allowed_extensions/allowed_extensions_inputfile.xls')
-input_path_suspicious_list = Path(input_common_dir + '\MURALITEAM\sep8.xls')
+input_audio_transcript_cefr = input_common_dir + r'/Assessment/Audiotranscript/input_audio_transcript_cefr.xlsx'
+input_path_assessmentdocket = input_common_dir + r'/Assessment/assessment_docket/input_assessment_docket.xlsx'
+input_path_assessmentdocket_downloaded = input_common_dir + r'/Assessment/assessment_docket/downloaded'
+input_path_allowed_extension = input_common_dir + r'/allowed_extensions/allowed_extensions_inputfile.xls'
+input_path_suspicious_list = input_common_dir + '/MURALITEAM/sep8.xls'
 input_path_allowed_extension_files = input_common_dir + r'/allowed_extensions/%s'
 input_path_applicant_report = Path(input_common_dir + r'\Assessment\applicant_report\applicantreport.xlsx')
 input_path_applicant_report_downloaded = Path(input_common_dir + r'\Assessment\applicant_report\downloaded\downloadedfile.xlsx')
@@ -80,6 +83,8 @@ input_infra_strict_domain_validations = Path(input_common_dir + r"\INFRA\strict_
 input_adhoc_profile_validations = Path(input_common_dir + r"\INFRA\adhoc_profile.xls")
 
 # output paths
+output_path_audio_transcript = output_common_dir + r'/Assessment/audio_transcript/output_audio_transcript_cefr.xlsx'
+output_path_assessmentdocket = output_common_dir + r'/Assessment/assessment_docket/output_assessment_docket.xlsx'
 output_path_allowed_extension = output_common_dir + r'/allowed_extensions/API_allowed_extensions'
 output_path_suspicious_candidates = Path(output_common_dir + r'\allowed_extensions\suspicious(' + started + ').xlsx')
 output_path_applicant_report = output_common_dir + r'\Assessment\report\API_applicantreport'

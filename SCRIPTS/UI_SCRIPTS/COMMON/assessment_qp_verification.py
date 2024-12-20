@@ -85,7 +85,7 @@ class QPVerification:
                                                     write_excel_object.green_color)
                         self.col = self.col + 2
 
-        self.browser.close()
+        self.browser.quit()
 
 
 print(datetime.datetime.now())
