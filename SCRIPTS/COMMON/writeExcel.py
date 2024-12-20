@@ -1,6 +1,7 @@
 import xlrd
 import xlsxwriter
 import datetime
+from pathlib import Path
 
 
 class Excel:
@@ -11,7 +12,7 @@ class Excel:
 
     def save_result(self, save_excel_path):
         self.started = datetime.datetime.now().strftime("%Y-%M-%d-%H-%M-%S")
-        self.write_excel = xlsxwriter.Workbook(save_excel_path + self.started + '.xls')
+        self.write_excel = xlsxwriter.Workbook(save_excel_path)
         self.ws = self.write_excel.add_worksheet()
         self.black_color = self.write_excel.add_format({'font_color': 'black', 'font_size': 9})
         self.red_color = self.write_excel.add_format({'bg_color': 'red', 'font_color': 'black', 'font_size': 9})

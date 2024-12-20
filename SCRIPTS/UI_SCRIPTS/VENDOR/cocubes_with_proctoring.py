@@ -221,7 +221,12 @@ class CocubesAutomation:
 
                 write_excel_object.compare_results_and_write_vertically(1, golden_image, self.row_size, 23, True)
 
-                write_excel_object.compare_results_and_write_vertically(4, snapshot_image, self.row_size, 24, True)
+                if snapshot_image >= 4:
+                    write_excel_object.compare_results_and_write_vertically(None, snapshot_image, self.row_size, 24,
+                                                                            True)
+                else:
+                    write_excel_object.compare_results_and_write_vertically(4, snapshot_image, self.row_size, 24,
+                                                                            True)
 
                 write_excel_object.compare_results_and_write_vertically(None, audio_file_size, self.row_size, 25, True)
 
@@ -235,8 +240,8 @@ class CocubesAutomation:
                 audio_filetype = public_audio_url[-4:]
                 public_video_url = video_s3_file.split('?AWS')[0]
                 video_filetype = public_video_url[-4:]
-                write_excel_object.compare_results_and_write_vertically('opus', audio_s3_file, self.row_size, 29)
-                write_excel_object.compare_results_and_write_vertically('webm', audio_s3_file, self.row_size, 31)
+                write_excel_object.compare_results_and_write_vertically('opus', audio_filetype, self.row_size, 29)
+                write_excel_object.compare_results_and_write_vertically('webm', video_filetype, self.row_size, 31)
                 write_excel_object.compare_results_and_write_vertically(None, audio_s3_file, self.row_size, 33, True)
                 write_excel_object.compare_results_and_write_vertically(None, video_s3_file, self.row_size, 34, True)
 

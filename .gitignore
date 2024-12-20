@@ -37,3 +37,4 @@ __pycache__/
 /PythonWorkingScripts_Output/Assessment/UI/*.xlsx
 /PythonWorkingScripts_Output/Assessment/UI/VET/*.xlsx
 /PythonWorkingScripts_Output/Assessment/UI/VET/*.xls
+chromedriver.exe

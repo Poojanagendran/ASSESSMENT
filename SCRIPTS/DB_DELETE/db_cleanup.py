@@ -676,8 +676,8 @@ class DataCleanUp:
             print(e)
 
     @staticmethod
-    def rate_control_delete():
-        db_connection = ams_db_connection_for_core2517()
+    def xss_delete_for_security_automation():
+        db_connection = connect_ams_db_for_db_specific(database=amsin_master_for_core2517.get('database'))
         cursor = db_connection.cursor()
         query = "delete from candidates where hp_dec(candidate_name) = '<script>alert(1)</script>' and tenant_id=2517;"
         print(query)

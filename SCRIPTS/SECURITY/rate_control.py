@@ -213,6 +213,7 @@ test_user_token = test_user_login.get("login_token")
 # assessment_common_obj.get_test_basic_info(test_user_token)
 crpo_common_obj.save_apppreferences(admin_token, json.dumps(sec_res_obj.api_thorttle_json), 201, 'api_throttle')
 hirepro_token.pop("X-APPLMA")
+remove_cache = crpo_common_obj.clear_tenant_cache(hirepro_token, 'securityautomation')
 # Reading data from Excel file
 excel_read_obj.excel_read(input_path_rate_control, 0)
 excel_data = excel_read_obj.details
@@ -222,11 +223,13 @@ for data in excel_data:
         sec_res_obj.api_thorttle_json['ENABLED'] = False
         crpo_common_obj.save_apppreferences(admin_token, json.dumps(sec_res_obj.api_thorttle_json), 201,
                                             'api_throttle')
+        remove_cache = crpo_common_obj.clear_tenant_cache(hirepro_token, 'securityautomation')
     else:
         print("TRUE")
         sec_res_obj.api_thorttle_json['ENABLED'] = True
         crpo_common_obj.save_apppreferences(admin_token, json.dumps(sec_res_obj.api_thorttle_json), 201,
                                             'api_throttle')
+        remove_cache = crpo_common_obj.clear_tenant_cache(hirepro_token, 'securityautomation')
     if data.get('typeOfUser') == 'CRPOADMIN':
         sec_res_obj.rate_control(admin_token, data)
     elif data.get('typeOfUser') == 'TESTUSER':
@@ -251,3 +254,4 @@ for data in excel_data:
 write_excel_object.write_overall_status(testcases_count=2)
 sec_res_obj.api_thorttle_json['ENABLED'] = False
 crpo_common_obj.save_apppreferences(admin_token, json.dumps(sec_res_obj.api_thorttle_json), 201, 'api_throttle')
+remove_cache = crpo_common_obj.clear_tenant_cache(hirepro_token, 'securityautomation')

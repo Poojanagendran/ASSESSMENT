@@ -86,7 +86,7 @@ input_adhoc_profile_validations = Path(input_common_dir + r"\INFRA\adhoc_profile
 output_path_audio_transcript = output_common_dir + r'/Assessment/audio_transcript/output_audio_transcript_cefr.xlsx'
 output_path_assessmentdocket = output_common_dir + r'/Assessment/assessment_docket/output_assessment_docket.xlsx'
 output_path_allowed_extension = output_common_dir + r'/allowed_extensions/API_allowed_extensions'
-output_path_suspicious_candidates = Path(output_common_dir + r'\allowed_extensions\suspicious(' + started + ').xlsx')
+output_path_suspicious_candidates = Path(output_common_dir + r'/allowed_extensions/suspicious(' + started + ').xlsx')
 output_path_applicant_report = output_common_dir + r'\Assessment\report\API_applicantreport'
 output_path_2tests_chaining = output_common_dir + r'\Assessment\API_2tests_Chaining_Automation -'
 output_path_3tests_chaining = output_common_dir + r'\Assessment\API_3tests_Chaining_Automation - '
@@ -117,7 +117,7 @@ output_path_sanitize_automation = output_common_dir + r'\Assessment\reinitiate\A
 output_interview_proctor_evaluation = output_common_dir + r'\interview\interview_proctoring_eval'
 
 # UI Automation Output Path
-output_path_ui_vet_qs = Path(output_common_dir + r'\Assessment\UI\VET\UI_qs(' + started + ').xlsx')
+output_path_ui_vet_qs = Path(output_common_dir + r'\Assessment\UI\VET\UI_qs')
 output_path_ui_cocubes = output_common_dir + r'\UI\UI_cocubes'
 output_path_ui_mettl = output_common_dir + r'\UI\UI_Mettl'
 output_path_ui_wheebox = output_common_dir + r'\UI\UI_Wheebox'

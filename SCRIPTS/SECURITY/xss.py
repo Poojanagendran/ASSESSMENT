@@ -42,6 +42,7 @@ class XSSCharEncoding:
             app_pref_type = "xss.config_deleted"
         update_xss_app_pref = crpo_common_obj.save_apppreferences(token, json.dumps(xss_content), app_pref_id,
                                                                   app_pref_type)
+        remove_cache = crpo_common_obj.clear_tenant_cache(hirepro_tkn, 'securityautomation')
         if test_case_data.get('api_audit_config') == 'True':
             audit_request = {"apiUrl": api_url, "xssConfig": {"isEnabled": True}, "id": api_id}
         elif test_case_data.get('api_audit_config') == 'False':
@@ -50,6 +51,7 @@ class XSSCharEncoding:
             audit_request = {"apiUrl": api_url, "xssConfig": None, "id": api_id}
 
         update_api_audit_configurations = crpo_common_obj.update_api_audit(hirepro_tkn, audit_request)
+        # remove_cache = crpo_common_obj.clear_tenant_cache(hirepro_tkn, 'hirepro')
         create_cand_req = {"PersonalDetails": {"Name": "<script>alert(1)</script>", "PhoneOffice": None,
                                                "Email1": "qaonehirepro@gmail.com", "USN": usn},
                            "SourceDetails": {"SourceId": "1"}}
