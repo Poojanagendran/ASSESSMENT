@@ -10,7 +10,7 @@ class WheeboxAutomation:
 
     def __init__(self):
         self.url = "https://amsin.hirepro.in/assessment/#/assess/login/eyJhbGlhcyI6ImF1dG9tYXRpb24ifQ=="
-        self.path = r"F:\qa_automation\chromedriver.exe"
+        self.path = chrome_driver_path
         write_excel_object.save_result(output_path_ui_wheebox)
         # 0th Row Header
         header = ['Wheebox']
@@ -202,7 +202,7 @@ class WheeboxAutomation:
 
         write_excel_object.ws.write(2, 1, overall_status, overall_color)
         write_excel_object.write_excel.close()
-
+        browser.quit()
 
 qs = WheeboxAutomation()
 token = crpo_common_obj.login_to_crpo(cred_crpo_admin.get('user'), cred_crpo_admin.get('password'),
