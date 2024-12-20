@@ -29,13 +29,14 @@ class CrpoCommon:
         self.driver.find_element_by_xpath('//*[@type="password"]').clear()
         # self.driver.find_element(By.XPATH, "//*[@class='form-control ng-pristine ng-untouched ng-valid ng-empty']").click()
         self.driver.find_element_by_xpath('//*[@type="password"]').send_keys(password)
-        self.driver.find_element_by_xpath('//*[@class="btn btn-default button_style login"]').click()
+        self.driver.find_element_by_xpath('//*[@class="btn btn-default button_style login ng-binding"]').click()
 
     def crpo_more_functionality(self):
         self.driver.find_element(By.LINK_TEXT, 'More').click()
 
     def crpo_assessment_candidates(self):
-        self.driver.find_element(By.LINK_TEXT, 'Assessment Candidates').click()
+        self.driver.find_element_by_xpath('//*[@class="ng-binding ng-scope"]').click()
+        #self.driver.find_element(By.LINK_TEXT, 'Assessment Candidates').click()
         # time.sleep(5)
 
     def crpo_assessment_candidates_filter(self):

@@ -202,7 +202,7 @@ class WheeboxAutomation:
 
         write_excel_object.ws.write(2, 1, overall_status, overall_color)
         write_excel_object.write_excel.close()
-
+        browser.quit()
 
 qs = WheeboxAutomation()
 token = crpo_common_obj.login_to_crpo(cred_crpo_admin.get('user'), cred_crpo_admin.get('password'),

@@ -577,13 +577,32 @@ class CrpoCommon:
                                  data=json.dumps(data), verify=False)
         return response.content
 
-    @staticmethod
+
     def get_tu_proc_screen_data(token, payload):
         response = requests.post(crpo_common_obj.domain + "/py/assessment/testuser/api/v1/get_tu_proc_screen_data/",
                                  headers=token,
                                  data=json.dumps(payload, default=str), verify=False)
         proctored_data = response.json()
         return proctored_data
+
+    @staticmethod
+    def audio_transcript(token, request_payload):
+        response = requests.post(crpo_common_obj.domain + "/py/assessment/report/api/v1/candidatetranscript/",
+                                 headers=token, data=json.dumps(request_payload, default=str), verify=False)
+        resp_dict = json.loads(response.content)
+        return resp_dict
+
+    def clear_test_results(self, token, request_payload):
+        response = requests.post(crpo_common_obj.domain + "/py/assessment/eval/api/v1/ccsr_eval/",
+                                 headers=token, data=json.dumps(request_payload, default=str), verify=False)
+        resp_dict = json.loads(response.content)
+        return resp_dict
+
+    def evaluate_candidate(self, token, request_payload):
+        response = requests.post(crpo_common_obj.domain + "/py/assessment/eval/api/v1/eval-online-assessment/",
+                                 headers=token, data=json.dumps(request_payload, default=str), verify=False)
+        resp_dict = json.loads(response.content)
+        return resp_dict
 
 
 crpo_common_obj = CrpoCommon()
