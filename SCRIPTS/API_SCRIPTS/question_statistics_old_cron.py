@@ -88,8 +88,8 @@ class OnlineAssessment:
         write_excel_object.compare_results_and_write_vertically(current_excel_data.get('questionId'), None, self.row, 2)
         write_excel_object.compare_results_and_write_vertically(int(current_excel_data.get('totalAttempts')),
                                                                 total_attempts, self.row, 3)
-        write_excel_object.compare_results_and_write_vertically(current_excel_data.get('avgResponseTime'),
-                                                                avg_res_time, self.row, 5)
+        write_excel_object.compare_results_and_write_vertically(round(current_excel_data.get('avgResponseTime'), 5),
+                                                                round(avg_res_time, 5), self.row, 5)
         write_excel_object.compare_results_and_write_vertically(round(current_excel_data.get('itemDifficultyLevel'), 4)
                                                                 , round(item_difficulty_level, 4), self.row, 7)
         write_excel_object.compare_results_and_write_vertically(int(current_excel_data.get('correct')),

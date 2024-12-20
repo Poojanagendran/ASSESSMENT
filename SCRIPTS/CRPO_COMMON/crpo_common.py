@@ -11,25 +11,26 @@ class CrpoCommon:
 
     @staticmethod
     def login_to_crpo(login_name, password, tenant):
-        header = {"content-type": "application/json","App-Server": "py310app"}
+        print(crpo_common_obj.domain)
+        header = {"content-type": "application/json"}
         data = {"LoginName": login_name, "Password": password, "TenantAlias": tenant, "UserName": login_name}
         response = requests.post(crpo_common_obj.domain + "/py/common/user/login_user/", headers=header,
                                  data=json.dumps(data), verify=False)
         login_response = response.json()
-        headers = {"content-type": "application/json", "APP-NAME": "CRPO", "X-APPLMA": "true", "App-Server": "py310app",
+        headers = {"content-type": "application/json", "APP-NAME": "CRPO", "X-APPLMA": "true",
                    "X-AUTH-TOKEN": login_response.get("Token")}
         print(headers)
         return headers
 
     @staticmethod
     def eu_login_to_crpo(login_name, password, tenant):
-        header = {"content-type": "application/json","App-Server": "py310app"}
+        header = {"content-type": "application/json"}
         data = {"LoginName": login_name, "Password": password, "TenantAlias": tenant, "UserName": login_name}
         response = requests.post(crpo_common_obj.eu_domain + "/py/common/user/login_user/", headers=header,
                                  data=json.dumps(data), verify=False)
         login_response = response.json()
 
-        headers = {"content-type": "application/json", "APP-NAME": "CRPO", "X-APPLMA": "true","App-Server": "py310app",
+        headers = {"content-type": "application/json", "APP-NAME": "CRPO", "X-APPLMA": "true",
                    "X-AUTH-TOKEN": login_response.get("Token")}
         print(headers)
         return headers
@@ -45,14 +46,6 @@ class CrpoCommon:
                                  data=json.dumps(request, default=str), verify=False)
         return response.json()
 
-    @staticmethod
-    def get_cand_src_code_and_attachments(token, request_payload):
-                response = requests.post(
-                        crpo_common_obj.domain + "/py/assessment/report/api/v1/get_cand_src_code_and_attachments/",
-                        headers = token, data = json.dumps(request_payload, default=str), verify = False)
-                resp_dict = json.loads(response.content)
-
-                return resp_dict
     @staticmethod
     def force_evaluate_proctoring(token, tu_ids):
         request = {
@@ -147,6 +140,26 @@ class CrpoCommon:
         response = requests.post(crpo_common_obj.domain + "/py/assessment/testuser/api/v1/re_initiate_automation/",
                                  headers=token,
                                  data=json.dumps(request, default=str), verify=False)
+
+    @staticmethod
+    def sanitise_tu_automation(token, test_user_id):
+        token.pop('X-APPLMA', None)
+        request = {"testUserId": test_user_id}
+        response = requests.post(crpo_common_obj.domain + "/py/assessment/testuser/api/v1/sanitise_tu_automation/",
+                                 headers=token,
+                                 data=json.dumps(request, default=str), verify=False)
+        data = response.json()
+        print(data)
+        return data
+
+    @staticmethod
+    def tests_against_candidate(token, candidateid):
+        payload = {"CandidateId": candidateid}
+        response = requests.post(crpo_common_obj.domain + "/py/assessment/test/api/v1/tests-against-candidate/",
+                                 headers=token,
+                                 data=json.dumps(payload, default=str), verify=False)
+        test_infos = response.json()
+        return test_infos
 
     @staticmethod
     def get_all_questions(token, request_data):
@@ -251,6 +264,19 @@ class CrpoCommon:
     def get_candidate_by_id(token, cid):
         request = {"CandidateId": cid, "RequiredDetails": [1]}
         response = requests.post(crpo_common_obj.domain + "/py/rpo/get_candidate_details_by_id/",
+                                 headers=token,
+                                 data=json.dumps(request, default=str), verify=False)
+        candidate_details = response.json()
+
+        return candidate_details
+
+    @staticmethod
+    def get_all_event(token):
+        request = {"Paging": {"MaxResults": 20, "PageNumber": 1, "IsCountRequired": True}, "isAllEventRequired": False,
+                   "Sort": 0, "Order": 0, "Search": None,
+                   "flags": {"isAllEventOwnersRequired": False, "isEventCollegesRequired": True,
+                             "isEventActivityCountRequired": False, "isEventApplicantCountRequired": True}, "Status": 1}
+        response = requests.post(crpo_common_obj.domain + "/py/crpo/event/api/v1/getAllEvent/",
                                  headers=token,
                                  data=json.dumps(request, default=str), verify=False)
         candidate_details = response.json()
@@ -398,6 +424,9 @@ class CrpoCommon:
                                  headers=token,
                                  data=json.dumps(request, default=str), verify=False)
         resp = json.loads(response.content)
+        print(s3_persistent_url)
+        print("Is Server by ECS - Loginto test v2", response.headers.get('x-ecsnode'))
+        print("Is Server by ECS - Loginto test v2", response.headers.get('x-isecs'))
         return resp
 
     @staticmethod
@@ -436,14 +465,6 @@ class CrpoCommon:
         return app_preference
 
     @staticmethod
-    def get_app_preference_generic(token, request):
-        response = requests.post(crpo_common_obj.domain + "/py/common/common_app_utils/api/v1/getAppPreference/",
-                                 headers=token, data=json.dumps(request, default=str), verify=False)
-        # print(response.headers.get('X-APP_NODE'))
-        app_preference = response.json()
-        return app_preference
-
-    @staticmethod
     def auth_user_v2(token):
         request = {}
 
@@ -451,6 +472,72 @@ class CrpoCommon:
                                  headers=token, data=json.dumps(request, default=str), verify=False)
         auth_user_v2 = response.json()
         return auth_user_v2
+
+    @staticmethod
+    def generating_backend_token(integration_id, client_id, client_secret):
+        header = {"content-type": "application/json"}
+        data = {"client_id": client_id, "client_secret": client_secret}
+        url = crpo_common_obj.domain + "/py/oauth2/" + integration_id + "/access_token/"
+        print(url)
+        response = requests.post(url, headers=header, data=json.dumps(data), verify=False)
+        login_response = response.json()
+        headers = {"content-type": "application/json", "APP-NAME": "CRPO", "X-APPLMA": "true", "App-Server": "py310app",
+                   "Authorization": "bearer " + login_response.get("access_token")}
+        print(headers)
+        return headers
+
+    @staticmethod
+    def download_assessment_docket(token, request_payload):
+        response = requests.post(
+            crpo_common_obj.domain + "/py/assessment/report/api/v1/get_cand_src_code_and_attachments/",
+            headers=token, data=json.dumps(request_payload, default=str), verify=False)
+        resp_dict = json.loads(response.content)
+
+        return resp_dict
+
+    @staticmethod
+    def generating_ui_token(integration_id, client_id, admin_token, cid, event_id, job_id):
+        header = {"content-type": "application/json", "isClientUpdatedWithCaptcha": "true"}
+        data = {"client_id": client_id}
+        url = crpo_common_obj.domain + "/py/oauth2/" + integration_id + "/access_token/"
+        print(url)
+        response = requests.post(url, headers=header, data=json.dumps(data), verify=False)
+        access_token = response.json()
+        print(access_token)
+
+        data_get_hash = {"candidateId": cid, "eventId": event_id, "jobId": job_id}
+        get_hash_url = crpo_common_obj.domain + "/py/crpo/assessment/slotmgmt/recruiter/api/v1/getHash/"
+        get_hash_resp = requests.post(get_hash_url, headers=admin_token, data=json.dumps(data_get_hash), verify=False)
+        get_hash_response = get_hash_resp.json()
+        hash = get_hash_response['data']['hash']
+        print(get_hash_response)
+
+        data_verify_hash = {"data": "candidate=" + str(cid) + "&event=" + str(event_id) + "&job=" + str(job_id),
+                            "hash": hash}
+        verify_hash_url = crpo_common_obj.domain + "/py/crpo/assessment/slotmgmt/candidate/api/v1/verifyHash/"
+        verify_hash_resp = requests.post(verify_hash_url, headers=admin_token, data=json.dumps(data_verify_hash),
+                                         verify=False)
+        verify_hash_response = verify_hash_resp.json()
+        print(verify_hash_response)
+        ui_token = {"authorization": "bearer " + access_token.get('access_token')}
+        return ui_token
+
+    @staticmethod
+    def generating_slots(token, event_id):
+        data = {"eventId": event_id}
+        url = crpo_common_obj.domain + "/py/crpo/assessment/slotmgmt/candidate/api/v1/getAllSlots/"
+        print(url)
+        response = requests.post(url, headers=token, data=json.dumps(data), verify=False)
+        slot_response = response.json()
+        return slot_response
+
+    @staticmethod
+    def get_app_preference_generic(token, request):
+        response = requests.post(crpo_common_obj.domain + "/py/common/common_app_utils/api/v1/getAppPreference/",
+                                 headers=token, data=json.dumps(request, default=str), verify=False)
+        # print(response.headers.get('X-APP_NODE'))
+        app_preference = response.json()
+        return app_preference
 
     @staticmethod
     def update_api_audit(token, req):
@@ -490,20 +577,14 @@ class CrpoCommon:
                                  data=json.dumps(data), verify=False)
         return response.content
 
-    @staticmethod
-    def audio_transcript(token, request_payload):
-        response = requests.post(crpo_common_obj.domain + "/py/assessment/report/api/v1/candidatetranscript/",
-                                 headers=token, data=json.dumps(request_payload, default=str), verify=False)
-        resp_dict = json.loads(response.content)
-        return resp_dict
-    def clear_test_results(self,token,request_payload):
-        response = requests.post(crpo_common_obj.domain + "/py/assessment/eval/api/v1/ccsr_eval/",
-                                 headers=token, data=json.dumps(request_payload, default=str), verify=False)
-        resp_dict = json.loads(response.content)
-        return resp_dict
-    def evaluate_candidate(self,token,request_payload):
-        response = requests.post(crpo_common_obj.domain + "/py/assessment/eval/api/v1/eval-online-assessment/",
-                                 headers=token, data=json.dumps(request_payload, default=str), verify=False)
-        resp_dict = json.loads(response.content)
-        return resp_dict
+
+    def get_tu_proc_screen_data(token, payload):
+        response = requests.post(crpo_common_obj.domain + "/py/assessment/testuser/api/v1/get_tu_proc_screen_data/",
+                                 headers=token,
+                                 data=json.dumps(payload, default=str), verify=False)
+        proctored_data = response.json()
+        return proctored_data
+
+
+
 crpo_common_obj = CrpoCommon()

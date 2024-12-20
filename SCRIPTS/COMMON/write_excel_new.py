@@ -1,6 +1,7 @@
 import xlrd
 import xlsxwriter
 import datetime
+from pathlib import Path
 
 
 class Excel:
@@ -11,7 +12,7 @@ class Excel:
 
     def save_result(self, save_excel_path):
         self.started = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-        self.write_excel = xlsxwriter.Workbook(save_excel_path + self.started + '.xls')
+        self.write_excel = xlsxwriter.Workbook(Path(save_excel_path + self.started + '.xls'))
         self.ws = self.write_excel.add_worksheet()
         self.black_color = self.write_excel.add_format({'font_color': 'black', 'font_size': 9})
         self.red_color = self.write_excel.add_format(
@@ -106,22 +107,40 @@ class Excel:
         self.ws.write(0, 4, "Ended :- " + str(self.endeded_time), self.black_color_bold)
         self.write_excel.close()
 
-    def compare_results_and_write_vertically(self, expected_data, actual_data, row_index, column_index):
+    def compare_results_and_write_vertically(self, expected_data, actual_data, row_index, column_index,
+                                             compare_but_write_actual_only=None):
         if column_index == 1:
             # this logic is used to write the row status
             write_excel_object.ws.write(row_index, column_index, expected_data, self.current_status_color)
         else:
             if expected_data is not None and actual_data is not None:
-                write_excel_object.ws.write(row_index, column_index, expected_data, write_excel_object.black_color)
-                if expected_data == actual_data:
-                    write_excel_object.ws.write(row_index, column_index + 1, actual_data,
-                                                write_excel_object.green_color)
+                if not compare_but_write_actual_only:
+                    write_excel_object.ws.write(row_index, column_index, expected_data, write_excel_object.black_color)
+                    if expected_data == actual_data:
+                        write_excel_object.ws.write(row_index, column_index + 1, actual_data,
+                                                    write_excel_object.green_color)
+                    else:
+                        write_excel_object.ws.write(row_index, column_index + 1, actual_data,
+                                                    write_excel_object.red_color)
+                        self.current_status = 'Fail'
+                        self.overall_status = 'Fail'
+                        self.current_status_color = write_excel_object.red_color
+                        self.overall_status_color = write_excel_object.red_color
+                # some cases we want to compare the expected and actual but don't want the expected to be written
+                # using this for co-cubes proctoring.
                 else:
-                    write_excel_object.ws.write(row_index, column_index + 1, actual_data, write_excel_object.red_color)
-                    self.current_status = 'Fail'
-                    self.overall_status = 'Fail'
-                    self.current_status_color = write_excel_object.red_color
-                    self.overall_status_color = write_excel_object.red_color
+                    if expected_data == actual_data:
+                        write_excel_object.ws.write(row_index, column_index, actual_data,
+                                                    write_excel_object.green_color)
+                    else:
+                        write_excel_object.ws.write(row_index, column_index, actual_data,
+                                                    write_excel_object.red_color)
+                        print("This is for co-cubes test")
+                        self.current_status = 'Fail'
+                        self.overall_status = 'Fail'
+                        self.current_status_color = write_excel_object.red_color
+                        self.overall_status_color = write_excel_object.red_color
+
             elif expected_data is None:
                 # In some special cases we don't have the expected data but want to verify weather we are getting
                 # actual data in the response ex- code compiler we cannot compare memory

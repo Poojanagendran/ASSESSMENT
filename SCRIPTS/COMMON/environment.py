@@ -1,6 +1,7 @@
 class Environment:
     def __init__(self):
-        environment = input("Please enter the environment [amsin or ams or betams] ").strip().lower()
+        environment = "amsin"
+        # environment = input("Please enter the environment [amsin or ams or betams] ").strip().lower()
 
         domains = {
             'ams': {

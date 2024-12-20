@@ -4,6 +4,8 @@ from SCRIPTS.CRPO_COMMON.crpo_common import *
 from SCRIPTS.CRPO_COMMON.credentials import *
 from SCRIPTS.COMMON.io_path import *
 from SCRIPTS.ASSESSMENT_COMMON.assessment_common import *
+from SCRIPTS.COMMON.parallel_execution import *
+# from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 class AllowedFileExtensions:
@@ -19,7 +21,7 @@ class AllowedFileExtensions:
                   "Expected Face count", "Actual Face count"]
         write_excel_object.write_headers_for_scripts(1, 0, header, write_excel_object.black_color_bold)
 
-    def upload_files(self, token, excel_input):
+    def brightness_sharpness_check(self, token, excel_input):
         face_count = None
         sharpness = None
         brightness = None
@@ -87,7 +89,7 @@ login_token = crpo_common_obj.login_to_crpo(cred_crpo_admin.get('user'), cred_cr
                                             cred_crpo_admin.get('tenant'))
 excel_read_obj.excel_read(input_path_brightness_check, 0)
 excel_data = excel_read_obj.details
-for data in excel_data:
-    print("One")
-    brightness_check.upload_files(login_token, data)
+
+thread_context(brightness_check.brightness_sharpness_check, login_token, excel_data)
+
 write_excel_object.write_overall_status(testcases_count=40)

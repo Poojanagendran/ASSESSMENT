@@ -1,1 +1,0 @@
-{"correctKeyStrokes": 0, "WrongKeyStrokes": 0, "totalCharsInCurrentPara": 0, "attempted": 0, "timeTaken": 0, "charsPerMin": 0, "wpm": 0, "grossWpm": 0, "netWpm": 0, "accuracy": 0}

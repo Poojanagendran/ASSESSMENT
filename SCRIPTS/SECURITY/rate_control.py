@@ -6,9 +6,13 @@ from SCRIPTS.COMMON.io_path import *
 from SCRIPTS.ASSESSMENT_COMMON.assessment_common import *
 
 
+# from SCRIPTS.DB_DELETE.db_cleanup import *
+
+
 class RateControl:
 
     def __init__(self):
+        # data_clean_obj.rate_control_delete()
         # admin_token = crpo_common_obj.login_to_crpo(cred_crpo_admin_security_automation.get('user'),
         #                                             cred_crpo_admin_security_automation.get('password'),
         #                                             cred_crpo_admin_security_automation.get('tenant'))
@@ -90,13 +94,24 @@ class RateControl:
         exp_message_per_hour_after_threshold = test_case_data.get('expectedMessagePerHourAfterThreshold')
         total_iter = int(limit_per_hour / limit_per_minute) + 1
         count = 1
-        request = {"Type": "crpo.interviewListSearch.config", "IsTenantGlobal": True}
+        # request = {"Type": "crpo.interviewListSearch.config", "IsTenantGlobal": True}
+        request = {"Type": "crpo.tenantConfigurations", "IsTenantGlobal": True}
         for overall_iter in range(0, total_iter):
             print("This is count ", count)
+            print(test_case_data.get('typeOfUser'))
             if count >= limit_per_hour:
                 if test_case_data.get('typeOfUser') == 'TESTUSER':
                     act_message_per_hour_till_threshold_resp = assessment_common_obj.get_test_basic_info(token)
                     act_message_per_hour_after_threshold_resp = assessment_common_obj.get_test_basic_info(token)
+
+                elif test_case_data.get('typeOfUser') == 'BACKEND':
+                    act_message_per_hour_till_threshold_resp = crpo_common_obj.get_all_event(token)
+                    act_message_per_hour_after_threshold_resp = crpo_common_obj.get_all_event(token)
+
+                elif test_case_data.get('typeOfUser') == 'UITOKEN':
+                    act_message_per_hour_till_threshold_resp = crpo_common_obj.generating_slots(token, event_id=3)
+                    act_message_per_hour_after_threshold_resp = crpo_common_obj.generating_slots(token, event_id=3)
+
                 else:
                     act_message_per_hour_till_threshold_resp = crpo_common_obj.get_app_preference_generic(token,
                                                                                                           request)
@@ -115,6 +130,10 @@ class RateControl:
                 for per_minute in range(0, limit_per_minute):
                     if test_case_data.get('typeOfUser') == 'TESTUSER':
                         act_minute_resp_till_threshold_resp = assessment_common_obj.get_test_basic_info(token)
+                    elif test_case_data.get('typeOfUser') == 'BACKEND':
+                        act_minute_resp_till_threshold_resp = crpo_common_obj.get_all_event(token)
+                    elif test_case_data.get('typeOfUser') == 'UITOKEN':
+                        act_minute_resp_till_threshold_resp = crpo_common_obj.generating_slots(token, event_id=3)
                     else:
                         act_minute_resp_till_threshold_resp = crpo_common_obj.get_app_preference_generic(token, request)
                     if act_minute_resp_till_threshold_resp.get('status') in [None, 'OK']:
@@ -124,6 +143,10 @@ class RateControl:
                     count = count + 1
                 if test_case_data.get('typeOfUser') == 'TESTUSER':
                     act_minute_resp_after_threshold_resp = assessment_common_obj.get_test_basic_info(token)
+                elif test_case_data.get('typeOfUser') == 'BACKEND':
+                    act_minute_resp_after_threshold_resp = crpo_common_obj.get_all_event(token)
+                elif test_case_data.get('typeOfUser') == 'UITOKEN':
+                    act_minute_resp_after_threshold_resp = crpo_common_obj.generating_slots(token, event_id=3)
                 else:
                     act_minute_resp_after_threshold_resp = crpo_common_obj.get_app_preference_generic(token, request)
 
@@ -172,6 +195,19 @@ hirepro_token = crpo_common_obj.login_to_crpo(cred_crpo_admin_hirepro.get('user'
                                               cred_crpo_admin_hirepro.get('tenant'))
 test_user_login = assessment_common_obj.login_to_test_v3('securityautomation1189', '1XTK}!',
                                                          'securityautomation', env_obj.domain)
+candidate_token = crpo_common_obj.login_to_crpo(cred_crpo_candidate_security_automation.get('user'),
+                                                cred_crpo_candidate_security_automation.get('password'),
+                                                cred_crpo_candidate_security_automation.get('tenant'))
+backend_token = crpo_common_obj.generating_backend_token(crpo_backend_token_security_automation.get('integration_id'),
+                                                         crpo_backend_token_security_automation.get('client_id'),
+                                                         crpo_backend_token_security_automation.get('client_secret'))
+# accenture_token = crpo_common_obj.login_to_crpo(cred_crpo_user_accenturetest.get('user'),
+#                                                 cred_crpo_user_accenturetest.get('password'),
+#                                                 cred_crpo_user_accenturetest.get('tenant'))
+ui_token = crpo_common_obj.generating_ui_token(crpo_ui_token_security_automation.get('integration_id'),
+                                               crpo_ui_token_security_automation.get('client_id'), admin_token,
+                                               cid=189, event_id=3, job_id=3)
+print(ui_token)
 
 test_user_token = test_user_login.get("login_token")
 # assessment_common_obj.get_test_basic_info(test_user_token)
@@ -201,9 +237,17 @@ for data in excel_data:
     elif data.get('typeOfUser') == 'VENDOR':
         print("Hey this is VENDOR")
         sec_res_obj.rate_control(vendor_token, data)
+    elif data.get('typeOfUser') == 'CANDIDATE':
+        print("Hey this is CANDIDATE token")
+        sec_res_obj.rate_control(candidate_token, data)
+    elif data.get('typeOfUser') == 'BACKEND':
+        print("Hey this is BACKEND token")
+        sec_res_obj.rate_control(backend_token, data)
+    elif data.get('typeOfUser') == 'UITOKEN':
+        print("Hey this is UI TOKEN")
+        sec_res_obj.rate_control(ui_token, data)
     else:
         sec_res_obj.rate_control(non_admin_token, data)
 write_excel_object.write_overall_status(testcases_count=2)
 sec_res_obj.api_thorttle_json['ENABLED'] = False
-crpo_common_obj.save_apppreferences(admin_token, json.dumps(sec_res_obj.api_thorttle_json), 201,
-                                    'api_throttle')
+crpo_common_obj.save_apppreferences(admin_token, json.dumps(sec_res_obj.api_thorttle_json), 201, 'api_throttle')

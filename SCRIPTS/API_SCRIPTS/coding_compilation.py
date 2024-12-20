@@ -3,11 +3,12 @@ from SCRIPTS.COMMON.write_excel_new import *
 from SCRIPTS.COMMON.io_path import *
 from SCRIPTS.ASSESSMENT_COMMON.assessment_common import *
 from SCRIPTS.COMMON.environment import *
+from SCRIPTS.COMMON.parallel_execution import *
 
 
 class CodingCompiler:
     def __init__(self):
-        self.main_domain = env_obj.domain + '/py/assessment/'
+        self.main_domain = env_obj.domain
         requests.packages.urllib3.disable_warnings()
         self.started = datetime.datetime.now()
         self.started = self.started.strftime("%Y-%M-%d-%H-%M-%S")
@@ -33,8 +34,10 @@ class CodingCompiler:
                   "Expected - Testcase2 Reason", "Actual - Testcase2 Reason", "Testcase2 Memory", "Testcase2 Time"]
         write_excel_object.write_headers_for_scripts(1, 0, header, write_excel_object.black_color_bold)
 
-    def coding_compilation_check(self, excel_input):
+    def coding_compilation_check(self, token, excel_input):
+        print("____________________________________Started \n \n")
         print(excel_input.get('testCases'))
+        print("____________________________________Completed \n \n")
         write_excel_object.current_status_color = write_excel_object.green_color
         write_excel_object.current_status = "Pass"
         # write_excel_object.current_status_color = write_excel_object.green_color
@@ -55,8 +58,6 @@ class CodingCompiler:
             "isForTestCaseResult": True,
             "data": code_data
         }
-        token = assessment_common_obj.login_to_test_v3(data.get('loginId'), data.get('password'),
-                                                       data.get('tenantName'), self.main_domain)
 
         code_token_result = assessment_common_obj.code_compiler(token.get('login_token'), request=code_compiler_request)
         print(code_token_result)
@@ -190,6 +191,9 @@ class CodingCompiler:
 coding_compiler = CodingCompiler()
 excel_read_obj.excel_read(input_coding_compiler, 0)
 excel_data = excel_read_obj.details
-for data in excel_data:
-    coding_compiler.coding_compilation_check(data)
+login_token = assessment_common_obj.login_to_test_v3('Automation152371400389', 'passpass', 'Automation',
+                                                     coding_compiler.main_domain)
+thread_context(coding_compiler.coding_compilation_check, login_token, excel_data)
+# for data in excel_data:
+#     coding_compiler.coding_compilation_check(data)
 write_excel_object.write_overall_status(testcases_count=2)
