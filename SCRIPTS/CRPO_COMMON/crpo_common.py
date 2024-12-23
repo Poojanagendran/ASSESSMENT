@@ -577,7 +577,7 @@ class CrpoCommon:
                                  data=json.dumps(data), verify=False)
         return response.content
 
-
+    @staticmethod
     def get_tu_proc_screen_data(token, payload):
         response = requests.post(crpo_common_obj.domain + "/py/assessment/testuser/api/v1/get_tu_proc_screen_data/",
                                  headers=token,
