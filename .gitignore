@@ -21,8 +21,10 @@ __pycache__/
 /PythonWorkingScripts_Output/SSRF/*.xlsx
 /PythonWorkingScripts_Output/UI/*.xls
 /PythonWorkingScripts_Output/UI/*.xlsx
+PythonWorkingScripts_Output/Email/*.xlsx
 /SCRIPTS/CRPO_COMMON/credentials.py
 /SCRIPTS/COMMON/dbconnection.py
+/SCRIPTS/COMMON/email_cred.py
 /PythonWorkingScripts_Output/Assessment/proctoring/*.xls
 /PythonWorkingScripts_Output/Assessment/proctoring/*.xlsx
 /PythonWorkingScripts_Output/Assessment/search/*.xls

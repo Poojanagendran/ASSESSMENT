@@ -89,6 +89,21 @@ class CrpoCommon:
         return resp_dict
 
     @staticmethod
+    def job_status_v2(token, contextguid):
+        request = {"ContextGUID": contextguid}
+        job_state = 'PENDING'
+        resp_dict = None
+        counter = 0
+        while job_state != 'SUCCESS' and counter < 10:
+            counter = counter + 1
+            response = requests.post(crpo_common_obj.domain + "/py/crpo/api/v1/getStatusOfAsyncAPI",
+                                     headers=token, data=json.dumps(request, default=str), verify=False)
+            resp_dict = json.loads(response.content)
+            job_state = resp_dict['data']['JobState']
+            time.sleep(30)
+        return resp_dict
+
+    @staticmethod
     def upload_files(token, file_name, file_path):
 
         token.pop('content-type', None)
@@ -603,6 +618,15 @@ class CrpoCommon:
                                  headers=token, data=json.dumps(request_payload, default=str), verify=False)
         resp_dict = json.loads(response.content)
         return resp_dict
+
+    @staticmethod
+    def send_test_user_credntials(token, test_user_id):
+        request_payload = {"testUserIds": [3758576], "isSync": False}
+        print(test_user_id)
+        response = requests.post(crpo_common_obj.domain +
+                                 "/py/assessment/htmltest/api/v1/sendTestUserCredential/",
+                                 headers=token, data=json.dumps(request_payload, default=str), verify=False)
+        return response.json()
 
 
 crpo_common_obj = CrpoCommon()
