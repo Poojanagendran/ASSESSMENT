@@ -9,16 +9,16 @@ class EmailConnectivity:
     def __init__(self):
         # imap has to be enabled in gmail settings
         # less secure apps needs to be enabled in gmain settings
-        self.sender_address = 'admin@hirepro.in'
-        self.subject = 'Assessment Credential mail - AMSIN AT Tenant'
+        # self.sender_address = 'admin@hirepro.in'
+        # self.subject = 'Assessment Credential mail - AMSIN AT Tenant'
         self.date_time_filter = datetime.now() - timedelta(minutes=10)
         self.time_filter = self.date_time_filter.strftime('%d-%b-%Y')
 
-    def connect_to_mailbox(self, sender_address, subject):
+    def connect_to_mailbox(self, sender_address, subject, mail_bucket='INBOX'):
         try:
             imap = imaplib.IMAP4_SSL("imap.gmail.com", 993)
             imap.login(email_cred.receiver_address, email_cred.receiver_password)
-            imap.select('INBOX')
+            imap.select(mail_bucket)
         except Exception as e:
             print("Could not connect mail INBOX because of ERROR: %s" % str(e))
         if sender_address and subject:
@@ -59,3 +59,4 @@ class EmailConnectivity:
 
 
 mail = EmailConnectivity()
+

@@ -628,12 +628,56 @@ class CrpoCommon:
 
     @staticmethod
     def send_test_user_credntials(token, test_user_id):
-        request_payload = {"testUserIds": [3758576], "isSync": False}
+        request_payload = {"testUserIds": [test_user_id], "isSync": False}
         print(test_user_id)
         response = requests.post(crpo_common_obj.domain +
                                  "/py/assessment/htmltest/api/v1/sendTestUserCredential/",
                                  headers=token, data=json.dumps(request_payload, default=str), verify=False)
         return response.json()
+
+    @staticmethod
+    def login_to_test(login_name, password, tenant):
+        header = {"content-type": "application/json", "X-APPLMA": "true", "APP-NAME": "onlineassessment",
+                  "App-Server": "py310app"}
+        data = {"LoginName": login_name, "Password": password, "TenantAlias": tenant}
+        response = requests.post(crpo_common_obj.domain + "/py/assessment/htmltest/api/v2/login_to_test/",
+                                 headers=header,
+                                 data=json.dumps(data), verify=False)
+        print("Is Server by ECS - Login to test", response.headers.get('X-ServedByEcs'))
+        login_response = response.json()
+        login_response = {"content-type": "application/json", "X-AUTH-TOKEN": login_response.get("Token"),
+                          "X-APPLMA": "true"}
+        return login_response
+
+    @staticmethod
+    def final_submit(assessment_token, request):
+        print(assessment_token)
+        url = crpo_common_obj.domain + '/py/assessment/htmltest/api/v1/finalSubmitTestResult/'
+        response = requests.post(url,
+                                 headers=assessment_token,
+                                 data=json.dumps(request, default=str), verify=False)
+        print("Is Server by ECS - submit test result", response.headers.get('X-ServedByEcs'))
+        json_resp = response.json()
+        if json_resp.get('isResultSubmitted'):
+            submit_xauth_token = json_resp.get('systemTkn')
+        else:
+            print("The Result is not submitted")
+            submit_xauth_token = None
+        submit_token = {'X-AUTH-TOKEN': submit_xauth_token, "X-APPLMA": "true", "APP-NAME": "onlineassessment"}
+        return submit_token
+
+    @staticmethod
+    def initiate_automation(submit_token, req):
+        url = crpo_common_obj.domain + '/py/assessment/testuser/api/v2/initiate_automation/'
+        # data = {"candidateId": int(cid), "testId": test_id, "debugTimeStamp": "2020-07-14T07:32:54.904Z"}
+        response = requests.post(url,
+                                 headers=submit_token,
+                                 data=json.dumps(req, default=str), verify=False)
+        print("Is Server by ECS - initiate automation", response.headers.get('X-ServedByEcs'))
+        itua_resp = response.json()
+        print(response.headers.get('X-GUID'))
+        print(itua_resp)
+        return itua_resp
 
 
 crpo_common_obj = CrpoCommon()

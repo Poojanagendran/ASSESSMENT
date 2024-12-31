@@ -685,6 +685,40 @@ class DataCleanUp:
         db_connection.commit()
         db_connection.close()
 
+    def mark_testuser_not_attended(self, tu_id):
+        db_connection = ams_db_connection()
+        cursor = db_connection.cursor()
+        tuser_scores = """delete from candidate_scores where testuser_id in 
+                               (select tu.id from test_users tu inner join tests t on t.id = tu.test_id 
+                               where tu.id in({0}) 
+                                and login_time is not null and t.tenant_id in (159)); """.format(tu_id)
+        print(tuser_scores)
+
+        cursor.execute(tuser_scores)
+        tuser_login_infos = 'delete from test_user_login_infos where testuser_id in ' \
+                            '(select tu.id from test_users tu inner join tests t on t.id = tu.test_id ' \
+                            'where tu.id in({0}) ' \
+                            'and login_time is not null and t.tenant_id in (159));'.format(tu_id)
+        print(tuser_login_infos)
+        cursor.execute(tuser_login_infos)
+
+        tuser_proctoring_infos = 'delete from test_user_proctor_details where testuser_id in ' \
+                                 '(select tu.id from test_users tu inner join tests t on t.id = tu.test_id ' \
+                                 'where tu.id in({0}) ' \
+                                 'and login_time is not null and t.tenant_id in (159));'.format(tu_id)
+        print(tuser_proctoring_infos)
+        cursor.execute(tuser_proctoring_infos)
+
+        update_tuser_statuss = 'update test_users set login_time = NULL, log_out_time = NULL, status = 0, ' \
+                               'client_system_info = NULL, time_spent = NULL, is_password_disabled = 0,config = NULL, ' \
+                               'client_system_info = NULL, total_score = NULL, percentage = NULL ' \
+                               'where id in({0}) and ' \
+                               'login_time is not null;'.format(tu_id)
+        print(update_tuser_statuss)
+        cursor.execute(update_tuser_statuss)
+        db_connection.commit()
+        db_connection.close()
+
 
 data_clean_obj = DataCleanUp()
 # del_data.delete_assessment_test_users()
