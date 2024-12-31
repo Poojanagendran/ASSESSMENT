@@ -20,7 +20,7 @@ amsin_at_crpo_login = domain + "/crpo/#/login/AT"
 amsin_crpodemo_crpo_login = domain + "/crpo/#/login/crpodemo"
 
 # Chromedriver Related
-chrome_driver_path = Path(chrome_driver_dir + '\chromedriver.exe')
+chrome_driver_path = Path(chrome_driver_dir + r'\chromedriver.exe')
 started = datetime.datetime.now()
 started = started.strftime("%d-%m-%Y")
 
@@ -54,6 +54,8 @@ input_question_statistics_tests = Path(input_common_dir + r'\Assessment\question
 # input_question_statistics_hirepro_cron = input_common_dir + 'Assessment\\question_statistics_new_cron_1.xls'
 input_path_sanitize_automation = Path(input_common_dir + r'\Assessment\sanitizeautomation.xls')
 input_path_for_email_validation = Path(input_common_dir + r'/Email/Emails.xls')
+input_path_sa_web_report = Path(input_common_dir + r'\Assessment\selfassessment_report\selfassessment_generic_webreport.xlsx')
+
 
 # interview
 input_interview_proctoring_evaluation = Path(input_common_dir + r'\Interview\proctoring\proctoring.xls')
@@ -119,6 +121,8 @@ output_question_statistics_new_cron = output_common_dir + r'\Assessment\API_qn_s
 output_question_statistics_tests_hp_cron = output_common_dir + r'\Assessment\API_hp_qn_statisctis_tests'
 output_path_sanitize_automation = output_common_dir + r'\Assessment\reinitiate\API_sanitize - '
 output_path_emails = output_common_dir + r'\Email\emails'
+output_path_sa_web_report = output_common_dir + r'\Assessment\API_sa_webreport - '
+
 
 # Interview
 output_interview_proctor_evaluation = output_common_dir + r'\interview\interview_proctoring_eval'
