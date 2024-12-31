@@ -25,3 +25,4 @@ for report_type, request in reports.items():
     except Exception as e:
         print("Please Verify it manually...")
         print(e)
+        continue
