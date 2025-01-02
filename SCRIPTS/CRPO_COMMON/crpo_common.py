@@ -199,6 +199,13 @@ class CrpoCommon:
         return resp_dict
 
     @staticmethod
+    def candidate_transcript_report(token, request_payload):
+        response = requests.post(crpo_common_obj.domain + "/py/assessment/report/api/v1/candidatetranscript/",
+                                 headers=token, data=json.dumps(request_payload, default=str), verify=False)
+        resp_dict = json.loads(response.content)
+        return resp_dict
+
+    @staticmethod
     def initiate_vendor_score(crpotoken, cid, test_id):
         url = crpo_common_obj.domain + '/py/assessment/assessmentvendor/api/v1/initiateVendorScore/'
         data = {"testId": test_id, "candidateIds": [cid], "isForced": True}
