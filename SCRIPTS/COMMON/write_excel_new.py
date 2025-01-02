@@ -108,7 +108,7 @@ class Excel:
         self.write_excel.close()
 
     def compare_results_and_write_vertically(self, expected_data, actual_data, row_index, column_index,
-                                             compare_but_write_actual_only=None):
+                                             compare_but_write_actual_only=None, is_act_zero_considered=None):
         if column_index == 1:
             # this logic is used to write the row status
             write_excel_object.ws.write(row_index, column_index, expected_data, self.current_status_color)
@@ -147,7 +147,7 @@ class Excel:
                 # and execution time since its changing every execution this will vary so we dont have expected but
                 # we know something will be returned by the api so we need below check
 
-                if actual_data:
+                if actual_data or (actual_data == 0 and is_act_zero_considered is True):
                     write_excel_object.ws.write(row_index, column_index, actual_data, write_excel_object.green_color)
                 else:
                     write_excel_object.ws.write(row_index, column_index, actual_data, write_excel_object.red_color)
