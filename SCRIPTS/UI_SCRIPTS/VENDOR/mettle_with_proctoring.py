@@ -1,10 +1,14 @@
+import datetime
+
 from SCRIPTS.COMMON.io_path import *
-#from SCRIPTS.COMMON.writeExcel import write_excel_object
+# from SCRIPTS.COMMON.writeExcel import write_excel_object
 from SCRIPTS.COMMON.write_excel_new import *
 from SCRIPTS.UI_COMMON.assessment_ui_common_v2 import *
 from SCRIPTS.CRPO_COMMON.credentials import *
 import time
 from SCRIPTS.UI_SCRIPTS.assessment_data_verification import *
+
+
 class MettleAutomation:
 
     def __init__(self):
@@ -20,7 +24,7 @@ class MettleAutomation:
                   'Next Group Status', 'Group3 Name', 'Next Group Status', 'Group4 Name', 'Next Group Status',
                   'Group5 Name', 'Next Group Status', 'Group6 Name', 'Submit test',
                   'Submission Confirmation', 'Group1 mark', 'Group2 mark', 'Group3 mark', 'Group4 mark', 'Group5 mark',
-                  'Group6 mark', 'Report link','Candidate proctoring status', 'golden image count',
+                  'Group6 mark', 'Report link', 'Candidate proctoring status', 'golden image count',
                   'snapshots count', 'Recorded audio file size', 'Audio Duration', 'Recorded video file size',
                   'Video Duration', 'Expected audio file type', 'Actual audio file type',
                   'Expected video file type', 'Actual video file type', 'Audio S3 file', 'Video s3 file']
@@ -71,15 +75,15 @@ class MettleAutomation:
                 data = tu_infos['data']['groupAndSectionWiseMarks']
                 # group1_name = data[0]['name']
                 group1_mark = int(data[0]['obtainedMarks'])
-                    # group2_name = data[1]['name']
+                # group2_name = data[1]['name']
                 group2_mark = int(data[1]['obtainedMarks'])
-                    # group3_name = data[2]['name']
+                # group3_name = data[2]['name']
                 group3_mark = int(data[2]['obtainedMarks'])
-                    # group4_name = data[3]['name']
+                # group4_name = data[3]['name']
                 group4_mark = int(data[3]['obtainedMarks'])
-                    # group5_name = data[4]['name']
+                # group5_name = data[4]['name']
                 group5_mark = int(data[4]['obtainedMarks'])
-                    # group6_name = data[5]['name']
+                # group6_name = data[5]['name']
                 group6_mark = int(data[5]['obtainedMarks'])
                 print(group1_mark)
                 print(group2_mark)
@@ -88,53 +92,62 @@ class MettleAutomation:
                 print(group5_mark)
                 print(group6_mark)
                 write_excel_object.compare_results_and_write_vertically('Mettl Check', None, self.row_size, 0)
-                #write_excel_object.compare_results_and_write_vertically('stand alone case', None,self.row_size, 2)
+                # write_excel_object.compare_results_and_write_vertically('stand alone case', None,self.row_size, 2)
                 write_excel_object.compare_results_and_write_vertically(test_id, None, self.row_size, 2)
                 write_excel_object.compare_results_and_write_vertically(candidate_id, None, self.row_size, 3)
                 write_excel_object.compare_results_and_write_vertically(test_userid, None, self.row_size, 4)
                 write_excel_object.compare_results_and_write_vertically('Start test1 Success', mettl_start_test1[0],
-                                                                            self.row_size, 5, True)
+                                                                        self.row_size, 5, True)
                 write_excel_object.compare_results_and_write_vertically('Start test2 Success', mettl_start_test2[0],
-                                                                            self.row_size, 6, True)
+                                                                        self.row_size, 6, True)
                 vendor_g1 = '1. English Ability'
                 vendor_g2 = '2. Analytical Reasoning'
                 vendor_g3 = '3. Numerical Ability'
                 vendor_g4 = '4. Common Applications and MS office'
                 vendor_g5 = '5. Pseudo Code'
                 vendor_g6 = '6. Networking Security and Cloud'
-                write_excel_object.compare_results_and_write_vertically(vendor_g1, mettl_group1_name[0], self.row_size, 7,True)
+                write_excel_object.compare_results_and_write_vertically(vendor_g1, mettl_group1_name[0], self.row_size,
+                                                                        7, True)
                 write_excel_object.compare_results_and_write_vertically('Next group success', next_group1[0],
-                                                                            self.row_size, 8, True)
+                                                                        self.row_size, 8, True)
                 write_excel_object.compare_results_and_write_vertically(vendor_g2, mettl_group2_name[0],
-                                                                            self.row_size, 9, True)
+                                                                        self.row_size, 9, True)
                 write_excel_object.compare_results_and_write_vertically('Next group success', next_group2[0],
-                                                                            self.row_size, 10, True)
+                                                                        self.row_size, 10, True)
                 write_excel_object.compare_results_and_write_vertically(vendor_g3, mettl_group3_name[0],
-                                                                            self.row_size, 11, True)
+                                                                        self.row_size, 11, True)
                 write_excel_object.compare_results_and_write_vertically('Next group success', next_group3[0],
-                                                                            self.row_size, 12, True)
+                                                                        self.row_size, 12, True)
                 write_excel_object.compare_results_and_write_vertically(vendor_g4, mettl_group4_name[0],
-                                                                            self.row_size, 13, True)
+                                                                        self.row_size, 13, True)
                 write_excel_object.compare_results_and_write_vertically('Next group success', next_group4[0],
-                                                                            self.row_size, 14, True)
+                                                                        self.row_size, 14, True)
                 write_excel_object.compare_results_and_write_vertically(vendor_g5, mettl_group5_name[0],
-                                                                            self.row_size, 15, True)
+                                                                        self.row_size, 15, True)
                 write_excel_object.compare_results_and_write_vertically('Next group success', next_group5[0],
-                                                                            self.row_size, 16, True)
+                                                                        self.row_size, 16, True)
                 write_excel_object.compare_results_and_write_vertically(vendor_g6, mettl_group6_name[0],
-                                                                            self.row_size, 17, True)
+                                                                        self.row_size, 17, True)
                 write_excel_object.compare_results_and_write_vertically('Mettl Final Submit success', final_submit[0],
-                                                                            self.row_size, 18, True)
-                write_excel_object.compare_results_and_write_vertically('Mettl Final Submit Confirmation success',final_submit_confirmation[0],
-                                                                            self.row_size, 19, True)
-                write_excel_object.compare_results_and_write_vertically(0, group1_mark, self.row_size, 20)
-                write_excel_object.compare_results_and_write_vertically(0, group2_mark, self.row_size, 21)
-                write_excel_object.compare_results_and_write_vertically(0, group3_mark, self.row_size, 22)
-                write_excel_object.compare_results_and_write_vertically(0, group4_mark, self.row_size, 23)
-                write_excel_object.compare_results_and_write_vertically(0, group5_mark, self.row_size, 24)
-                write_excel_object.compare_results_and_write_vertically(0, group6_mark, self.row_size, 25)
-                write_excel_object.compare_results_and_write_vertically(0, report_link, self.row_size, 26)
-                #write_excel_object.compare_results_and_write_vertically(None, third_party_status, self.row_size, 27)
+                                                                        self.row_size, 18, True)
+                write_excel_object.compare_results_and_write_vertically('Mettl Final Submit Confirmation success',
+                                                                        final_submit_confirmation[0],
+                                                                        self.row_size, 19, True)
+
+                write_excel_object.compare_results_and_write_vertically(None, group1_mark, self.row_size, 20,
+                                                                        is_act_zero_considered=True)
+                write_excel_object.compare_results_and_write_vertically(None, group2_mark, self.row_size, 21,
+                                                                        is_act_zero_considered=True)
+                write_excel_object.compare_results_and_write_vertically(None, group3_mark, self.row_size, 22,
+                                                                        is_act_zero_considered=True)
+                write_excel_object.compare_results_and_write_vertically(None, group4_mark, self.row_size, 23,
+                                                                        is_act_zero_considered=True)
+                write_excel_object.compare_results_and_write_vertically(None, group5_mark, self.row_size, 24,
+                                                                        is_act_zero_considered=True)
+                write_excel_object.compare_results_and_write_vertically(None, group6_mark, self.row_size, 25,
+                                                                        is_act_zero_considered=True)
+                write_excel_object.compare_results_and_write_vertically(None, report_link, self.row_size, 26)
+                # write_excel_object.compare_results_and_write_vertically(None, third_party_status, self.row_size, 27)
                 get_tu_proc_screen_data_payload = {"tuId": testuser_id}
                 proctor_results = crpo_common_obj.get_tu_proc_screen_data(tkn, get_tu_proc_screen_data_payload)
                 candidate_proctoring_status = proctor_results['data']['testUserDetails']['proctorStatus']
@@ -184,10 +197,12 @@ class MettleAutomation:
             write_excel_object.current_status, None, self.row_size, 1)
         self.row_size = self.row_size + 1
         browser.quit()
-qs=MettleAutomation()
+
+
+qs = MettleAutomation()
 token = crpo_common_obj.login_to_crpo(cred_crpo_admin.get('user'), cred_crpo_admin.get('password'),
                                       cred_crpo_admin.get('tenant'))
-sprint_id = input('Enter Sprint ID')
+sprint_id = str(datetime.datetime.now())
 candidate_id = crpo_common_obj.create_candidate(token, sprint_id)
 print(candidate_id)
 test_id = 20882
@@ -203,9 +218,7 @@ tu_req_payload = {"testUserId": test_userid,
 tu_cred = crpo_common_obj.test_user_credentials(token, test_userid)
 login_id = tu_cred['data']['testUserCredential']['loginId']
 password = tu_cred['data']['testUserCredential']['password']
-#print(login_id)
-#print(password)
+# print(login_id)
+# print(password)
 qs.mettl_technical(login_id, password, token, tu_req_payload)
 write_excel_object.write_overall_status(testcases_count=1)
-
-
