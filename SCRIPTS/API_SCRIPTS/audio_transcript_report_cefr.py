@@ -165,6 +165,6 @@ for data in excel_data:
 
     audio_transcript_obj.excel_write(data)
 
-write_excel_object.write_overall_status(testcases_count=4)
+write_excel_object.write_overall_status(testcases_count=6)
 
 
