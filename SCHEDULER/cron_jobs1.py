@@ -122,8 +122,8 @@ def task_mic_distortion():
         time.sleep(2)
 
 
-custom_hour = 11
-custom_minute = 47
+custom_hour = 14
+custom_minute = 15
 scheduler.add_job(task_allowed_extensions, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 scheduler.add_job(task_analyze_brightness_shapness, 'cron', hour=custom_hour, minute=custom_minute,
                   max_instances=1)
