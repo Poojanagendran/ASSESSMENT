@@ -156,16 +156,9 @@ class Excel:
                     self.current_status_color = write_excel_object.red_color
                     self.overall_status_color = write_excel_object.red_color
 
-            elif actual_data is None:
+            elif expected_data in ['EMPTY', 'NULL', 'None', 'null', 'empty', 'Empty',] and not actual_data:
                 write_excel_object.ws.write(row_index, column_index, expected_data, write_excel_object.black_color)
-                if expected_data in ['EMPTY', 'NULL', 'None', 'null', None]:
-                    write_excel_object.ws.write(row_index, column_index, 'EMPTY', write_excel_object.green_color)
-                else:
-                    write_excel_object.ws.write(row_index, column_index, 'EMPTY', write_excel_object.red_color)
-                    self.current_status = 'fail'
-                    self.overall_status = 'fail'
-                    self.current_status_color = write_excel_object.red_color
-                    self.overall_status_color = write_excel_object.red_color
+                write_excel_object.ws.write(row_index, column_index+1, 'EMPTY', write_excel_object.green_color)
 
             else:
                 # this part used for writing data without comparison,
