@@ -155,6 +155,15 @@ class Excel:
                     self.overall_status = 'fail'
                     self.current_status_color = write_excel_object.red_color
                     self.overall_status_color = write_excel_object.red_color
+
+            elif expected_data is not None and actual_data is None:
+                write_excel_object.ws.write(row_index, column_index, expected_data, write_excel_object.black_color)
+                write_excel_object.ws.write(row_index, column_index, actual_data, write_excel_object.red_color)
+                self.current_status = 'fail'
+                self.overall_status = 'fail'
+                self.current_status_color = write_excel_object.red_color
+                self.overall_status_color = write_excel_object.red_color
+
             else:
                 # this part used for writing data without comparison,
                 # some information does not need cmp but need to be written in every row
