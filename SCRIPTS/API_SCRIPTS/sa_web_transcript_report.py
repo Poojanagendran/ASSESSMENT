@@ -1,16 +1,16 @@
 from datetime import datetime, timedelta
-from urllib.parse import urlparse, urlunparse
 from SCRIPTS.COMMON.read_excel import excel_read_obj
 from SCRIPTS.COMMON.write_excel_new import write_excel_object
 from SCRIPTS.COMMON.io_path import *
 from SCRIPTS.CRPO_COMMON.credentials import cred_crpo_suparya_crpodemo
 from SCRIPTS.CRPO_COMMON.crpo_common import crpo_common_obj
 import xlrd
-import re
 import json
+from SCRIPTS.COMMON.parser import *
 
 class WebTranscriptReport2:
     def __init__(self):
+        print(datetime.datetime.now())
         self.row_size = 3
         self.details = []
         excel_read_obj.excel_read(input_path_sa_web_report, 0)
@@ -378,21 +378,6 @@ class WebTranscriptReport2:
         converted_date = base_date + timedelta(days=excel_float)
         return converted_date.strftime("%d-%m-%Y")
 
-    def clean_urls1(self, data2):
-        # Regex to match the AWS security parameters in the URLs
-        url_pattern = re.compile(r"(\?AWSAccessKeyId=[^&]+&Signature=[^&]+&Expires=[^&]+)")
-
-        if isinstance(data2, dict):
-            for key in data2:
-                data2[key] = self.clean_urls1(data2[key])
-        elif isinstance(data2, list):
-            for i in range(len(data2)):
-                data2[i] = url_pattern.sub("", data2[i])
-        elif isinstance(data2, str):
-            data2 = url_pattern.sub("", data2)
-
-        return data2
-
     def excel_write(self, actualdata, expecteddata):
         candidate_details = actualdata['data']['candidate']
         data = expecteddata[0]
@@ -432,7 +417,6 @@ class WebTranscriptReport2:
         mcqwwq3 = actualdata['data']['mcqWithWeightage'][2]
 
         codingq1 = actualdata['data']['coding'][0]
-        # print(codingq1)
         codingsummaryq1 = codingq1['codingSummary']
         codingq2 = actualdata['data']['coding'][1]
         codingsummaryq2 = codingq2['codingSummary']
@@ -444,20 +428,16 @@ class WebTranscriptReport2:
         qaq2 = actualdata['data']['qa'][1]
         qaq3 = actualdata['data']['qa'][2]
 
-        cleaned_data = web_transcript_report_obj2.clean_urls1(qaq1['jsonCandidateAnswer'])
-        # Print the cleaned data in JSON format
-        qaq1candidateans = json.dumps(cleaned_data, indent=2)
-        cleaned_data = web_transcript_report_obj2.clean_urls1(qaq2['jsonCandidateAnswer'])
-        # Print the cleaned data in JSON format
-        qaq2candidateans = json.dumps(cleaned_data, indent=2)
+        qaq1candidateans = json.dumps(clean_urls(qaq1['jsonCandidateAnswer']), indent=2)
+        qaq2candidateans = json.dumps(clean_urls(qaq2['jsonCandidateAnswer']), indent=2)
 
-        photo_url = urlparse(candidate_details['photoUrl'])
         edate = data.get('AttendedDate')
         adate = assessment_details['attendedOn']
         datetime_obj = datetime.datetime.strptime(adate, "%Y-%m-%dT%H:%M:%S").date()
         actual_date = datetime_obj.strftime("%d-%m-%Y")
         expected_date = web_transcript_report_obj2.excel_float_to_datetime(edate)
-        clean_url = urlunparse(photo_url._replace(query=""))
+        # photo_url = urlparse(candidate_details['photoUrl'])
+        # clean_url = urlunparse(photo_url._replace(query=""))
 
         write_excel_object.current_status_color = write_excel_object.green_color
         write_excel_object.current_status = "Pass"
@@ -467,13 +447,8 @@ class WebTranscriptReport2:
         write_excel_object.compare_results_and_write_vertically(data.get('TestID'), assessment_details['testId'], self.row_size, 6)
         write_excel_object.compare_results_and_write_vertically(data.get('Email'), candidate_details['email1'], self.row_size, 8)
         write_excel_object.compare_results_and_write_vertically(str(int(data.get('Mobile'))).strip(), candidate_details['mobile1'].strip(), self.row_size, 10)
-        if candidate_details['currentLocationText'] is None:
-            loc = 'None'
-            write_excel_object.compare_results_and_write_vertically(data.get('Location'), loc, self.row_size, 12)
-        else :
-            write_excel_object.compare_results_and_write_vertically(data.get('Location'), candidate_details['currentLocationText'] , self.row_size, 12)
-
-        write_excel_object.compare_results_and_write_vertically(data.get('PhotoURL'), clean_url, self.row_size, 14)
+        write_excel_object.compare_results_and_write_vertically(data.get('Location'), candidate_details['currentLocationText'] , self.row_size, 12)
+        write_excel_object.compare_results_and_write_vertically(data.get('PhotoURL'), clean_urls(candidate_details['photoUrl']), self.row_size, 14)
         write_excel_object.compare_results_and_write_vertically(expected_date, actual_date, self.row_size, 16)
         write_excel_object.compare_results_and_write_vertically(data.get('TimeTaken'), assessment_details['timeSpent'], self.row_size, 18)
         write_excel_object.compare_results_and_write_vertically(data.get('IPAddress'), ipaddress, self.row_size, 20)
@@ -573,7 +548,6 @@ class WebTranscriptReport2:
                                                                 self.row_size, 174)
         write_excel_object.compare_results_and_write_vertically(data.get('Q1RtcTimeSpent'), rtcq1['timeSpent'],
                                                                 self.row_size, 176)
-
         write_excel_object.compare_results_and_write_vertically(int(data.get('Q2RtcQuestionID')), rtcq2['id'],
                                                                 self.row_size, 178)
         write_excel_object.compare_results_and_write_vertically(data.get('Q2RtcQuestionString'),
@@ -592,7 +566,6 @@ class WebTranscriptReport2:
                                                                 self.row_size, 192)
         write_excel_object.compare_results_and_write_vertically(data.get('Q2RtcTimeSpent'), rtcq2['timeSpent'],
                                                                 self.row_size, 194)
-
         write_excel_object.compare_results_and_write_vertically(int(data.get('Q3RtcQuestionID')), rtcq3['id'],
                                                                 self.row_size, 196)
         write_excel_object.compare_results_and_write_vertically(data.get('Q3RtcQuestionString'),
@@ -629,7 +602,6 @@ class WebTranscriptReport2:
                                                                 self.row_size, 228)
         write_excel_object.compare_results_and_write_vertically(data.get('Q4RtcTimeSpent'), rtcq4['timeSpent'],
                                                                 self.row_size, 230)
-
         write_excel_object.compare_results_and_write_vertically(int(data.get('Q5RtcQuestionID')), rtcq5['id'],
                                                                 self.row_size, 232)
         write_excel_object.compare_results_and_write_vertically(data.get('Q5RtcQuestionString'),
@@ -648,7 +620,6 @@ class WebTranscriptReport2:
                                                                 self.row_size, 246)
         write_excel_object.compare_results_and_write_vertically(data.get('Q5RtcTimeSpent'), rtcq5['timeSpent'],
                                                                 self.row_size, 248)
-
         write_excel_object.compare_results_and_write_vertically(int(data.get('Q6RtcQuestionID')), rtcq6['id'],
                                                                 self.row_size, 250)
         write_excel_object.compare_results_and_write_vertically(data.get('Q6RtcQuestionString'),
@@ -790,8 +761,6 @@ class WebTranscriptReport2:
                                                                 mcaq1['typeOfQuestionText'], self.row_size, 382)
         write_excel_object.compare_results_and_write_vertically(data.get('Q1McaCorrectAns'), mcaq1['jsonCorrectAnswerStr'],
                                                                 self.row_size, 384)
-        # print("mca answer1 : ",data.get('Q1McaCorrectAns'))
-        # print("mca answer2 : ", mcaq1['correctAnswer'])
         write_excel_object.compare_results_and_write_vertically(data.get('Q1McaCandidateAns'), mcaq1['candidateAnswer'],
                                                                 self.row_size, 386)
         write_excel_object.compare_results_and_write_vertically(int(data.get('Q1McaObtainedMarks')),
@@ -1011,15 +980,9 @@ crpo_headers = crpo_common_obj.login_to_crpo(cred_crpo_suparya_crpodemo.get('use
 web_transcript_report_obj2.excel_read_2(input_path_sa_web_report, 0)
 
 excel_data_2 = web_transcript_report_obj2.details
-print(excel_data_2)
 candidate_transcript_payload = {"testId": 20880, "testUserId": 3769232}
 transcript_data = crpo_common_obj.candidate_transcript_report(crpo_headers,candidate_transcript_payload)
 web_transcript_report_obj2.excel_write(transcript_data,excel_data_2)
-
-# for data in excel_data_2:
-#     if candidate_details['candidateName'] == data.get('CandidateName')
-
-# print(candidate_name)
-
-
 write_excel_object.write_overall_status(testcases_count=1)
+print(datetime.datetime.now())
+
