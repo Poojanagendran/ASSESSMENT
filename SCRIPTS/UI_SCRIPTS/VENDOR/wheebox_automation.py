@@ -49,6 +49,7 @@ class WheeboxAutomation:
                 wb_proceed_test = assess_ui_common_obj.wheebox_proceed_test()
                 wb_auto_next_qn = assess_ui_common_obj.wheebox_auto_next_qn()
                 for question_count in range(0, 90):
+                    time.sleep(5)
                     answer_qn = assess_ui_common_obj.wheebox_answer_qn()
                     print(question_count)
                 wb_submit_test = assess_ui_common_obj.wheebox_submit_test()
@@ -207,7 +208,8 @@ class WheeboxAutomation:
 qs = WheeboxAutomation()
 token = crpo_common_obj.login_to_crpo(cred_crpo_admin.get('user'), cred_crpo_admin.get('password'),
                                       cred_crpo_admin.get('tenant'))
-sprint_id = input('Enter Sprint ID')
+#sprint_id = input('Enter Sprint ID')
+sprint_id = str(datetime.datetime.now())
 candidate_id = crpo_common_obj.create_candidate(token, sprint_id)
 print(candidate_id)
 test_id = 14673
