@@ -32,8 +32,19 @@ input_path_allowed_extension = input_common_dir + r'/allowed_extensions/allowed_
 input_path_suspicious_list = input_common_dir + '/MURALITEAM/sep8.xls'
 input_path_allowed_extension_files = input_common_dir + r'/allowed_extensions/%s'
 input_path_applicant_report = Path(input_common_dir + r'\Assessment\applicant_report\applicantreport.xlsx')
+input_path_applicant_report_event = Path(input_common_dir + r'\Assessment\applicant_report\event_applicantreport.xlsx')
+input_path_applicant_report_assessment = Path(
+    input_common_dir + r'\Assessment\applicant_report\assessment_applicantreport.xlsx')
+input_path_applicant_report_requirement = Path(
+    input_common_dir + r'\Assessment\applicant_report\requirement_applicantreport.xlsx')
 input_path_applicant_report_downloaded = Path(
     input_common_dir + r'\Assessment\applicant_report\downloaded\downloadedfile.xlsx')
+input_path_applicant_report_downloaded_event = Path(
+    input_common_dir + r'\Assessment\applicant_report\downloaded\eventdownloadedfile.xlsx')
+input_path_applicant_report_downloaded_requirement = Path(
+    input_common_dir + r'\Assessment\applicant_report\downloaded\requirementdownloadedfile.xlsx')
+input_path_applicant_report_downloaded_assessment = Path(
+    input_common_dir + r'\Assessment\applicant_report\downloaded\assessmentdownloadedfile.xlsx')
 input_path_2tests_chaining = Path(input_common_dir + r'\Assessment\chaining\2ndlogincase.xls')
 input_path_3tests_chaining = Path(input_common_dir + r'\Assessment\chaining\3_tests_login_automation.xls')
 input_path_plagiarism_report = Path(input_common_dir + r'\Assessment\plagiarism_report\plagiarism_report.xlsx')
@@ -54,8 +65,8 @@ input_question_statistics_tests = Path(input_common_dir + r'\Assessment\question
 # input_question_statistics_hirepro_cron = input_common_dir + 'Assessment\\question_statistics_new_cron_1.xls'
 input_path_sanitize_automation = Path(input_common_dir + r'\Assessment\sanitizeautomation.xls')
 input_path_for_email_validation = Path(input_common_dir + r'/Email/Emails.xls')
-input_path_sa_web_report = Path(input_common_dir + r'\Assessment\selfassessment_report\selfassessment_generic_webreport.xlsx')
-
+input_path_sa_web_report = Path(
+    input_common_dir + r'\Assessment\selfassessment_report\selfassessment_generic_webreport.xlsx')
 
 # interview
 input_interview_proctoring_evaluation = Path(input_common_dir + r'\Interview\proctoring\proctoring.xls')
@@ -92,7 +103,10 @@ output_path_audio_transcript = output_common_dir + r'/Assessment/audio_transcrip
 output_path_assessmentdocket = output_common_dir + r'/Assessment/assessment_docket/output_assessment_docket.xlsx'
 output_path_allowed_extension = output_common_dir + r'/allowed_extensions/API_allowed_extensions'
 output_path_suspicious_candidates = Path(output_common_dir + r'/allowed_extensions/suspicious(' + started + ').xlsx')
-output_path_applicant_report = output_common_dir + r'\Assessment\report\API_applicantreport'
+output_path_applicant_report = output_common_dir + r'\Assessment\report\API_job_applicantreport'
+output_path_applicant_report_event = output_common_dir + r'\Assessment\report\API_event_applicantreport'
+output_path_applicant_report_requirement = output_common_dir + r'\Assessment\report\API_requirement_applicantreport'
+output_path_applicant_report_assessment = output_common_dir + r'\Assessment\report\API_assessment_applicantreport'
 output_path_2tests_chaining = output_common_dir + r'\Assessment\API_2tests_Chaining_Automation -'
 output_path_3tests_chaining = output_common_dir + r'\Assessment\API_3tests_Chaining_Automation - '
 output_path_plagiarism_report = output_common_dir + r'\Assessment\plagiarism_report\API_plagiarism_report'
@@ -122,7 +136,6 @@ output_question_statistics_tests_hp_cron = output_common_dir + r'\Assessment\API
 output_path_sanitize_automation = output_common_dir + r'\Assessment\reinitiate\API_sanitize - '
 output_path_emails = output_common_dir + r'\Email\emails'
 output_path_sa_web_report = output_common_dir + r'\Assessment\API_sa_webreport - '
-
 
 # Interview
 output_interview_proctor_evaluation = output_common_dir + r'\interview\interview_proctoring_eval'
