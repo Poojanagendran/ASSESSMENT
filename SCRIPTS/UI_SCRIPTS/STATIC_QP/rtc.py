@@ -87,11 +87,12 @@ class OnlineAssessment:
                             assess_ui_common_obj.start_test()
                             if current_excel_data.get('isAnswerChangeRequired') == "Yes":
                                 for relogin_question_count in range(0, total_child_questions_count):
+                                    assess_ui_common_obj.next_question(relogin_question_count + 1)
                                     # Assessment side question starts from Number One, so below addition is required
                                     assess_ui_common_obj.select_answer_for_the_question(
                                         current_excel_data.get('relogin_qid%d' % (relogin_question_count + 1)))
-                                    if relogin_question_count != (total_child_questions_count - 1):
-                                        assess_ui_common_obj.next_question(relogin_question_count + 2)
+                                    # if relogin_question_count != (total_child_questions_count - 1):
+                                    #     assess_ui_common_obj.next_question(relogin_question_count + 2)
                                 assess_ui_common_obj.end_test()
                                 assess_ui_common_obj.end_test_confirmation()
                                 time.sleep(5)
@@ -104,9 +105,10 @@ class OnlineAssessment:
                                 self.browser.quit()
                             elif current_excel_data.get('unAnswerRequired') == "Yes":
                                 for relogin_question_count in range(0, total_child_questions_count):
+                                    assess_ui_common_obj.next_question(relogin_question_count + 1)
                                     assess_ui_common_obj.unanswer_question()
-                                    if relogin_question_count != (total_child_questions_count - 1):
-                                        assess_ui_common_obj.next_question(relogin_question_count + 2)
+                                    # if relogin_question_count != (total_child_questions_count - 1):
+                                    #     assess_ui_common_obj.next_question(relogin_question_count + 1)
                                 assess_ui_common_obj.end_test()
                                 assess_ui_common_obj.end_test_confirmation()
                                 time.sleep(5)
