@@ -633,6 +633,7 @@ class CrpoCommon:
         response = requests.post(crpo_common_obj.domain +
                                  "/py/assessment/htmltest/api/v1/sendTestUserCredential/",
                                  headers=token, data=json.dumps(request_payload, default=str), verify=False)
+        time.sleep(2)
         return response.json()
 
     @staticmethod
