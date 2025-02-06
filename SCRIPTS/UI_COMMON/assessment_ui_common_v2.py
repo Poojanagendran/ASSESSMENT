@@ -193,7 +193,7 @@ class AssessmentUICommon:
         return answered
 
     def next_question(self, question_index):
-        # time.sleep(1)
+        time.sleep(0.3)
         value = "btnQuestionIndex%s" % str(question_index)
         self.driver.find_element(By.NAME, value).click()
 
@@ -240,6 +240,7 @@ class AssessmentUICommon:
 
     def unanswer_question(self):
         self.driver.find_element(By.XPATH, "//button[@class='btn btn-default btnUnanswer ng-scope']").click()
+        time.sleep(0.3)
         print("Un Answer Succeded")
 
     def find_question_string(self):
