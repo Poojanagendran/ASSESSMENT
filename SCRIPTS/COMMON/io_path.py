@@ -142,9 +142,9 @@ output_interview_proctor_evaluation = output_common_dir + r'\interview\interview
 
 # UI Automation Output Path
 output_path_ui_vet_qs = Path(output_common_dir + r'\Assessment\UI\VET\UI_qs')
-output_path_ui_cocubes = output_common_dir + r'\UI\UI_cocubes'
-output_path_ui_mettl = output_common_dir + r'\UI\UI_Mettl'
-output_path_ui_wheebox = output_common_dir + r'\UI\UI_Wheebox'
+output_path_ui_cocubes = output_common_dir + r'\UI\UI_cocubes.xls'
+output_path_ui_mettl = output_common_dir + r'\UI\UI_Mettl.xls'
+output_path_ui_wheebox = output_common_dir + r'\UI\UI_Wheebox.xls'
 output_path_ui_mcq_randomization = output_common_dir + r'\UI\UI_mcq_qprandomization_'
 output_path_ui_rtc_server_random = output_common_dir + r'\UI\UI_rtc_server_qprandomization_'
 output_path_ui_coding_randomization = output_common_dir + r'\UI\UI_coding_qprandomization_'
@@ -155,8 +155,8 @@ output_path_ui_fib_randomization = output_common_dir + r'\UI\UI_fib_qprandomizat
 output_path_ui_video_randomization = output_common_dir + r'\UI\UI_video_qprandomization_'
 output_path_ui_draw_randomization = output_common_dir + r'\UI\UI_draw_qprandomization_'
 output_path_ui_assessment_verification = output_common_dir + r'\UI\UI_ui_assessment_relogin.xls'
-output_path_ui_qp_verification = output_common_dir + r"\UI\UI_QP_verification"
-output_path_ui_test_security = output_common_dir + r"\UI\UI_Test_Security"
+output_path_ui_qp_verification = output_common_dir + r"\UI\UI_QP_verification.xls"
+output_path_ui_test_security = output_common_dir + r"\UI\UI_Test_Security.xls"
 output_path_ui_hirepro_chaining = Path(output_common_dir + r'\UI\UI_hirepro_chaining - ' + started + '.xls')
 output_path_ui_vet_vet_chaining = Path(
     output_common_dir + r'\UI\UI_vet_vet_chaining_plus_retest_consent - ' + started + '.xls')

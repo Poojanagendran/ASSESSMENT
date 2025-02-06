@@ -84,3 +84,20 @@ def get_html_payload(email_message):
     return payload
 
 
+def clean_urls(data):
+    #Removing AWS security parameters from urls/images
+    # Regex to match the AWS security parameters in the URLs
+    url_pattern = re.compile(r"(\?AWSAccessKeyId=[^&]+&Signature=[^&]+&Expires=[^&]+)")
+
+    if isinstance(data, dict):
+        # If it's a dictionary, recursively clean each value
+        return {key: clean_urls(value) for key, value in data.items()}
+    elif isinstance(data, list):
+        # If it's a list, recursively clean each element
+        return [clean_urls(item) for item in data]
+    elif isinstance(data, str):
+        # If it's a string, clean the URL using regex
+        return url_pattern.sub("", data)
+    else:
+        # If it's neither a dict, list, nor string, return it as is
+        return data
