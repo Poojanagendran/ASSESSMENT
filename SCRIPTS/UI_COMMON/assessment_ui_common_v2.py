@@ -193,7 +193,7 @@ class AssessmentUICommon:
         return answered
 
     def next_question(self, question_index):
-        # time.sleep(1)
+        time.sleep(0.3)
         value = "btnQuestionIndex%s" % str(question_index)
         self.driver.find_element(By.NAME, value).click()
 
@@ -240,6 +240,7 @@ class AssessmentUICommon:
 
     def unanswer_question(self):
         self.driver.find_element(By.XPATH, "//button[@class='btn btn-default btnUnanswer ng-scope']").click()
+        time.sleep(0.3)
         print("Un Answer Succeded")
 
     def find_question_string(self):
@@ -967,6 +968,21 @@ class AssessmentUICommon:
             is_element_successful = False
             wheebox_confirm_submit = "Not submitted"
         return wheebox_confirm_submit, is_element_successful
+    def wheebox_q1_ans(self):
+        time.sleep(2)
+        try:
+            self.driver.find_element(By.XPATH, "//*[@id='butt1']").click()
+            print("started answering from question1")
+            wheebox_q1_ans = "answered"
+            is_element_successful = True
+
+        except Exception as e:
+            print(e)
+            print("not started answering")
+            is_element_successful = False
+            wheebox_q1_ans = "Not answered"
+        return wheebox_q1_ans, is_element_successful
+
 
     def coding_editor(self, code):
         self.driver.find_element(By.CLASS_NAME, 'ace_content').click()

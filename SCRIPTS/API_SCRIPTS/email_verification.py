@@ -45,6 +45,7 @@ class EmailChecker:
         crpo_common_obj.tag_candidate_to_test(self.crpo_headers, candidate_id, test_id, event_id, jobrole_id)
         time.sleep(5)
         test_userid = crpo_common_obj.get_all_test_user(self.crpo_headers, candidate_id)
+        send_cred = crpo_common_obj.send_test_user_credntials(self.crpo_headers, 3758576)
         tu_cred = crpo_common_obj.test_user_credentials(self.crpo_headers, test_userid)
         login_id = tu_cred['data']['testUserCredential']['loginId']
         password = tu_cred['data']['testUserCredential']['password']
@@ -97,24 +98,31 @@ class EmailChecker:
         write_excel_object.compare_results_and_write_vertically(test_case.get('from'),
                                                                 self.static_actual_data.get('mail_from'), self.row_size,
                                                                 6)
-        write_excel_object.compare_results_and_write_vertically(test_case.get('from'),
-                                                                self.static_actual_data.get('mail_from'), self.row_size,
-                                                                8)
+        # write_excel_object.compare_results_and_write_vertically(test_case.get('from'),
+        #                                                         self.static_actual_data.get('mail_from'), self.row_size,
+        #                                                         8)
         write_excel_object.compare_results_and_write_vertically(test_case.get('cc'),
                                                                 self.static_actual_data.get('mail_cc'), self.row_size,
-                                                                10)
+                                                                8)
+
         write_excel_object.compare_results_and_write_vertically(test_case.get('subject'),
                                                                 self.static_actual_data.get('mail_subject'),
-                                                                self.row_size, 12)
+                                                                self.row_size, 10)
         write_excel_object.compare_results_and_write_vertically(test_case.get('mailBody'),
                                                                 self.static_actual_data.get('mail_text_body'),
-                                                                self.row_size, 14)
+                                                                self.row_size, 12)
+        if str(test_case.get('mailBody')).encode('utf-8') == str(self.static_actual_data.get('mail_text_body')).encode(
+                'utf-8'):
+            print("Matched")
+        else:
+            print("Not matched")
+
         write_excel_object.compare_results_and_write_vertically(str(test_case.get('expected_dynamic_data')),
                                                                 str(self.dynamic_actual_data),
-                                                                self.row_size, 16)
+                                                                self.row_size, 14)
         write_excel_object.compare_results_and_write_vertically(str(test_case.get('attachment')),
                                                                 self.static_actual_data.get('attachment_status'),
-                                                                self.row_size, 18)
+                                                                self.row_size, 16)
         write_excel_object.compare_results_and_write_vertically(
             write_excel_object.current_status, None, self.row_size, 1)
         self.row_size = self.row_size + 1

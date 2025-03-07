@@ -8,7 +8,20 @@ from SCRIPTS.COMMON.api_requests_for_reports import *
 reports = {
     'job_report': {'output_path': output_path_applicant_report, 'expected_input_path': input_path_applicant_report,
                    'actual_input_path': input_path_applicant_report_downloaded,
-                   'request_payload': getall_applicant_request_payload, 'test_case_count': 48}}
+                   'request_payload': getall_applicant_request_payload, 'test_case_count': 48},
+    'event_report': {'output_path': output_path_applicant_report_event,
+                     'expected_input_path': input_path_applicant_report_event,
+                     'actual_input_path': input_path_applicant_report_downloaded_event,
+                     'request_payload': getall_applicant_request_payload, 'test_case_count': 58},
+    'requirement_report': {'output_path': output_path_applicant_report_requirement,
+                           'expected_input_path': input_path_applicant_report_requirement,
+                           'actual_input_path': input_path_applicant_report_downloaded_requirement,
+                           'request_payload': getall_applicant_request_payload, 'test_case_count': 68},
+    'assessment_report': {'output_path': output_path_applicant_report_assessment,
+                          'expected_input_path': input_path_applicant_report_assessment,
+                          'actual_input_path': input_path_applicant_report_downloaded_assessment,
+                          'request_payload': getall_applicant_request_payload, 'test_case_count': 78}
+}
 crpo_headers = crpo_common_obj.login_to_crpo(cred_crpo_admin.get('user'), cred_crpo_admin.get('password'),
                                              cred_crpo_admin.get('tenant'))
 for report_type, request in reports.items():
