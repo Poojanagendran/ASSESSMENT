@@ -1,6 +1,7 @@
-import os
 import time
+import traceback
 from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -22,14 +23,387 @@ class CrpoCommon:
         # self.driver.switch_to.window(self.driver.window_handles[1])
         return self.driver
 
+    def move_to_manage_actions_page(self , url):
+        # chrome option is needed in VET cases - ( its handling permissions like mic access)
+        self.wait_for_page_load(40)
+        self.driver.get(url)
+        print("moved to manage actions")
+        self.driver.implicitly_wait(10)
+
+    def select_and_save_all_actions(self):
+        try:
+            checkboxes = self.driver.find_elements(By.XPATH, "//input[@type='checkbox']")
+
+            # Check all checkboxes
+            for checkbox in checkboxes:
+                if not checkbox.is_selected():  # Only check if it's not already checked
+                    checkbox.click()
+            save = self.driver.find_element(By.XPATH,"//span[@class='pull-right']//button[@type='button'][normalize-space()='Save']")
+            self.driver.execute_script("arguments[0].scrollIntoView();", save)
+            self.driver.execute_script("arguments[0].click();", save)
+            print("Successfully Enabled all actions")
+
+
+        except Exception as e:
+            print(f"Error occurred while enabling checkboxes: {e}")
+
     def ui_login_to_crpo(self, user_name, password):
         time.sleep(5)
         self.driver.find_element(By.NAME, 'loginName').clear()
         self.driver.find_element(By.NAME, 'loginName').send_keys(user_name)
-        self.driver.find_element_by_xpath('//*[@type="password"]').clear()
-        # self.driver.find_element(By.XPATH, "//*[@class='form-control ng-pristine ng-untouched ng-valid ng-empty']").click()
-        self.driver.find_element_by_xpath('//*[@type="password"]').send_keys(password)
-        self.driver.find_element_by_xpath('//*[@class="btn btn-default button_style login ng-binding"]').click()
+        self.driver.find_element(By.XPATH, "//input[@type='password']").clear()
+        self.driver.find_element(By.XPATH, "//input[@type='password']").send_keys(password)
+        self.driver.find_element(By.XPATH,
+                                 '//*[@class = "btn btn-default button_style login ng-binding"]').click()
+
+    def wait_for_page_load(self, timeout=30):
+        """Waits until the page loading spinner disappears to ensure UI is ready."""
+        try:
+            wait = WebDriverWait(self.driver, timeout)  # Default timeout reduced to 15s for efficiency
+            loading_elements = self.driver.find_elements(By.CLASS_NAME, "dw-loading-active")
+
+            if loading_elements:
+                wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, "dw-loading-active")))
+
+            # if self.driver.find_elements(By.CLASS_NAME, "dw-loading-active"):
+            #     wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, "dw-loading-active")))
+
+
+        except TimeoutException:
+            print("⚠️ Warning: Page load took too long or never completed.")
+        except Exception as e:
+            print(f"❌ Error while waiting for page load: {str(e)}")
+            traceback.print_exc()
+
+    def click_on_filter_button(self):
+        """Clicks on the filter button after ensuring the page is ready."""
+        try:
+            wait = WebDriverWait(self.driver, 20)
+            crpo_ui_obj.wait_for_page_load()
+            # Click filter button if present
+            filter_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//a[@id='cardlist-view-filter']")))
+            self.driver.execute_script("arguments[0].click();", filter_button)
+
+        except TimeoutException:
+            print("⚠️ Warning: Filter button not found or took too long to load.")
+        except Exception as e:
+            print(f"❌ Error clicking on filter button: {str(e)}")
+            traceback.print_exc()
+
+    def click_on_more_option(self):
+        """Clicks on the 'More Options' (three dots) menu safely and efficiently."""
+        try:
+            wait = WebDriverWait(self.driver, 20)  # Reduced timeout for better efficiency
+            crpo_ui_obj.wait_for_page_load()
+            # Find and click on more options
+            more_options = wait.until(
+                EC.element_to_be_clickable((By.XPATH, "//a[@class='pointer fa fa-lg fa-ellipsis-v']"))
+            )
+            self.driver.execute_script("arguments[0].click();", more_options)
+
+        except TimeoutException:
+            print("⚠️ Warning: 'More Options' button not found or took too long to load.")
+        except Exception as e:
+            print(f"❌ Error clicking on 'More Options': {str(e)}")
+            traceback.print_exc()
+
+    def click_on_multiple_more_option(self):
+        """Clicks on the 'More Options' (three dots) menu safely and efficiently."""
+        try:
+            wait = WebDriverWait(self.driver, 20)  # Reduced timeout for better efficiency
+            crpo_ui_obj.wait_for_page_load()
+            # Find and click on more options
+            more_options = wait.until(
+                EC.element_to_be_clickable((By.XPATH, "//a[@class='pointer fa fa-lg fa-ellipsis-v']"))
+            )
+            self.driver.execute_script("arguments[0].click();", more_options)
+
+        except TimeoutException:
+            print("⚠️ Warning: 'More Options' button not found or took too long to load.")
+        except Exception as e:
+            print(f"❌ Error clicking on 'More Options': {str(e)}")
+            traceback.print_exc()
+
+    def filter_search_by_id(self , value):
+        try:
+            wait = WebDriverWait(self.driver, 30)
+
+            id_box = wait.until(EC.presence_of_element_located(
+                (By.XPATH, "//input[@placeholder='ID,ID,ID...']")))
+            id_box.clear()
+            id_box.send_keys(value)
+            button = wait.until(
+                EC.presence_of_element_located((By.XPATH, "//button[@class='btn btn-primary ng-binding']"))
+            )
+            self.driver.execute_script("arguments[0].scrollIntoView();", button)
+            self.driver.execute_script("arguments[0].click();", button)
+
+        except Exception as e:
+            print("Error while searching by id : ", e)
+
+    def filter_search_by_id_authoring(self, value):
+        try:
+            wait = WebDriverWait(self.driver, 15)  # Reduced wait time for efficiency
+
+            # Find input box
+            id_box = wait.until(EC.presence_of_element_located(
+                (By.XPATH, "//label[text()='Id '] /following-sibling::input[@type='text']"))
+            )
+            id_box.clear()
+
+            # Ensure all elements in value are strings
+            id_box.send_keys(" ".join(map(str, value)))
+
+            # Find and click the search button
+            button = wait.until(
+                EC.presence_of_element_located((By.XPATH, "//button[@class='btn btn-primary ng-binding']"))
+            )
+
+            # Scroll and click the button
+            self.driver.execute_script("arguments[0].scrollIntoView();", button)
+            self.driver.execute_script("arguments[0].click();", button)
+
+        except Exception as e:
+            print(f"Error while searching by ID: {e}")
+
+    def filter_search_by_single_id_authoring(self, value):
+        try:
+            wait = WebDriverWait(self.driver, 15)  # Reduced wait time for efficiency
+
+            # Find input box
+            id_box = wait.until(EC.presence_of_element_located(
+                (By.XPATH, "//label[text()='Id '] /following-sibling::input[@type='text']"))
+            )
+            id_box.clear()
+
+            # Ensure all elements in value are strings
+            id_box.send_keys(value)
+
+            # Find and click the search button
+            button = wait.until(
+                EC.presence_of_element_located((By.XPATH, "//button[@class='btn btn-primary ng-binding']"))
+            )
+
+            # Scroll and click the button
+            self.driver.execute_script("arguments[0].scrollIntoView();", button)
+            self.driver.execute_script("arguments[0].click();", button)
+
+        except Exception as e:
+            print(f"Error while searching by ID: {e}")
+
+    def filter_search_by_test_user_id(self , value):
+        try:
+            wait = WebDriverWait(self.driver, 30)
+
+            # Wait for input field and enter test user id
+            test_user_id_box = wait.until(EC.presence_of_element_located((By.XPATH, "//label[text()='Test User Id(s) '] /following-sibling::input[@type='text']")))
+            test_user_id_box.clear()
+            test_user_id_box.send_keys(value)
+            button = wait.until(
+                EC.presence_of_element_located((By.XPATH, "//button[@class='btn btn-primary ng-binding']"))
+            )
+            self.driver.execute_script("arguments[0].scrollIntoView();", button)
+            self.driver.execute_script("arguments[0].click();", button)
+
+        except Exception as e:
+            print("Error while searching by test user id :",e)
+
+    def fetch_grid_actions(self, filter_function=None,
+                           xpath="//div[@class='popover-content card-actions']/div") -> list:
+        """Fetch grid actions from the assessment UI."""
+        try:
+            # Apply filter if provided
+            if filter_function:
+                filter_function()
+
+            actions = self.driver.find_elements(By.XPATH, xpath)
+            return [action.text for action in actions]
+
+        except Exception as e:
+            print(f"Error in fetching grid actions: {e}")
+            return []
+
+    def fetch_bp_grid_actions(self):
+        try:
+            action_list = []
+
+            # Locate all action elements inside 'td.td-last.ng-scope'
+            actions = self.driver.find_elements(By.CSS_SELECTOR, "td.td-last.ng-scope a")
+
+            for action in actions:
+                action_text = action.text.strip()  # Extract visible text
+
+                if not action_text:
+                    try:
+                        icon_element = action.find_element(By.TAG_NAME, "i")
+                        icon_class = icon_element.get_attribute("class")
+
+                        # Map icon class to meaningful names
+                        icon_map = {
+                            "fa fa-eye": "View History Json",
+                            "fa fa-expand": "Extend Search",
+                            "fa fa-pencil-square-o": "Edit",
+                            "fa fa-trash": "Delete"
+                        }
+
+                        action_text = icon_map.get(icon_class, "Unknown Action")
+                    except Exception:
+                        action_text = "Unknown Action"
+
+                action_list.append(action_text)
+
+            return action_list  # Return cleaned action labels
+
+        except Exception as e:
+            print(f"Error fetching actions: {e}")
+            return []
+
+    def move_to_grid(self, grid_name):
+        """Navigates to a specified grid in the UI."""
+        try:
+            wait = WebDriverWait(self.driver, 30)
+            self.wait_for_page_load()
+            assessments_button = wait.until(
+                EC.element_to_be_clickable((By.XPATH, f"//a[normalize-space()='{grid_name}']"))
+            )
+            self.driver.execute_script("arguments[0].click();", assessments_button)
+
+        except Exception as e:
+            print(f"❌ Error while navigating to grid '{grid_name}': {str(e)}")
+            traceback.print_exc()
+
+    def move_inside_authoring_grid(self, grid_name):
+        """Navigates to a specified grid in the UI."""
+        try:
+            wait = WebDriverWait(self.driver, 30)
+            element = wait.until(EC.element_to_be_clickable((By.XPATH, f"//span[@title='{grid_name}']")))
+            self.driver.execute_script("arguments[0].click();", element)
+
+        except Exception as e:
+            print(f"❌ Error while navigating to '{grid_name}' grid inside authoring : {str(e)}")
+            traceback.print_exc()
+
+    def get_assessment_grid_actions(self, test_user_ids, grid_name, test_id=None):
+        try:
+            wait = WebDriverWait(self.driver, 30)
+            results = []
+            grid_actions_list = []
+            self.move_to_grid(grid_name)
+            if test_id:
+                self.click_on_filter_button()
+                self.filter_search_by_id(test_id)
+                self.click_on_more_option()
+                grid_actions_list = self.fetch_grid_actions()
+                view_candidates_button = wait.until(
+                    EC.element_to_be_clickable((By.XPATH, "//div[contains(text(),'View Candidates')]"))
+                )
+                self.driver.execute_script("arguments[0].click();", view_candidates_button)
+
+            crpo_ui_obj.click_on_filter_button()
+            for user_id in test_user_ids:
+                self.filter_search_by_test_user_id(user_id)
+                self.click_on_more_option()
+                results.append(self.fetch_grid_actions())
+
+            # Return results with a consistent format
+            return [grid_actions_list] + results if grid_actions_list else results
+
+        except TimeoutException as te:
+            print(f"❌ Timeout Error: {grid_name} grid actions took too long to load: {te}")
+        except Exception as e:
+            print(f"❌ Error while processing {grid_name} grid actions: {str(e)}")
+            traceback.print_exc()
+        return []
+
+    def get_event_grid_actions(self, event_test_user_id, grid_name, event_id):
+        try:
+            wait = WebDriverWait(self.driver, 30)
+            results = []
+
+            self.move_to_grid(grid_name)
+            self.click_on_filter_button()
+            self.filter_search_by_id(event_id)
+
+            wait.until(
+                EC.element_to_be_clickable((By.XPATH, "//i[@class='glyphicon glyphicon-option-horizontal']"))).click()
+            wait.until(
+                EC.element_to_be_clickable((By.XPATH, "//div[contains(text(),'View Event Assessments')]"))).click()
+
+            self.click_on_more_option()
+            event_grid_actions = self.fetch_grid_actions()
+
+            # Navigate to View Candidates and apply filters
+            wait.until(EC.element_to_be_clickable((By.XPATH, "//div[contains(text(),'View Candidates')]"))).click()
+            self.click_on_filter_button()
+            # Fetch grid actions for each test user ID
+            for user_id in event_test_user_id:
+                self.filter_search_by_id(user_id)
+                self.click_on_more_option()
+                results.append(self.fetch_grid_actions())
+
+            return [event_grid_actions] + results
+
+        except TimeoutException as te:
+            print(f"❌ Timeout Error: {grid_name} grid actions took too long to load: {te}")
+        except Exception as e:
+            print(f"❌ Error while processing {grid_name} grid actions: {str(e)}")
+            traceback.print_exc()
+
+        return []  # Ensures function always returns a list, even in case of failure
+
+    def get_authoring_grid_actions(self, qp_ids, grid_name, sub_grid):
+        try:
+            wait = WebDriverWait(self.driver, 20)  # Reduced wait time for efficiency
+            results = []
+
+            # Ensure UI object is called correctly
+            self.move_to_grid(grid_name)
+            self.move_inside_authoring_grid(sub_grid)
+            # Apply filters
+            self.click_on_filter_button()
+            self.filter_search_by_id_authoring(qp_ids)
+            self.wait_for_page_load()
+
+            # Wait for all "more options" elements
+            more_options = wait.until(
+                EC.presence_of_all_elements_located((By.XPATH, "//a[@class='pointer fa fa-lg fa-ellipsis-v']"))
+            )
+
+            # Click each 'More Options' and fetch actions
+            for element in more_options:
+                wait.until(EC.element_to_be_clickable(element))  # Ensure each element is clickable
+                element.click()
+                results.append(self.fetch_grid_actions())
+
+            return results
+
+        except TimeoutException as te:
+            print(f"❌ Timeout Error: '{grid_name}' grid actions took too long to load:\n{te}")
+        except Exception as e:
+            print(f"❌ Error while processing '{grid_name}' grid actions:\n{e}")
+            traceback.print_exc()
+
+        return []  # Ensure function always returns a list
+
+    def get_blueprint_grid_actions(self, bp_ids, grid_name,sub_grid):
+        try:
+            results = []
+            self.move_to_grid(grid_name)
+            self.move_inside_authoring_grid(sub_grid)
+            self.click_on_filter_button()
+            for bp_id in bp_ids:
+                self.filter_search_by_single_id_authoring(bp_id)
+                results.append(self.fetch_bp_grid_actions())
+
+            return results
+
+        except TimeoutException as te:
+            print(f"❌ Timeout Error: {grid_name} grid actions took too long to load: {te}")
+        except Exception as e:
+            print(f"❌ Error while processing {grid_name} grid actions: {str(e)}")
+            traceback.print_exc()
+
+        return []  # Ensures function always returns a list, even in case of failure
 
     def crpo_more_functionality(self):
         self.driver.find_element(By.LINK_TEXT, 'More').click()
