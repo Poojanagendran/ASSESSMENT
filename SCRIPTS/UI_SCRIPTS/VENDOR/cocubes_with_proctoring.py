@@ -254,7 +254,8 @@ qs = CocubesAutomation()
 token = crpo_common_obj.login_to_crpo(cred_crpo_admin_at.get('user'), cred_crpo_admin_at.get('password'),
                                       cred_crpo_admin_at.get('tenant'))
 
-sprint_id = input('Enter Sprint ID')
+#sprint_id = input('Enter Sprint ID')
+sprint_id = str(datetime.datetime.now())
 candidate_id = crpo_common_obj.create_candidate(token, sprint_id)
 print(candidate_id)
 test_id = 13965
