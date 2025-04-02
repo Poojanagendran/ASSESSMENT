@@ -129,7 +129,7 @@ class AssessmentUICommon:
             print(e)
 
     def selfie(self):
-        time.sleep(10)
+        time.sleep(30)
         selfie = self.driver.find_element(By.XPATH,
                                           "//button[@class = 'btn btn-primary center-block ng-scope' and contains(text(), 'Click a Selfie')]")
         selfie.click()
@@ -967,6 +967,25 @@ class AssessmentUICommon:
             is_element_successful = False
             wheebox_confirm_submit = "Not submitted"
         return wheebox_confirm_submit, is_element_successful
+
+    def wheebox_t2start(self):
+        try:
+            # Wait for the button to be clickable
+            button = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//*[@class='btn btn-success']"))
+            )
+            button.click()
+            # Optionally, wait for a new window or another element to appear (if needed)
+            # self.driver.switch_to.window(self.driver.window_handles[2])
+            print("T2 starting")
+            wheeboxt2_starting = "T2 starting"
+            is_element_successful = True
+        except Exception as e:
+            print(e)
+            print("T2 not starting")
+            wheeboxt2_starting = "T2 not starting"
+            is_element_successful = False
+        return wheeboxt2_starting, is_element_successful
     def wheebox_q1_ans(self):
         time.sleep(2)
         try:
