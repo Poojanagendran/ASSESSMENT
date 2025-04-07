@@ -1,6 +1,5 @@
 import time
 import urllib3
-from typing import Dict, Any
 from SCRIPTS.COMMON.read_excel import excel_read_obj
 from SCRIPTS.COMMON.write_excel_new import write_excel_object
 from SCRIPTS.CRPO_COMMON.crpo_common import *
@@ -109,13 +108,12 @@ for data in excel_data:
 
         for _ in range(10):  # 10 iterations * 30 seconds each = 5 minutes (300 sec)
             current_status = re_initiate_obj.check_task_status()
-            # print("Current task status: ", current_status)
             if current_status == "PENDING":
                 print("Task status is pending. checking again in 30 sec")
                 time.sleep(30)
             else:
+                time.sleep(2)
                 print(f"Task status: {current_status}")
-                # time.sleep(20)
                 response = crpo_common_obj.tests_against_candidate(crpo_headers, candidate_id)
                 score = response['data']['TestsAgainstCandidate'][0]['TotalScore']
                 test_user_status = response['data']['TestsAgainstCandidate'][0]['StatusText']

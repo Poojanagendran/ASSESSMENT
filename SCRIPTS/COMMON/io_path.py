@@ -17,8 +17,10 @@ amsin_crpodemo_assessment_url = domain + "/assessment/#/assess/login/eyJhbGlhcyI
 
 # CRPO Login
 amsin_at_crpo_login = domain + "/crpo/#/login/AT"
-amsin_crpodemo_crpo_login = domain + "/crpo/#/login/crpodemo"
+amsin_automation_crpo_login = domain + "/crpo/#/login/automation"
+amsin_crpodemo_crpo_login = domain + "/crpo/#/login/crpodemotest"
 
+automation_manage_actions = domain +"/crpo/#/automation/settings/common/roles/14495/manageActions"
 # Chromedriver Related
 chrome_driver_path = Path(chrome_driver_dir + r'/chromedriver.exe')
 started = datetime.datetime.now()
