@@ -1,4 +1,5 @@
 from SCRIPTS.CRPO_COMMON.credentials import *
+from SCRIPTS.DB_DELETE.question_statistics_test_delete import qs_test_del
 from SCRIPTS.UI_SCRIPTS.assessment_data_verification import *
 from SCRIPTS.COMMON.read_excel import *
 from SCRIPTS.COMMON.write_excel_new import *
@@ -9,6 +10,7 @@ import json
 class OnlineAssessment:
 
     def __init__(self):
+        qs_test_del.delete_question_statistics()
         self.row = 1
         write_excel_object.save_result(output_question_statistics_tests)
         header = ['Question Statics']

@@ -93,6 +93,7 @@ input_path_ui_mcq_client_section_random = Path(input_common_dir + r'/UI/Assessme
 input_path_ui_rtc_static = Path(input_common_dir + r'/UI/Assessment/rtc_static.xls')
 input_path_ui_marking_schema = Path(input_common_dir + r'/UI/Assessment/test_marking.xls')
 input_path_ui_self_assessment = Path(input_common_dir + r'/UI/Assessment/self_assessment.xls')
+input_path_ui_grid_actions = Path(input_common_dir + r'/UI/Assessment/Grid_Actions_input.xlsx')
 # input_path_ui_fib_marking_schema = input_common_dir + 'UI\\Assessment\\test_marking_fib.xls'
 
 
@@ -141,15 +142,15 @@ output_path_ui_vet_qs = Path(output_common_dir + r'/Assessment/UI/VET/UI_qs')
 output_path_ui_cocubes = output_common_dir + r'/UI/UI_cocubes.xls'
 output_path_ui_mettl = output_common_dir + r'/UI/UI_Mettl.xls'
 output_path_ui_wheebox = output_common_dir + r'/UI/UI_Wheebox.xls'
-output_path_ui_mcq_randomization = output_common_dir + r'/UI/UI_mcq_qprandomization_'
-output_path_ui_rtc_server_random = output_common_dir + r'/UI/UI_rtc_server_qprandomization_'
-output_path_ui_coding_randomization = output_common_dir + r'/UI/UI_coding_qprandomization_'
-output_path_ui_subjective_randomization = output_common_dir + r'/UI/UI_subjective_qprandomization_'
-output_path_ui_mcqww_randomization = output_common_dir + r'/UI/UI_mcqww_qprandomization_'
-output_path_ui_mca_randomization = output_common_dir + r'/UI/UI_mca_qprandomization_'
-output_path_ui_fib_randomization = output_common_dir + r'/UI/UI_fib_qprandomization_'
-output_path_ui_video_randomization = output_common_dir + r'/UI/UI_video_qprandomization_'
-output_path_ui_draw_randomization = output_common_dir + r'/UI/UI_draw_qprandomization_'
+output_path_ui_mcq_randomization = output_common_dir + r'/UI/UI_mcq_qprandomization_.xls'
+output_path_ui_rtc_server_random = output_common_dir + r'/UI/UI_rtc_server_qprandomization_.xls'
+output_path_ui_coding_randomization = output_common_dir + r'/UI/UI_coding_qprandomization_.xls'
+output_path_ui_subjective_randomization = output_common_dir + r'/UI/UI_subjective_qprandomization_.xls'
+output_path_ui_mcqww_randomization = output_common_dir + r'/UI/UI_mcqww_qprandomization_.xls'
+output_path_ui_mca_randomization = output_common_dir + r'/UI/UI_mca_qprandomization_.xls'
+output_path_ui_fib_randomization = output_common_dir + r'/UI/UI_fib_qprandomization_.xls'
+output_path_ui_video_randomization = output_common_dir + r'/UI/UI_video_qprandomization_.xls'
+output_path_ui_draw_randomization = output_common_dir + r'/UI/UI_draw_qprandomization_.xls'
 output_path_ui_assessment_verification = output_common_dir + r'/UI/UI_ui_assessment_relogin.xls'
 output_path_ui_qp_verification = output_common_dir + r"/UI/UI_QP_verification.xls"
 output_path_ui_test_security = output_common_dir + r"/UI/UI_Test_Security.xls"
@@ -186,6 +187,9 @@ output_path_ui_self_assessment = output_common_dir + r'/UI/UI_self_assessment'
 output_path_response_encryption = output_common_dir + r'/SECURITY/response_encryption.xls'
 output_path_xss = output_common_dir + r'/SECURITY/xss_char_encoding'
 output_path_rate_control = output_common_dir + r'/SECURITY/rate_control'
+
+output_path_ui_assessment_grid_actions = output_common_dir + r'/UI/UI_assessment_grid_actions'
+output_path_ui_authoring_grid_actions = output_common_dir + r'/UI/UI_authoring_grid_actions'
 
 # INFRA
 output_path_infra_strict_domain = output_common_dir + r'/INFRA/API_infra_strict_domain'
