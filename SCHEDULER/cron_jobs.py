@@ -207,15 +207,24 @@ def task_response_encryption():
         time.sleep(2)
 
 
-custom_hour = 16
-custom_minute = 40
+custom_hour = 19
+custom_minute = 1
+scheduler.add_job(task_question_statistics_tests_old_cron, 'cron', hour=custom_hour, minute=custom_minute,
+                  max_instances=1)
+scheduler.add_job(task_question_statistics_tests_hirepro_cron, 'cron', hour=custom_hour, minute=custom_minute,
+                  max_instances=1)
+scheduler.add_job(task_question_statistics_old_cron, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
+scheduler.add_job(task_question_statistics_with_hirepro_cron, 'cron', hour=custom_hour, minute=custom_minute,
+                  max_instances=1)
+custom_minute = 4
+
 scheduler.add_job(task_xss, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 scheduler.add_job(task_allowed_extensions, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 scheduler.add_job(task_analyze_brightness_shapness, 'cron', hour=custom_hour, minute=custom_minute,
                   max_instances=1)
 
 # custom_hour = 11
-custom_minute = 43
+custom_minute = 7
 scheduler.add_job(task_applicant_report, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 
 scheduler.add_job(task_encryption_check, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
@@ -224,45 +233,37 @@ scheduler.add_job(task_plagiarism_report, 'cron', hour=custom_hour, minute=custo
 scheduler.add_job(task_proctor_evaluation, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 
 # custom_hour = 11
-custom_minute = 46
+custom_minute = 10
 scheduler.add_job(task_question_search_with_boundary, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 scheduler.add_job(task_question_search_with_count, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 scheduler.add_job(task_reuse_test_score, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 
 # custom_hour = 11
-custom_minute = 49
+custom_minute = 13
 scheduler.add_job(task_reinitiate_automation, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 scheduler.add_job(task_ssrf_check, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 scheduler.add_job(task_mic_distortion, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 
-custom_minute = 52
+custom_minute = 16
 scheduler.add_job(task_sa_web_transcript_report, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 scheduler.add_job(task_response_encryption, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 # scheduler.add_job(task_audio_transcript_report_cefr, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 
-custom_minute = 55
+custom_minute = 19
 scheduler.add_job(task_behaviour_proctoring_evaluation_new, 'cron', hour=custom_hour, minute=custom_minute,
                   max_instances=1)
-# scheduler.add_job(task_question_statistics_tests_old_cron, 'cron', hour=custom_hour, minute=custom_minute,
-#                   max_instances=1)
-# scheduler.add_job(task_question_statistics_tests_hirepro_cron, 'cron', hour=custom_hour, minute=custom_minute,
-#                   max_instances=1)
-# scheduler.add_job(task_question_statistics_old_cron, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 
-# custom_minute = 20
-# scheduler.add_job(task_question_statistics_with_hirepro_cron, 'cron', hour=custom_hour, minute=custom_minute,
-#                   max_instances=1)
 scheduler.add_job(task_sanitizeapi, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 scheduler.add_job(task_typing_assessment_docket, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 scheduler.add_job(task_code_compilation, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 
-custom_hour = 17
-custom_minute = 1
+# custom_hour = 17
+custom_minute = 21
 scheduler.add_job(task_chaining_of_2_tests, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 scheduler.add_job(task_chaining_of_3_tests, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 scheduler.add_job(task_email_verification, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 
-custom_minute = 3
+custom_minute = 25
 scheduler.add_job(task_rate_controller, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 scheduler.add_job(task_device_proctoring_evaluation, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 
