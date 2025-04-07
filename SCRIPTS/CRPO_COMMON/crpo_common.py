@@ -2,6 +2,7 @@ import requests
 import json
 import time
 from SCRIPTS.COMMON.environment import *
+import logging
 
 
 class CrpoCommon:
@@ -11,6 +12,7 @@ class CrpoCommon:
 
     @staticmethod
     def login_to_crpo(login_name, password, tenant):
+        logging.info('Entered in to  login to CRPO ')
         print(crpo_common_obj.domain)
         header = {"content-type": "application/json"}
         data = {"LoginName": login_name, "Password": password, "TenantAlias": tenant, "UserName": login_name}
@@ -20,10 +22,12 @@ class CrpoCommon:
         headers = {"content-type": "application/json", "APP-NAME": "CRPO", "X-APPLMA": "true",
                    "X-AUTH-TOKEN": login_response.get("Token")}
         print(headers)
+        logging.info('Successfully Exited From login to CRPO ')
         return headers
 
     @staticmethod
     def eu_login_to_crpo(login_name, password, tenant):
+        logging.info('Entered in to  login to EU CRPO ')
         header = {"content-type": "application/json"}
         data = {"LoginName": login_name, "Password": password, "TenantAlias": tenant, "UserName": login_name}
         response = requests.post(crpo_common_obj.eu_domain + "/py/common/user/login_user/", headers=header,
@@ -33,10 +37,12 @@ class CrpoCommon:
         headers = {"content-type": "application/json", "APP-NAME": "CRPO", "X-APPLMA": "true",
                    "X-AUTH-TOKEN": login_response.get("Token")}
         print(headers)
+        logging.info('Successfully exited from eu CRPO ')
         return headers
 
     @staticmethod
     def candidate_web_transcript(token, test_id, test_user_id):
+        logging.info('Entered Candidate web Transcript')
         request = {"testId": int(test_id), "testUserId": int(test_user_id),
                    "reportFlags": {"eduWorkProfilesRequired": True, "testUsersScoreRequired": True,
                                    "fileContentRequired": False, "isProctroingDetailsRequired": True,
@@ -44,52 +50,58 @@ class CrpoCommon:
         response = requests.post(crpo_common_obj.domain + "/py/assessment/report/api/v1/candidatetranscript/",
                                  headers=token,
                                  data=json.dumps(request, default=str), verify=False)
+        logging.info(response.json())
         return response.json()
 
     @staticmethod
     def force_evaluate_proctoring(token, tu_ids):
+        logging.info('Entered to force evaluate proctoring')
         request = {
             "testUserIds": tu_ids, "isForce": True}
         response = requests.post(crpo_common_obj.domain +
                                  "/py/assessment/htmltest/api/v1/initiate-test-proc/?isSync=false",
                                  headers=token,
                                  data=json.dumps(request, default=str), verify=False)
+        logging.info(response.json())
         return response.json()
 
     # interviews Grid
     @staticmethod
     def run_proctoring(token, ir_id):
-        print(token)
+        logging.info('Entered Run Proctoring')
         request = {"interviewId": int(ir_id)}
         response = requests.post(crpo_common_obj.domain +
                                  "/py/crpo/api/v1/interview/interviewer/view_proctored_data/",
                                  headers=token,
                                  data=json.dumps(request, default=str), verify=False)
+        logging.info(response.json())
         return response.json()
 
     # interviews Grid
     @staticmethod
     def lip_sync(token, ir_id):
-        print(token)
+        logging.info('Entered Lipsync')
         request = {"irId": int(ir_id)}
         response = requests.post(crpo_common_obj.domain +
                                  "/py/crpo/api/v1/interview/lipsync/get_lipsync_samples/",
                                  headers=token,
                                  data=json.dumps(request, default=str), verify=False)
+        logging.info(response.json())
         return response.json()
 
     @staticmethod
     def job_status(token, contextguid):
+        logging.info('Entered Jobstatus Context id :- %s', contextguid)
         request = {"ContextGUID": contextguid}
-        print(request)
         response = requests.post(crpo_common_obj.domain + "/py/crpo/api/v1/getStatusOfAsyncAPI",
                                  headers=token, data=json.dumps(request, default=str), verify=False)
         resp_dict = json.loads(response.content)
-        print(resp_dict)
+        logging.info(resp_dict)
         return resp_dict
 
     @staticmethod
     def job_status_v2(token, contextguid):
+        logging.info('Entered to jobstatus v2')
         request = {"ContextGUID": contextguid}
         job_state = 'PENDING'
         resp_dict = None
@@ -101,11 +113,12 @@ class CrpoCommon:
             resp_dict = json.loads(response.content)
             job_state = resp_dict['data']['JobState']
             time.sleep(30)
+        logging.info(resp_dict)
         return resp_dict
 
     @staticmethod
     def upload_files(token, file_name, file_path):
-
+        logging.info('Entered to upload files')
         token.pop('content-type', None)
         token.pop('X-APPLMA', None)
         request = {'file': (file_name, open(file_path, 'rb'))}
@@ -119,17 +132,21 @@ class CrpoCommon:
 
         api_request = requests.post(url, headers=token, files=request, verify=False)
         resp_dict = json.loads(api_request.content)
+        logging.info(resp_dict)
         return resp_dict
 
     @staticmethod
     def untag_candidate(token, data1):
+        logging.info("Enterd to untag candidate %s", data1)
         for request in data1:
             response = requests.post(crpo_common_obj.domain + "/py/assessment/testuser/api/v1/un-tag/",
                                      headers=token,
                                      data=json.dumps(request, default=str), verify=False)
+            logging.info(response)
 
     @staticmethod
     def proctor_evaluation_detail(token, testuser_id):
+        logging.info("Entered to proctor evaluation %s", testuser_id)
         token.pop('X-APPLMA', None)
         request = {"testUserId": testuser_id}
         response = requests.post(crpo_common_obj.domain + "/py/assessment/testuser/api/v1/get_proctor_detail/",
@@ -137,19 +154,22 @@ class CrpoCommon:
                                  data=json.dumps(request, default=str), verify=False)
         time.sleep(10)
         tu_proctor_details = response.json()
-        print(tu_proctor_details)
+        logging.info(tu_proctor_details)
         return tu_proctor_details
 
     @staticmethod
     def save_apppreferences(token, content, id, type):
+        logging.info("Entered to save app_preference :- %s", type)
         data = {"AppPreference": {"Id": id, "Content": content, "Type": type}, "IsTenantGlobal": True}
 
         response = requests.post(crpo_common_obj.domain + "/py/common/common_app_utils/save_app_preferences/",
                                  headers=token, data=json.dumps(data, default=str), verify=False)
+        logging.info(response.json())
         return response.json()
 
     @staticmethod
     def re_initiate_automation(token, test_id, candidate_id):
+        logging.info("Entered to reinitiate automation test id:- %s candidate_id:- %s", test_id, candidate_id)
         token.pop('X-APPLMA', None)
         request = {"testId": test_id, "candidateId": candidate_id}
         response = requests.post(crpo_common_obj.domain + "/py/assessment/testuser/api/v1/re_initiate_automation/",
@@ -158,55 +178,67 @@ class CrpoCommon:
 
     @staticmethod
     def sanitise_tu_automation(token, test_user_id):
+        logging.info("sanitise tu automation started for tu id :- %s", test_user_id)
         token.pop('X-APPLMA', None)
         request = {"testUserId": test_user_id}
         response = requests.post(crpo_common_obj.domain + "/py/assessment/testuser/api/v1/sanitise_tu_automation/",
                                  headers=token,
                                  data=json.dumps(request, default=str), verify=False)
         data = response.json()
-        print(data)
+        logging.info(data)
         return data
 
     @staticmethod
     def tests_against_candidate(token, candidateid):
+        logging.info("tests against candidate started for candidate id :-", candidateid)
         payload = {"CandidateId": candidateid}
         response = requests.post(crpo_common_obj.domain + "/py/assessment/test/api/v1/tests-against-candidate/",
                                  headers=token,
                                  data=json.dumps(payload, default=str), verify=False)
         test_infos = response.json()
+        logging.info(test_infos)
         return test_infos
 
     @staticmethod
     def get_all_questions(token, request_data):
+        logging.info("get all candidate started")
         response = requests.post(crpo_common_obj.domain + "/py/assessment/authoring/api/v1/getAllQuestion/",
                                  headers=token,
                                  data=str(request_data.get('request')), verify=False)
         get_all_questions_resp = json.loads(response.content)
+        logging.info(get_all_questions_resp)
         return get_all_questions_resp
 
     @staticmethod
     def generate_applicant_report(token, request_payload):
+        logging.info("generate applicant report started")
         response = requests.post(crpo_common_obj.domain + "/py/common/xl_creator/api/v1/generate_applicant_report/",
                                  headers=token, data=json.dumps(request_payload, default=str), verify=False)
         resp_dict = json.loads(response.content)
+        logging.info(resp_dict)
         return resp_dict
 
     @staticmethod
     def generate_plagiarism_report(token, request_payload):
+        logging.info("Plagiarism report started")
         response = requests.post(crpo_common_obj.domain + "/py/assessment/report/api/v1/plagiarismreport/",
                                  headers=token, data=json.dumps(request_payload, default=str), verify=False)
         resp_dict = json.loads(response.content)
+        logging.info(resp_dict)
         return resp_dict
 
     @staticmethod
     def candidate_transcript_report(token, request_payload):
+        logging.info('candidatetranscript started')
         response = requests.post(crpo_common_obj.domain + "/py/assessment/report/api/v1/candidatetranscript/",
                                  headers=token, data=json.dumps(request_payload, default=str), verify=False)
         resp_dict = json.loads(response.content)
+        logging.info(resp_dict)
         return resp_dict
 
     @staticmethod
     def initiate_vendor_score(crpotoken, cid, test_id):
+        logging.info('initiateVendorScore started')
         url = crpo_common_obj.domain + '/py/assessment/assessmentvendor/api/v1/initiateVendorScore/'
         data = {"testId": test_id, "candidateIds": [cid], "isForced": True}
 
@@ -214,18 +246,22 @@ class CrpoCommon:
                                  headers=crpotoken,
                                  data=json.dumps(data, default=str), verify=False)
         it_vendor_resp = response.json()
+        logging.info(it_vendor_resp)
         return it_vendor_resp
 
     @staticmethod
     def untag_candidate_by_cid(token, test_id, candidate_ids):
+        logging.info("un-tag candidate started")
         data1 = [{"testId": test_id, "candidateIds": candidate_ids}]
         for request in data1:
             response = requests.post(crpo_common_obj.domain + "/py/assessment/testuser/api/v1/un-tag/",
                                      headers=token,
                                      data=json.dumps(request, default=str), verify=False)
+            logging.info(response)
 
     @staticmethod
     def create_candidate(token, usn):
+        logging.info("create candidate started")
         request = {"PersonalDetails": {"FirstName": usn, "Email1": "S1N1J1E1V11111" + usn + "@gmail.com", "USN": usn,
                                        "DateOfBirth": "2022-02-08T18:30:00.000Z"}}
         response = requests.post(crpo_common_obj.domain + "/py/rpo/create_candidate/", headers=token,
@@ -233,23 +269,29 @@ class CrpoCommon:
         response_data = response.json()
         candidate_id = response_data.get('CandidateId')
         if response_data.get('status') == 'OK':
+            logging.info("Candidate created successfully ")
             print("candidate created in crpo")
             url = 'https://automation-in.hirepro.in/?candidate=%s' % candidate_id
         else:
             print("candidate not created in CRPO_COMMON due to some technical glitch")
             print(response_data)
+            logging.info("Candidate created Failed %s" % response_data)
         return candidate_id
 
     @staticmethod
     def create_candidate_v2(token, request):
+        logging.info("create candidate v2 %s" % request)
         response = requests.post(crpo_common_obj.domain + "/py/rpo/create_candidate/", headers=token,
                                  data=json.dumps(request), verify=False)
         response_data = response.json()
+        logging.info("careate candidate api response %s" % response_data)
         candidate_id = response_data.get('CandidateId')
         if response_data.get('status') == 'OK':
             print("candidate created in crpo")
+            logging.info("Candidate created successfully ")
         else:
             print("candidate not created in CRPO_COMMON due to some technical glitch")
+            logging.info("Candidate not created in CRPO_COMMON due to some technical glitch")
 
         return candidate_id
 
@@ -257,43 +299,51 @@ class CrpoCommon:
     def tag_candidate_to_test(token, cid, testid, eventid, jobroleid):
         request = {"CandidateIds": [int(cid)], "TestIds": [int(testid)], "EventId": int(eventid),
                    "JobRoleId": int(jobroleid), "Sync": "True"}
+        logging.info("Tag candidate to test Request is %s" % request)
         response = requests.post(crpo_common_obj.domain +
                                  "/py/crpo/applicant/api/v1/tagCandidatesToEventJobRoleTests/",
                                  headers=token,
                                  data=json.dumps(request, default=str), verify=False)
+        logging.info("Tag candidate to test Response is %s" % response)
         return response
 
     @staticmethod
     def test_user_credentials(token, tu_id):
+        logging.info("Begin getCredential api")
         request = {"testUserId": tu_id}
         response = requests.post(crpo_common_obj.domain +
                                  "/py/assessment/testuser/api/v1/getCredential/",
                                  headers=token,
                                  data=json.dumps(request, default=str), verify=False)
+        logging.info("End of getCredential api %s", response)
         return response.json()
 
     @staticmethod
     def get_all_test_user(token, cid):
+        logging.info("Begin getAllTestUser api")
         request = {"isMyAssessments": False, "search": {"candidateIds": [cid]}}
         response = requests.post(crpo_common_obj.domain + "/py/assessment/testuser/api/v1/getAllTestUser/",
                                  headers=token,
                                  data=json.dumps(request, default=str), verify=False)
         data = response.json()
         test_user_id = data['data']['testUserInfos'][0]['id']
+        logging.info("End of getAllTestUser api %s" % data)
         return test_user_id
 
     @staticmethod
     def get_candidate_by_id(token, cid):
+        logging.info("Begin get_candidate_details_by_id api")
         request = {"CandidateId": cid, "RequiredDetails": [1]}
         response = requests.post(crpo_common_obj.domain + "/py/rpo/get_candidate_details_by_id/",
                                  headers=token,
                                  data=json.dumps(request, default=str), verify=False)
         candidate_details = response.json()
-
+        logging.info("End of get_candidate_details_by_id api %s", candidate_details)
         return candidate_details
 
     @staticmethod
     def get_all_event(token):
+        logging.info("Begin getAllEvent api")
         request = {"Paging": {"MaxResults": 20, "PageNumber": 1, "IsCountRequired": True}, "isAllEventRequired": False,
                    "Sort": 0, "Order": 0, "Search": None,
                    "flags": {"isAllEventOwnersRequired": False, "isEventCollegesRequired": True,
@@ -301,16 +351,19 @@ class CrpoCommon:
         response = requests.post(crpo_common_obj.domain + "/py/crpo/event/api/v1/getAllEvent/",
                                  headers=token,
                                  data=json.dumps(request, default=str), verify=False)
+        logging.info("End of getAllEvent api %s" % response)
         candidate_details = response.json()
 
         return candidate_details
 
     @staticmethod
     def create_question(token, request):
+        logging.info("Begin of createQuestion api")
         response = requests.post(crpo_common_obj.domain + "/py/assessment/authoring/api/v1/createQuestion/",
                                  headers=token, data=json.dumps(request), verify=False)
         question_id_resp = response.json()
         question_id = question_id_resp['data']['questionId']
+        logging.info("End of createQuestion api %s" % question_id_resp)
         return question_id
 
     @staticmethod
@@ -367,6 +420,8 @@ class CrpoCommon:
 
     @staticmethod
     def search_test_user_by_cid_and_testid(token, cid, test_id):
+        logging.info('Entered in to search_test_user_by_cid_and_testid method')
+
         request = {"isPartnerTestUserInfo": True, "testId": test_id,
                    "search": {"status": 6, "candidateSearch": {"ids": [cid]}}}
         response = requests.post(crpo_common_obj.domain + "/py/assessment/testuser/api/v1/getTestUsersForTest/",
@@ -383,6 +438,7 @@ class CrpoCommon:
         else:
             test_user_data = {'testUserId': "NotExist", 'parentTestUserId': "EMPTY",
                               'Offline': "EMPTY"}
+        logging.info('Exited from search_test_user_by_cid_and_testid method')
 
         return test_user_data
 
@@ -398,7 +454,9 @@ class CrpoCommon:
 
     @staticmethod
     def change_applicant_status(token, applicant_id, event_id, jobrole_id, status_id):
-
+        logging.info(
+            "Changing applicant status for applicant id {0},eventid: {1}, jobrole_id:{2} statusid: {status_id}",
+            applicant_id, event_id, jobrole_id, status_id)
         payload = {"ApplicantIds": [applicant_id], "EventId": event_id, "JobRoleId": jobrole_id,
                    "ToStatusId": status_id,
                    "Sync": "False", "Comments": "", "InitiateStaffing": False}
@@ -406,6 +464,7 @@ class CrpoCommon:
                                  headers=token,
                                  data=json.dumps(payload, default=str), verify=False)
         test_user_infos = response.json()
+        logging.info("Successfully changed applicant status")
         return test_user_infos
 
     @staticmethod
@@ -419,10 +478,12 @@ class CrpoCommon:
 
     @staticmethod
     def force_untag_testuser(token, test_user_id):
+        logging.info('Entered in to Force Untag and untagging tu: {0}', test_user_id)
         request = {"testUserIds": [test_user_id], "isForced": True}
         response = requests.post(crpo_common_obj.domain + "/py/assessment/testuser/api/v1/un-tag/",
                                  headers=token,
                                  data=json.dumps(request, default=str), verify=False)
+        logging.info('Successfully untagged tu: {0}', test_user_id)
         return response
 
     @staticmethod
