@@ -112,7 +112,7 @@ for data in excel_data:
                 print("Task status is pending. checking again in 30 sec")
                 time.sleep(30)
             else:
-                time.sleep(2)
+                time.sleep(5)
                 print(f"Task status: {current_status}")
                 response = crpo_common_obj.tests_against_candidate(crpo_headers, candidate_id)
                 score = response['data']['TestsAgainstCandidate'][0]['TotalScore']

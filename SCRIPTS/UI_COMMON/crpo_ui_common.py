@@ -56,7 +56,7 @@ class CrpoCommon:
         self.driver.find_element(By.XPATH,
                                  '//*[@class = "btn btn-default button_style login ng-binding"]').click()
 
-    def wait_for_page_load(self, timeout=30):
+    def wait_for_page_load(self, timeout=10):
         """Waits until the page loading spinner disappears to ensure UI is ready."""
         try:
             wait = WebDriverWait(self.driver, timeout)  # Default timeout reduced to 15s for efficiency
@@ -68,7 +68,6 @@ class CrpoCommon:
             # if self.driver.find_elements(By.CLASS_NAME, "dw-loading-active"):
             #     wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, "dw-loading-active")))
 
-
         except TimeoutException:
             print("⚠️ Warning: Page load took too long or never completed.")
         except Exception as e:
@@ -78,7 +77,7 @@ class CrpoCommon:
     def click_on_filter_button(self):
         """Clicks on the filter button after ensuring the page is ready."""
         try:
-            wait = WebDriverWait(self.driver, 20)
+            wait = WebDriverWait(self.driver, 10)
             crpo_ui_obj.wait_for_page_load()
             # Click filter button if present
             filter_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//a[@id='cardlist-view-filter']")))
@@ -126,12 +125,18 @@ class CrpoCommon:
 
     def filter_search_by_id(self , value):
         try:
-            wait = WebDriverWait(self.driver, 30)
+            wait = WebDriverWait(self.driver, 10)
+            if isinstance(value, (int, str)):
+                value = [value]
 
             id_box = wait.until(EC.presence_of_element_located(
                 (By.XPATH, "//input[@placeholder='ID,ID,ID...']")))
             id_box.clear()
-            id_box.send_keys(value)
+
+            # Ensure all elements in value are strings
+            id_box.send_keys(" ".join(map(str, value)))
+
+            # id_box.send_keys(value)
             button = wait.until(
                 EC.presence_of_element_located((By.XPATH, "//button[@class='btn btn-primary ng-binding']"))
             )
@@ -193,12 +198,14 @@ class CrpoCommon:
 
     def filter_search_by_test_user_id(self , value):
         try:
-            wait = WebDriverWait(self.driver, 30)
+            wait = WebDriverWait(self.driver, 10)
 
             # Wait for input field and enter test user id
             test_user_id_box = wait.until(EC.presence_of_element_located((By.XPATH, "//label[text()='Test User Id(s) '] /following-sibling::input[@type='text']")))
             test_user_id_box.clear()
-            test_user_id_box.send_keys(value)
+            test_user_id_box.send_keys(" ".join(map(str, value)))
+
+            # test_user_id_box.send_keys(value)
             button = wait.until(
                 EC.presence_of_element_located((By.XPATH, "//button[@class='btn btn-primary ng-binding']"))
             )
@@ -240,10 +247,10 @@ class CrpoCommon:
 
                         # Map icon class to meaningful names
                         icon_map = {
-                            "fa fa-eye": "View History Json",
-                            "fa fa-expand": "Extend Search",
-                            "fa fa-pencil-square-o": "Edit",
-                            "fa fa-trash": "Delete"
+                            "fa fa-fw fa-eye": "View History Json",
+                            "fa fa-fw fa-expand": "Extend Search",
+                            "fa fa-fw fa-pencil-square-o": "Edit",
+                            "fa fa-fw fa-trash": "Delete"
                         }
 
                         action_text = icon_map.get(icon_class, "Unknown Action")
@@ -261,7 +268,7 @@ class CrpoCommon:
     def move_to_grid(self, grid_name):
         """Navigates to a specified grid in the UI."""
         try:
-            wait = WebDriverWait(self.driver, 30)
+            wait = WebDriverWait(self.driver, 10)
             self.wait_for_page_load()
             assessments_button = wait.until(
                 EC.element_to_be_clickable((By.XPATH, f"//a[normalize-space()='{grid_name}']"))
@@ -275,7 +282,7 @@ class CrpoCommon:
     def move_inside_authoring_grid(self, grid_name):
         """Navigates to a specified grid in the UI."""
         try:
-            wait = WebDriverWait(self.driver, 30)
+            wait = WebDriverWait(self.driver, 10)
             element = wait.until(EC.element_to_be_clickable((By.XPATH, f"//span[@title='{grid_name}']")))
             self.driver.execute_script("arguments[0].click();", element)
 
@@ -285,10 +292,11 @@ class CrpoCommon:
 
     def get_assessment_grid_actions(self, test_user_ids, grid_name, test_id=None):
         try:
-            wait = WebDriverWait(self.driver, 30)
+            wait = WebDriverWait(self.driver, 10)
             results = []
             grid_actions_list = []
             self.move_to_grid(grid_name)
+
             if test_id:
                 self.click_on_filter_button()
                 self.filter_search_by_id(test_id)
@@ -299,11 +307,21 @@ class CrpoCommon:
                 )
                 self.driver.execute_script("arguments[0].click();", view_candidates_button)
 
-            crpo_ui_obj.click_on_filter_button()
-            for user_id in test_user_ids:
-                self.filter_search_by_test_user_id(user_id)
-                self.click_on_more_option()
-                results.append(self.fetch_grid_actions())
+            self.click_on_filter_button()
+            self.filter_search_by_test_user_id(test_user_ids)
+            self.wait_for_page_load()
+
+            more_options = wait.until(
+                EC.presence_of_all_elements_located((By.XPATH, "//a[@class='pointer fa fa-lg fa-ellipsis-v']"))
+            )
+
+            if more_options:  # Ensure the list is not empty
+                for element in more_options:
+                    try:
+                        wait.until(EC.element_to_be_clickable(element)).click()
+                        results.append(self.fetch_grid_actions())
+                    except Exception as e:
+                        print(f"⚠️ Warning: Skipping element due to error: {e}")
 
             # Return results with a consistent format
             return [grid_actions_list] + results if grid_actions_list else results
@@ -315,33 +333,53 @@ class CrpoCommon:
             traceback.print_exc()
         return []
 
-    def get_event_grid_actions(self, event_test_user_id, grid_name, event_id):
+    def get_event_grid_actions(self, event_test_user_ids, grid_name, event_id):
+        """Retrieve available grid actions for an event and its test users."""
         try:
             wait = WebDriverWait(self.driver, 30)
             results = []
 
+            # Move to the required grid and apply event filter
             self.move_to_grid(grid_name)
             self.click_on_filter_button()
             self.filter_search_by_id(event_id)
+            self.wait_for_page_load()
 
+            # Navigate to 'View Event Assessments'
             wait.until(
-                EC.element_to_be_clickable((By.XPATH, "//i[@class='glyphicon glyphicon-option-horizontal']"))).click()
+                EC.element_to_be_clickable((By.XPATH, "//i[@class='glyphicon glyphicon-option-horizontal']"))
+            ).click()
             wait.until(
-                EC.element_to_be_clickable((By.XPATH, "//div[contains(text(),'View Event Assessments')]"))).click()
+                EC.element_to_be_clickable((By.XPATH, "//div[contains(text(),'View Event Assessments')]"))
+            ).click()
 
+            # Fetch actions from the event grid
             self.click_on_more_option()
-            event_grid_actions = self.fetch_grid_actions()
+            event_grid_actions = self.fetch_grid_actions() if self.fetch_grid_actions() else []
 
-            # Navigate to View Candidates and apply filters
-            wait.until(EC.element_to_be_clickable((By.XPATH, "//div[contains(text(),'View Candidates')]"))).click()
+            # Navigate to 'View Candidates' and apply filters
+            wait.until(
+                EC.element_to_be_clickable((By.XPATH, "//div[contains(text(),'View Candidates')]"))
+            ).click()
             self.click_on_filter_button()
-            # Fetch grid actions for each test user ID
-            for user_id in event_test_user_id:
-                self.filter_search_by_id(user_id)
-                self.click_on_more_option()
-                results.append(self.fetch_grid_actions())
+            self.filter_search_by_id(event_test_user_ids)  # Batch filtering
+            self.wait_for_page_load()
 
-            return [event_grid_actions] + results
+            # Fetch grid actions for each test user ID
+            more_options = wait.until(
+                EC.presence_of_all_elements_located((By.XPATH, "//a[@class='pointer fa fa-lg fa-ellipsis-v']"))
+            )
+
+            for idx, element in enumerate(more_options):
+                try:
+                    wait.until(EC.element_to_be_clickable(element)).click()
+                    actions = self.fetch_grid_actions()
+                    results.append(actions)
+                except Exception as e:
+                    print(
+                        f"⚠️ Warning: Failed to click 'More Options' for test user {event_test_user_ids[idx]}. Error: {e}")
+
+            return [event_grid_actions] + results if event_grid_actions else results
 
         except TimeoutException as te:
             print(f"❌ Timeout Error: {grid_name} grid actions took too long to load: {te}")
