@@ -3,12 +3,16 @@ from SCRIPTS.COMMON.write_excel_new import *
 from SCRIPTS.CRPO_COMMON.credentials import *
 from SCRIPTS.CRPO_COMMON.crpo_common import *
 from SCRIPTS.COMMON.io_path import *
+from Logging.Logging import logging_config
 import time
+import logging
 
 
 class ReuseScore:
 
     def __init__(self):
+        logging_config(log_reuse_score)
+        logging.info('Initialized successfully')
         self.test_login_informations = {}
         write_excel_object.save_result(output_path_reuse_score)
         header = ["Chaining Of Two Tests"]
@@ -70,9 +74,11 @@ login_token = crpo_common_obj.login_to_crpo(cred_crpo_admin_at.get('user'), cred
 excel_read_obj.excel_read(input_path_ui_reuse_score, 0)
 excel_data = excel_read_obj.details
 reuse_score_excel = excel_read_obj.details
+logging.info('Successfully Read excel input')
 # print(reuse_score_excel)
 row_count = 1
 for current_excel_data in reuse_score_excel:
+    logging.info('Testcase info:- %s' % current_excel_data)
     row_count = row_count + 1
     candidate_id = int(current_excel_data.get('candidateId'))
     event_id = int(current_excel_data.get('newEventId'))
