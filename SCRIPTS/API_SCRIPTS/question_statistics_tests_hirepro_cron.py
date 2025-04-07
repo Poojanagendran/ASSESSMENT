@@ -1,4 +1,5 @@
 from SCRIPTS.CRPO_COMMON.credentials import *
+from SCRIPTS.DB_DELETE.question_statistics_test_new_cron_delete import qs_new_cron_test_del
 from SCRIPTS.UI_SCRIPTS.assessment_data_verification import *
 from SCRIPTS.COMMON.read_excel import *
 from SCRIPTS.COMMON.write_excel_new import *
@@ -10,6 +11,7 @@ class OnlineAssessment:
 
     def __init__(self):
         self.row = 1
+        qs_new_cron_test_del.delete_question_statistics()
         write_excel_object.save_result(output_question_statistics_tests_hp_cron)
         header = ['Question Statics']
         write_excel_object.write_headers_for_scripts(0, 0, header, write_excel_object.black_color_bold)

@@ -30,6 +30,6 @@ class HireproCronQuestionStats:
         db_connection.close()
 
 
-del_data = HireproCronQuestionStats()
-del_data.delete_question_statistics()
+qs_new_cron_del = HireproCronQuestionStats()
+# del_data.delete_question_statistics()
 print(datetime.datetime.now())

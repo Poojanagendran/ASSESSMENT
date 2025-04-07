@@ -72,12 +72,14 @@ class GridActions:
     @staticmethod
     def grid_actions(expected):
         try:
-            event_id = 18603
+            event_id = [18603]
             event_candidate_id = [1564087,1565333,1564089,1564093,1564095]
-            test_id = 21193
+            test_id = [21193]
             test_user_id = [3774865,3778101, 3774867, 3774869, 3774871]
             vendor_test_id = 21381
             vendor_test_user_id = [3778097,3778099]
+            devops_test_id = [21715]
+            devops_test_user_id = [3789217, 3789205, 3784165, 3784163]
 
             if not isinstance(expected, list):
                 raise ValueError("Expected actions must be a list.")
@@ -109,9 +111,10 @@ class GridActions:
             vendor_grid_actions = crpo_ui_obj.get_assessment_grid_actions(vendor_test_user_id, 'Assessments', vendor_test_id) or []
             event_grid_actions = crpo_ui_obj.get_event_grid_actions(event_candidate_id, 'Events', event_id) or []
             assessment_candidate_grid_actions = crpo_ui_obj.get_assessment_grid_actions(test_user_id, 'Assessment Candidates') or []
+            assessment_devops_grid_actions = crpo_ui_obj.get_assessment_grid_actions(devops_test_user_id, 'Assessments', devops_test_id) or []
 
             # Combine grid actions into a list
-            grid_actions = [*assessment_grid_actions, *vendor_grid_actions, *event_grid_actions,*assessment_candidate_grid_actions]
+            grid_actions = [*assessment_grid_actions, *vendor_grid_actions, *event_grid_actions,*assessment_candidate_grid_actions, *assessment_devops_grid_actions]
 
             # Validate list lengths before processing
             if not (len(expected) == len(grid_actions) == len(testcase)):

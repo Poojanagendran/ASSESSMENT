@@ -34,6 +34,6 @@ class DeleteQuestionStatistics:
         db_connection.close()
 
 
-del_data = DeleteQuestionStatistics()
-del_data.delete_question_statistics()
+qs_new_cron_test_del = DeleteQuestionStatistics()
+# del_data.delete_question_statistics()
 print(datetime.datetime.now())
