@@ -207,65 +207,68 @@ def task_response_encryption():
         time.sleep(2)
 
 
-custom_hour = 1
+custom_hour = 8
 custom_minute = 30
+scheduler.add_job(task_rate_controller, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
+scheduler.add_job(task_chaining_of_2_tests, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
+scheduler.add_job(task_chaining_of_3_tests, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
+scheduler.add_job(task_behaviour_proctoring_evaluation_new, 'cron', hour=custom_hour, minute=custom_minute,
+                  max_instances=1)
+
+# next cron , 5 mins from 1st script
+custom_hour, custom_minute = (custom_hour + (custom_minute + 5) // 60) % 24, (custom_minute + 5) % 60
+scheduler.add_job(task_email_verification, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 scheduler.add_job(task_question_statistics_tests_old_cron, 'cron', hour=custom_hour, minute=custom_minute,
                   max_instances=1)
 scheduler.add_job(task_question_statistics_tests_hirepro_cron, 'cron', hour=custom_hour, minute=custom_minute,
                   max_instances=1)
 scheduler.add_job(task_question_statistics_old_cron, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
+
+# next cron 10 mins from 1st script
+custom_hour, custom_minute = (custom_hour + (custom_minute + 5) // 60) % 24, (custom_minute + 5) % 60
 scheduler.add_job(task_question_statistics_with_hirepro_cron, 'cron', hour=custom_hour, minute=custom_minute,
                   max_instances=1)
-custom_minute = 34
 
-scheduler.add_job(task_xss, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 scheduler.add_job(task_allowed_extensions, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 scheduler.add_job(task_analyze_brightness_shapness, 'cron', hour=custom_hour, minute=custom_minute,
                   max_instances=1)
 
-# custom_hour = 11
-custom_minute = 37
-scheduler.add_job(task_applicant_report, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-
-scheduler.add_job(task_encryption_check, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-
-scheduler.add_job(task_plagiarism_report, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-scheduler.add_job(task_proctor_evaluation, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-
-# custom_hour = 11
-custom_minute = 40
+# next cron 13 mins from 1st script
+custom_hour, custom_minute = (custom_hour + (custom_minute + 3) // 60) % 24, (custom_minute + 3) % 60
 scheduler.add_job(task_question_search_with_boundary, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 scheduler.add_job(task_question_search_with_count, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 scheduler.add_job(task_reuse_test_score, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
+scheduler.add_job(task_proctor_evaluation, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 
-# custom_hour = 11
-custom_minute = 43
+# next cron 16 mins from 1st script
+custom_hour, custom_minute = (custom_hour + (custom_minute + 3) // 60) % 24, (custom_minute + 3) % 60
 scheduler.add_job(task_reinitiate_automation, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 scheduler.add_job(task_ssrf_check, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 scheduler.add_job(task_mic_distortion, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 
-custom_minute = 46
+# next cron 19 mins from 1st script
+custom_hour, custom_minute = (custom_hour + (custom_minute + 3) // 60) % 24, (custom_minute + 3) % 60
 scheduler.add_job(task_sa_web_transcript_report, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 scheduler.add_job(task_response_encryption, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-# scheduler.add_job(task_audio_transcript_report_cefr, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
+scheduler.add_job(task_audio_transcript_report_cefr, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 
-custom_minute = 49
-scheduler.add_job(task_behaviour_proctoring_evaluation_new, 'cron', hour=custom_hour, minute=custom_minute,
-                  max_instances=1)
+# next cron 22 mins from 1st script
+custom_hour, custom_minute = (custom_hour + (custom_minute + 3) // 60) % 24, (custom_minute + 3) % 60
 
 scheduler.add_job(task_sanitizeapi, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 scheduler.add_job(task_typing_assessment_docket, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 scheduler.add_job(task_code_compilation, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 
-# custom_hour = 17
-custom_minute = 51
-scheduler.add_job(task_chaining_of_2_tests, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-scheduler.add_job(task_chaining_of_3_tests, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-scheduler.add_job(task_email_verification, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-
-custom_minute = 55
-scheduler.add_job(task_rate_controller, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
+# next cron 25 mins from 1st script
+custom_hour, custom_minute = (custom_hour + (custom_minute + 3) // 60) % 24, (custom_minute + 3) % 60
 scheduler.add_job(task_device_proctoring_evaluation, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
+scheduler.add_job(task_xss, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
+scheduler.add_job(task_encryption_check, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
+
+# next cron 28 mins from 1st script
+custom_hour, custom_minute = (custom_hour + (custom_minute + 3) // 60) % 24, (custom_minute + 3) % 60
+scheduler.add_job(task_plagiarism_report, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
+scheduler.add_job(task_applicant_report, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
 
 # Start the scheduler
 scheduler.start()
