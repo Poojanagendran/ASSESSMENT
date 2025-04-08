@@ -1,0 +1,24 @@
+2025-02-20 07:31:37,134 - INFO - Initialized successfully
+2025-02-20 07:31:37,135 - INFO - Entered in to  login to CRPO 
+2025-02-20 07:31:39,057 - INFO - Successfully Exited From login to CRPO 
+2025-02-20 07:31:39,091 - INFO - Successfully Read excel input
+2025-02-20 07:31:39,091 - INFO - Testcase info:- {'candidateId': 1367418.0, 'typeOfTest': 'Cocube – Cocube', 'testCase': 'Cocube – Candidate Attended Same T1 and T2  Already', 'newEventId': 10807.0, 'newJobId': 30295.0, 'newEventTest1Id': 14259.0, 'newEventTest2Id': 14261.0, 'oldEventId': 10800.0, 'oldJobId': 30251.0, 'oldEventTest1Id': 14240.0, 'oldEventTest2Id': 14242.0, 'oldEventTest1TestUserId': 1401588.0, 'oldEventTest2TestUserId': 1401590.0, 'newEventApplicantId': 1032543.0, 'toStatusId': 167299.0, 'expectedTest1OverallScore': 23.0, 'expectedTest2OverallScore': 'EMPTY', 'expectedstatus1InEvent2': 'ANZ Aptitide Assessment-Pending', 'expectedstatus2InEvent2': 'ANZ Video Assessment-Shortlisted', 'expectedstatus3InEvent2': 'ANZ Video Assessment-Attended', 'expectedNextTestStatus': 'Yes', 'expectedT1Status': 'Attended', 'areYouExpectingTestLinkForNewT1?': 'Yes', 'group1ExpectedMark': '', 'group2ExpectedMark': '', 'group3ExpectedMark': '', 'group4ExpectedMark': ''}
+2025-02-20 07:31:39,092 - INFO - Entered in to search_test_user_by_cid_and_testid method
+2025-02-20 07:31:40,104 - INFO - Exited from search_test_user_by_cid_and_testid method
+2025-02-20 07:31:41,375 - INFO - Successfully changed applicant status
+2025-02-20 07:31:42,437 - INFO - Entered in to search_test_user_by_cid_and_testid method
+2025-02-20 07:31:43,176 - INFO - Exited from search_test_user_by_cid_and_testid method
+2025-02-20 07:31:48,180 - INFO - Entered in to search_test_user_by_cid_and_testid method
+2025-02-20 07:31:49,126 - INFO - Exited from search_test_user_by_cid_and_testid method
+2025-02-20 09:24:01,344 - INFO - Initialized successfully
+2025-02-20 09:24:01,344 - INFO - Entered in to  login to CRPO 
+2025-02-20 09:24:02,809 - INFO - Successfully Exited From login to CRPO 
+2025-02-20 09:24:02,825 - INFO - Successfully Read excel input
+2025-02-20 09:24:02,826 - INFO - Testcase info:- {'candidateId': 1367418.0, 'typeOfTest': 'Cocube – Cocube', 'testCase': 'Cocube – Candidate Attended Same T1 and T2  Already', 'newEventId': 10807.0, 'newJobId': 30295.0, 'newEventTest1Id': 14259.0, 'newEventTest2Id': 14261.0, 'oldEventId': 10800.0, 'oldJobId': 30251.0, 'oldEventTest1Id': 14240.0, 'oldEventTest2Id': 14242.0, 'oldEventTest1TestUserId': 1401588.0, 'oldEventTest2TestUserId': 1401590.0, 'newEventApplicantId': 1032543.0, 'toStatusId': 167299.0, 'expectedTest1OverallScore': 23.0, 'expectedTest2OverallScore': 'EMPTY', 'expectedstatus1InEvent2': 'ANZ Aptitide Assessment-Pending', 'expectedstatus2InEvent2': 'ANZ Video Assessment-Shortlisted', 'expectedstatus3InEvent2': 'ANZ Video Assessment-Attended', 'expectedNextTestStatus': 'Yes', 'expectedT1Status': 'Attended', 'areYouExpectingTestLinkForNewT1?': 'Yes', 'group1ExpectedMark': '', 'group2ExpectedMark': '', 'group3ExpectedMark': '', 'group4ExpectedMark': ''}
+2025-02-20 09:24:02,826 - INFO - Entered in to search_test_user_by_cid_and_testid method
+2025-02-20 09:24:03,544 - INFO - Exited from search_test_user_by_cid_and_testid method
+2025-02-20 09:24:04,915 - INFO - Successfully changed applicant status
+2025-02-20 09:24:06,426 - INFO - Entered in to search_test_user_by_cid_and_testid method
+2025-02-20 09:24:07,616 - INFO - Exited from search_test_user_by_cid_and_testid method
+2025-02-20 09:24:12,630 - INFO - Entered in to search_test_user_by_cid_and_testid method
+2025-02-20 09:24:13,318 - INFO - Exited from search_test_user_by_cid_and_testid method
