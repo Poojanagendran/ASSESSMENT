@@ -1,0 +1,28 @@
+2025-03-24 06:46:45,177 - INFO - Initialized successfully
+2025-03-24 06:46:45,177 - INFO - Entered in to  login to CRPO 
+2025-03-24 06:46:46,085 - INFO - Successfully Exited From login to CRPO 
+2025-03-24 06:46:46,098 - INFO - Successfully Read excel input
+2025-03-24 06:46:46,099 - INFO - Testcase info:- {'candidateId': 1367418.0, 'typeOfTest': 'Cocube – Cocube', 'testCase': 'Cocube – Candidate Attended Same T1 and T2  Already', 'newEventId': 10807.0, 'newJobId': 30295.0, 'newEventTest1Id': 14259.0, 'newEventTest2Id': 14261.0, 'oldEventId': 10800.0, 'oldJobId': 30251.0, 'oldEventTest1Id': 14240.0, 'oldEventTest2Id': 14242.0, 'oldEventTest1TestUserId': 1401588.0, 'oldEventTest2TestUserId': 1401590.0, 'newEventApplicantId': 1032543.0, 'toStatusId': 167299.0, 'expectedTest1OverallScore': 23.0, 'expectedTest2OverallScore': 'EMPTY', 'expectedstatus1InEvent2': 'ANZ Aptitide Assessment-Pending', 'expectedstatus2InEvent2': 'ANZ Video Assessment-Shortlisted', 'expectedstatus3InEvent2': 'ANZ Video Assessment-Attended', 'expectedNextTestStatus': 'Yes', 'expectedT1Status': 'Attended', 'areYouExpectingTestLinkForNewT1?': 'Yes', 'group1ExpectedMark': '', 'group2ExpectedMark': '', 'group3ExpectedMark': '', 'group4ExpectedMark': ''}
+2025-03-24 06:46:46,099 - INFO - Entered in to search_test_user_by_cid_and_testid method
+2025-03-24 06:46:46,859 - INFO - Exited from search_test_user_by_cid_and_testid method
+2025-03-24 06:46:48,273 - INFO - Successfully changed applicant status
+2025-03-24 06:46:48,273 - INFO - Tag candidate to test Request is {'CandidateIds': [1367418], 'TestIds': [14259], 'EventId': 10807, 'JobRoleId': 30295, 'Sync': 'True'}
+2025-03-24 06:46:49,114 - INFO - Tag candidate to test Response is <Response [200]>
+2025-03-24 06:46:49,115 - INFO - Entered in to search_test_user_by_cid_and_testid method
+2025-03-24 06:46:51,020 - INFO - Exited from search_test_user_by_cid_and_testid method
+2025-03-24 06:46:56,036 - INFO - Entered in to search_test_user_by_cid_and_testid method
+2025-03-24 06:46:57,537 - INFO - Exited from search_test_user_by_cid_and_testid method
+2025-03-24 07:41:30,530 - INFO - Initialized successfully
+2025-03-24 07:41:30,532 - INFO - Entered in to  login to CRPO 
+2025-03-24 07:41:31,634 - INFO - Successfully Exited From login to CRPO 
+2025-03-24 07:41:31,657 - INFO - Successfully Read excel input
+2025-03-24 07:41:31,657 - INFO - Testcase info:- {'candidateId': 1367418.0, 'typeOfTest': 'Cocube – Cocube', 'testCase': 'Cocube – Candidate Attended Same T1 and T2  Already', 'newEventId': 10807.0, 'newJobId': 30295.0, 'newEventTest1Id': 14259.0, 'newEventTest2Id': 14261.0, 'oldEventId': 10800.0, 'oldJobId': 30251.0, 'oldEventTest1Id': 14240.0, 'oldEventTest2Id': 14242.0, 'oldEventTest1TestUserId': 1401588.0, 'oldEventTest2TestUserId': 1401590.0, 'newEventApplicantId': 1032543.0, 'toStatusId': 167299.0, 'expectedTest1OverallScore': 23.0, 'expectedTest2OverallScore': 'EMPTY', 'expectedstatus1InEvent2': 'ANZ Aptitide Assessment-Pending', 'expectedstatus2InEvent2': 'ANZ Video Assessment-Shortlisted', 'expectedstatus3InEvent2': 'ANZ Video Assessment-Attended', 'expectedNextTestStatus': 'Yes', 'expectedT1Status': 'Attended', 'areYouExpectingTestLinkForNewT1?': 'Yes', 'group1ExpectedMark': '', 'group2ExpectedMark': '', 'group3ExpectedMark': '', 'group4ExpectedMark': ''}
+2025-03-24 07:41:31,657 - INFO - Entered in to search_test_user_by_cid_and_testid method
+2025-03-24 07:41:32,421 - INFO - Exited from search_test_user_by_cid_and_testid method
+2025-03-24 07:41:33,565 - INFO - Successfully changed applicant status
+2025-03-24 07:41:33,565 - INFO - Tag candidate to test Request is {'CandidateIds': [1367418], 'TestIds': [14259], 'EventId': 10807, 'JobRoleId': 30295, 'Sync': 'True'}
+2025-03-24 07:41:34,263 - INFO - Tag candidate to test Response is <Response [200]>
+2025-03-24 07:41:34,263 - INFO - Entered in to search_test_user_by_cid_and_testid method
+2025-03-24 07:41:34,967 - INFO - Exited from search_test_user_by_cid_and_testid method
+2025-03-24 07:41:39,970 - INFO - Entered in to search_test_user_by_cid_and_testid method
+2025-03-24 07:41:40,601 - INFO - Exited from search_test_user_by_cid_and_testid method
