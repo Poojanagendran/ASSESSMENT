@@ -1,6 +1,7 @@
 import os
 import time
-
+import platform
+import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
@@ -21,9 +22,17 @@ class AssessmentUICommon:
     def __init__(self):
         self.delay = 120
         print("This is Latest Version of UI Code")
+        self.os_name = platform.system()
+        print(self.os_name)
 
     def initiate_browser(self, url, path):
         # chrome option is needed in VET cases - ( its handling permissions like mic access)
+        if self.os_name == 'Windows':
+            chrome_path = path
+        elif self.os_name == 'Linux':
+            path = "/home/muthu/ASSESSMENT/chromedriver"
+        else:
+            raise Exception(f"Unsupported OS: {self.os_name}")
         chrome_options = Options()
         chrome_options.add_argument("--use-fake-ui-for-media-stream")
         # chrome_options.add_argument("--headless")  # Enable headless mode
@@ -138,7 +147,7 @@ class AssessmentUICommon:
                                                    "//span[@class='ng-scope' and contains(text(), 'Proceed to test ')]")
         proceed_to_next.click()
 
-    #Not used now, will use it in futrure if its required to remove any disabled variable
+    # Not used now, will use it in futrure if its required to remove any disabled variable
     def remove_disabled_attribute(self):
         button = self.driver.find_element(By.XPATH, "//button[@class='btn btn-primary center-block ng-scope']")
         if button.is_displayed():
@@ -987,6 +996,7 @@ class AssessmentUICommon:
             wheeboxt2_starting = "T2 not starting"
             is_element_successful = False
         return wheeboxt2_starting, is_element_successful
+
     def wheebox_q1_ans(self):
         time.sleep(2)
         try:
@@ -1001,7 +1011,6 @@ class AssessmentUICommon:
             is_element_successful = False
             wheebox_q1_ans = "Not answered"
         return wheebox_q1_ans, is_element_successful
-
 
     def coding_editor(self, code):
         self.driver.find_element(By.CLASS_NAME, 'ace_content').click()
