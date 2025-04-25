@@ -30,7 +30,7 @@ class AssessmentUICommon:
         if self.os_name == 'Windows':
             chrome_path = path
         elif self.os_name == 'Linux':
-            path = "/home/muthu/ASSESSMENT/chromedriver"
+            chrome_path = "/home/muthu/ASSESSMENT/chromedriver"
         else:
             raise Exception(f"Unsupported OS: {self.os_name}")
         chrome_options = Options()
@@ -39,7 +39,7 @@ class AssessmentUICommon:
         # chrome_options.add_argument("--disable-gpu")  # Recommended to prevent GPU errors in headless mode
         # chrome_options.add_argument("--no-sandbox")  # Bypass OS security model, necessary for some systems
         # chrome_options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
-        self.driver = webdriver.Chrome(executable_path=path, chrome_options=chrome_options)
+        self.driver = webdriver.Chrome(executable_path=chrome_path, chrome_options=chrome_options)
         self.driver.get(url)
         self.driver.implicitly_wait(10)
         self.driver.maximize_window()
