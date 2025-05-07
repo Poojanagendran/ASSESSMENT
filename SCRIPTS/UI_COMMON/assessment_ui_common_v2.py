@@ -27,10 +27,14 @@ class AssessmentUICommon:
 
     def initiate_browser(self, url, path):
         # chrome option is needed in VET cases - ( its handling permissions like mic access)
+
         if self.os_name == 'Windows':
             chrome_path = path
         elif self.os_name == 'Linux':
             path = "/home/muthu/ASSESSMENT/chromedriver"
+        elif self.os_name == 'Darwin':
+            # This is for MAC OS.
+            path = "/Users/cnet/Desktop/ASSESSMENT/chromedriver"
         else:
             raise Exception(f"Unsupported OS: {self.os_name}")
         chrome_options = Options()
