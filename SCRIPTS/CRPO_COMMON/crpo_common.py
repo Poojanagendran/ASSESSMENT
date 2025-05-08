@@ -262,7 +262,12 @@ class CrpoCommon:
     @staticmethod
     def create_candidate(token, usn):
         logging.info("create candidate started")
-        request = {"PersonalDetails": {"FirstName": usn, "Email1": "S1N1J1E1V11111" + usn + "@gmail.com", "USN": usn,
+        email =  "S1N1J1E1V11111" + usn + "@gmail.com"
+        remove_chars = "- :."  # characters to remove
+        translation_table = str.maketrans("", "", remove_chars)
+        email_id = email.translate(translation_table)
+
+        request = {"PersonalDetails": {"FirstName": 'Muthumurugan', "Email1":email_id, "USN": usn,
                                        "DateOfBirth": "2022-02-08T18:30:00.000Z"}}
         response = requests.post(crpo_common_obj.domain + "/py/rpo/create_candidate/", headers=token,
                                  data=json.dumps(request), verify=False)
