@@ -27,10 +27,14 @@ class AssessmentUICommon:
 
     def initiate_browser(self, url, path):
         # chrome option is needed in VET cases - ( its handling permissions like mic access)
+
         if self.os_name == 'Windows':
-            chrome_path = path
+            path = path
         elif self.os_name == 'Linux':
-            chrome_path = "/home/muthu/ASSESSMENT/chromedriver"
+            path = "/home/muthu/ASSESSMENT/chromedriver"
+        elif self.os_name == 'Darwin':
+            # This is for MAC OS.
+            path = "/Users/cnet/Desktop/ASSESSMENT/chromedriver"
         else:
             raise Exception(f"Unsupported OS: {self.os_name}")
         chrome_options = Options()
@@ -39,7 +43,7 @@ class AssessmentUICommon:
         # chrome_options.add_argument("--disable-gpu")  # Recommended to prevent GPU errors in headless mode
         # chrome_options.add_argument("--no-sandbox")  # Bypass OS security model, necessary for some systems
         # chrome_options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
-        self.driver = webdriver.Chrome(executable_path=chrome_path, chrome_options=chrome_options)
+        self.driver = webdriver.Chrome(executable_path=path, chrome_options=chrome_options)
         self.driver.get(url)
         self.driver.implicitly_wait(10)
         self.driver.maximize_window()
@@ -978,24 +982,36 @@ class AssessmentUICommon:
             wheebox_confirm_submit = "Not submitted"
         return wheebox_confirm_submit, is_element_successful
 
-    def wheebox_t2start(self):
+    def chaining_shortlisting(self):
         try:
-            # Wait for the button to be clickable
-            button = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//*[@class='btn btn-success']"))
-            )
-            button.click()
-            # Optionally, wait for a new window or another element to appear (if needed)
-            # self.driver.switch_to.window(self.driver.window_handles[2])
-            print("T2 starting")
-            wheeboxt2_starting = "T2 starting"
-            is_element_successful = True
+            wait = WebDriverWait(self.driver, 180)
+            time.sleep(5)
+            print("Page title:", self.driver.title)
+            print("URL:", self.driver.current_url)
+            print("Current DOM length:", len(self.driver.page_source))
+            wait.until(EC.url_contains("/submitSuccess"))
+            print("URL:", self.driver.current_url)
+            print("Checking DOM after redirect...")
+            print("DOM length:", len(self.driver.page_source))
+
+            buttons = self.driver.find_elements(By.TAG_NAME, "button")
+            for i, btn in enumerate(buttons):
+                print(f"Button {i}: name={btn.get_attribute('name')}, text='{btn.text}'")
+            self.driver.find_element(By.XPATH, "//button[@name='btnStartNextTest' and contains(., 'Take me to next test')]").click()
+            is_shortlisted_to_next = 'Success'
+            is_element_successful = 'Success'
         except Exception as e:
             print(e)
-            print("T2 not starting")
-            wheeboxt2_starting = "T2 not starting"
-            is_element_successful = False
-        return wheeboxt2_starting, is_element_successful
+            is_shortlisted_to_next = 'Failed'
+            is_element_successful = 'Failed'
+        return is_shortlisted_to_next, is_element_successful
+
+        # next_button = wait.until(EC.element_to_be_clickable((
+        #     By.XPATH, "//button[.//span[contains(text(), 'Take me to next test')]]"
+        # )))
+        # next_button.click()
+
+
 
     def wheebox_q1_ans(self):
         time.sleep(2)
