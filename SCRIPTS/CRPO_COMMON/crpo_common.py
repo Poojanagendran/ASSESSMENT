@@ -158,6 +158,19 @@ class CrpoCommon:
         return tu_proctor_details
 
     @staticmethod
+    def get_tu_proc_screen_data(token, testuser_id):
+        logging.info("Entered to proctor evaluation %s", testuser_id)
+        # token.pop('X-APPLMA', None)
+        request = {"tuId": testuser_id}
+        response = requests.post(crpo_common_obj.domain + "/py/assessment/testuser/api/v1/get_tu_proc_screen_data/",
+                                 headers=token,
+                                 data=json.dumps(request, default=str), verify=False)
+        time.sleep(10)
+        tu_proctor_details = response.json()
+        logging.info(tu_proctor_details)
+        return tu_proctor_details
+
+    @staticmethod
     def save_apppreferences(token, content, id, type):
         logging.info("Entered to save app_preference :- %s", type)
         data = {"AppPreference": {"Id": id, "Content": content, "Type": type}, "IsTenantGlobal": True}
@@ -666,7 +679,7 @@ class CrpoCommon:
         return response.content
 
     @staticmethod
-    def get_tu_proc_screen_data(token, payload):
+    def get_tu_proc_screen_data_v2(token, payload):
         response = requests.post(crpo_common_obj.domain + "/py/assessment/testuser/api/v1/get_tu_proc_screen_data/",
                                  headers=token,
                                  data=json.dumps(payload, default=str), verify=False)
