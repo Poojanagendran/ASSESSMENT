@@ -44,7 +44,8 @@ class FaceLiveliness:
         write_excel_object.current_status_color = write_excel_object.green_color
         write_excel_object.current_status = "Pass"
         tu_id = int(current_excel_data.get('testUserId'))
-        print(tu_id)
+        # print(tu_id)
+        get_tu_proc_screen_data_payload = {"tuId": tu_id}
         tu_proctor_details = crpo_common_obj.get_tu_proc_screen_data(token, tu_id)
         print(tu_proctor_details)
         proctor_detail = tu_proctor_details['data']['getProctorDetail']

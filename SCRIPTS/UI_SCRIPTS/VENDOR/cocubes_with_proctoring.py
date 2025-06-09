@@ -9,7 +9,7 @@ class CocubesAutomation:
 
     def __init__(self):
         self.url = "https://qaassesscocubes.hirepro.in/hprotest/#/assess/login/eyJhbGlhcyI6ImF0In0="
-        self.path = chrome_driver_path
+        self.path = '/Users/cnet/Desktop/ASSESSMENT/chromedriver'
         write_excel_object.save_result(output_path_ui_cocubes)
         # 0th Row Header
         header = ['Cocubes']
@@ -273,5 +273,7 @@ login_id = tu_cred['data']['testUserCredential']['loginId']
 password = tu_cred['data']['testUserCredential']['password']
 print(login_id)
 print(password)
+
 qs.cocubes_technical(login_id, password, token, tu_req_payload)
 write_excel_object.write_overall_status(testcases_count=1)
+
