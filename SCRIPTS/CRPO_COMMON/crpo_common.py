@@ -161,7 +161,7 @@ class CrpoCommon:
     def get_tu_proc_screen_data(token, testuser_id):
         logging.info("Entered to proctor evaluation %s", testuser_id)
         # token.pop('X-APPLMA', None)
-        request = {"tuId": testuser_id}
+        request = testuser_id
         response = requests.post(crpo_common_obj.domain + "/py/assessment/testuser/api/v1/get_tu_proc_screen_data/",
                                  headers=token,
                                  data=json.dumps(request, default=str), verify=False)
