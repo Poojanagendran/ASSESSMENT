@@ -4,6 +4,8 @@ import datetime
 import time
 from SCRIPTS.CRPO_COMMON.crpo_common import *
 import urllib.request
+import certifi
+import ssl
 
 # ----------------------------------------------------------------------------------------------------------------------#
 # "ast" package is used to convert Dictionary to Json (which is used in "downloadReport" method)
@@ -36,6 +38,8 @@ class Reports:
     # -----------------------------------------------------------------------------------------------------------------#
     def downloadReport(self, token, download_path, download_api_response):
         print(token)
+
+
         resp_dict = download_api_response
         print(resp_dict)
         getall_applicant_status = resp_dict['status']
@@ -53,8 +57,17 @@ class Reports:
                 print("--------------------------------")
             else:
                 print("Job status changed to Success")
+                # urllib.request.urlretrieve(downloadurl.get('downloadLink'), download_path, context=ssl_context)
+
                 downloadurl = ast.literal_eval(resp_dict['data']['Result'])
-                urllib.request.urlretrieve(downloadurl.get('downloadLink'), download_path)
+                print(downloadurl)
+                ssl_context = ssl.create_default_context(cafile=certifi.where())
+                download_link = downloadurl.get('downloadLink')
+
+                with urllib.request.urlopen(download_link, context=ssl_context) as response:
+                    with open(download_path, 'wb') as out_file:
+                        out_file.write(response.read())
+                # urllib.request.urlretrieve(downloadurl.get('downloadLink'), download_path)
                 # urllib.request.urlretrieve(downloadurl, config_obj.download_path)
 
                 # subprocess.check_output(['wget', '-O', config_obj.download_path, downloadurl['downloadLink']])

@@ -10,7 +10,7 @@ class AssessmentDataVerification:
         self.started = self.started.strftime("%Y-%M-%d-%H-%M-%S")
         self.row_size = 2
         self.write_excel = xlsxwriter.Workbook(
-            'F:\\ASSESSMENT\\PythonWorkingScripts_Output\\UI\\UI_Automation_MCQ_Only - ' + self.started + '.xls')
+            '/Users/cnet/Desktop/ASSESSMENT/PythonWorkingScripts_Output/UI/UI_Automation_MCQ_Only - ' + self.started + '.xls')
         self.final_status = ''
         self.ws = self.write_excel.add_worksheet()
         self.black_color = self.write_excel.add_format({'font_color': 'black', 'font_size': 9})

@@ -13,36 +13,20 @@ class CodingCheating:
         header = ['Proctoring Evaluation automation']
         # 1 Row Header
         write_excel_object.write_headers_for_scripts(0, 0, header, write_excel_object.black_color_bold)
-        header = ['Testcases', 'Status', 'Test ID', 'Candidate ID', 'Testuser ID', 'Expected Liveness proct status',
-                  'Actual Liveness proct status',
+        header = ['Testcases', 'Status', 'Test ID', 'Candidate ID', 'Testuser ID', 'Expected Liveness proctoring status',
+                  'Actual Liveness proctoring status','Expected coding state', 'Actual coding state',
                   'Expected overall proctoring status',
                   'Actual overall proctoring status', 'Expected overall rating', 'Actual overall rating',
                   'Expected Video proctoring status', 'Actual Video Proctoring status']
         write_excel_object.write_headers_for_scripts(1, 0, header, write_excel_object.black_color_bold)
 
-    def suspicious_or_not_supicious(self, data, overall_proctoring_status_value):
-        if data is True:
-            # only overall proctoring status has number value.
-            if overall_proctoring_status_value is False:
-                self.status = 'Suspicious'
-            else:
-                if overall_proctoring_status_value >= 0.66:
-                    self.status = 'Highly Suspicious'
-
-                elif overall_proctoring_status_value >= 0.35:
-                    self.status = 'Medium'
-
-                elif overall_proctoring_status_value > 0:
-                    self.status = 'Low'
-                else:
-                    self.status = 'Not Suspicious'
-        else:
-            self.status = 'Not Suspicious'
-
     def proctor_detail(self, row_count, current_excel_data, token):
         write_excel_object.current_status_color = write_excel_object.green_color
         write_excel_object.current_status = "Pass"
         tu_id = int(current_excel_data.get('testUserId'))
+        print("This is tuid")
+        print(tu_id)
+        tu_id = {"tuId": tu_id}
         print(tu_id)
         tu_proctor_details = crpo_common_obj.get_tu_proc_screen_data(token, tu_id)
         print(tu_proctor_details)
@@ -50,23 +34,37 @@ class CodingCheating:
         coding_sus = proctor_detail.get('codingSuspiciousDetails')
         if coding_sus:
             coding_suspicious = coding_sus.get('codingSuspicious')
+            coding_suspicious_state_name = coding_sus.get('statusName')
         else:
             coding_suspicious = 'EMPTY'
+            coding_suspicious_state_name = 'EMPTY'
         # self.suspicious_or_not_supicious(device_suspicious, False)
         write_excel_object.compare_results_and_write_vertically(
             current_excel_data.get('expectedCodingCheatingStatus'), coding_suspicious, row_count, 5)
+        write_excel_object.compare_results_and_write_vertically(
+            current_excel_data.get('expectedCodingCheatingState'), coding_suspicious_state_name, row_count, 7)
         object_proctoring = proctor_detail.get('behaviouralSuspicious')
-        overall_proctoring_status = proctor_detail.get('finalDecision')
+        # overall_proctoring_status = proctor_detail.get('finalDecision')
         overall_suspicious_value = proctor_detail.get('systemOverallDecision')
-        self.suspicious_or_not_supicious(overall_proctoring_status, overall_suspicious_value)
+        if overall_suspicious_value >= 0.66:
+            overall_proctoring_status = 'Highly Suspicious'
+
+        elif overall_suspicious_value >= 0.35:
+            overall_proctoring_status = 'Medium'
+
+        elif overall_suspicious_value > 0:
+            overall_proctoring_status = 'Low'
+        else:
+            overall_proctoring_status = 'Not Suspicious'
+        # self.suspicious_or_not_supicious( overall_suspicious_value)
         write_excel_object.compare_results_and_write_vertically(current_excel_data.get('overallProctoringStatus'),
-                                                                self.status, row_count, 7)
+                                                                overall_proctoring_status, row_count, 9)
         excel_overall_suspicious_value = round(current_excel_data.get('overallSuspiciousValue'), 4)
         write_excel_object.compare_results_and_write_vertically(excel_overall_suspicious_value,
-                                                                overall_suspicious_value, row_count, 9)
+                                                                overall_suspicious_value, row_count, 11)
         write_excel_object.compare_results_and_write_vertically(object_proctoring,
                                                                 current_excel_data.get('expectedBehaviouralSuspicious'),
-                                                                row_count, 11)
+                                                                row_count, 13)
         write_excel_object.compare_results_and_write_vertically(current_excel_data.get('testCase'), None, row_count, 0)
         write_excel_object.compare_results_and_write_vertically(write_excel_object.current_status, None, row_count, 1)
         write_excel_object.compare_results_and_write_vertically(current_excel_data.get('testId'), None, row_count, 2)
@@ -76,9 +74,9 @@ class CodingCheating:
                                                                 4)
 
 
-login_token = crpo_common_obj.login_to_crpo(cred_crpo_admin_crpodemo.get('user'),
-                                            cred_crpo_admin_crpodemo.get('password'),
-                                            cred_crpo_admin_crpodemo.get('tenant'))
+login_token = crpo_common_obj.login_to_crpo(cred_crpo_admin_at.get('user'),
+                                            cred_crpo_admin_at.get('password'),
+                                            cred_crpo_admin_at.get('tenant'))
 # content = json.dumps(automation_proctor_eval_app_pref)
 # app_pref_proc_eval_id = automation_tenant_proc_eval_id
 # app_pref_proc_eval_type = automation_tenant_proc_eval_type

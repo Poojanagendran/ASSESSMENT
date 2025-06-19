@@ -9,6 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.chrome.service import Service
 
 
 # from selenium.webdriver.common.keys import Keys
@@ -43,7 +44,10 @@ class AssessmentUICommon:
         # chrome_options.add_argument("--disable-gpu")  # Recommended to prevent GPU errors in headless mode
         # chrome_options.add_argument("--no-sandbox")  # Bypass OS security model, necessary for some systems
         # chrome_options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
-        self.driver = webdriver.Chrome(executable_path=path, chrome_options=chrome_options)
+        service = Service(executable_path=path)
+        self.driver = webdriver.Chrome(service=service, options=chrome_options)
+
+        # self.driver = webdriver.Chrome(executable_path=path, chrome_options=chrome_options)
         self.driver.get(url)
         self.driver.implicitly_wait(10)
         self.driver.maximize_window()
@@ -444,7 +448,7 @@ class AssessmentUICommon:
             self.driver.find_element(By.XPATH, "//*[@class = 'proceed wizardButton greenBackground']").click()
             print("Proceed Test Successful")
             time.sleep(25)
-            os.system("F:\\my_test.mp3")
+            # os.system("F:\\my_test.mp3")
             vet_proceed_test = "Successful"
             is_element_successful = True
             time.sleep(5)
