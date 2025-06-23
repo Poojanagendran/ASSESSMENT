@@ -43,7 +43,7 @@ class VersantQuickScreener:
                 overview = assess_ui_common_obj.vet_overview()
                 instruction = assess_ui_common_obj.vet_instruction()
                 for i in range(0, 9):
-                    assess_ui_common_obj.play_audio()
+                    # assess_ui_common_obj.play_audio()
                     print("Current_iteration is :  ", i)
                     time.sleep(60)
                 survey = assess_ui_common_obj.survey_submit()
