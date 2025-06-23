@@ -311,7 +311,7 @@ token = crpo_common_obj.login_to_crpo(cred_crpo_admin.get('user'), cred_crpo_adm
 test_id = 15323
 event_id = 11625
 jobrole_id = 30439
-sprint_id = input('Enter Sprint ID ')
+sprint_id =  str(datetime.datetime.now()).replace(" ", "").replace("-", "").replace(":", "").replace(".", "")
 next_cand = 2000
 for current_excel_row in candidate_details:
     next_cand = next_cand + 1

@@ -1,5 +1,6 @@
 import subprocess
 import time
+import threading
 from apscheduler.schedulers.blocking import BlockingScheduler
 from SCRIPTS.COMMON.io_user_directory import *
 
@@ -21,256 +22,66 @@ def run_script(script_name, script_path):
             print(f"{script_name} failed with error: {result.stderr}")
             if attempt < max_retries:
                 print(f"Retrying... (Attempt {attempt}/{max_retries})")
-                time.sleep(5)  # Wait for 5 seconds before retrying
+                time.sleep(5)
             else:
                 print(f"{script_name} failed after {max_retries} attempts.")
     return success
 
 
-# Create a scheduler
+# Thread wrapper for non-blocking job execution
+def threaded_job(script_name, relative_path):
+    def job():
+        script_path = str(path) + relative_path
+        print(script_path)
+        if run_script(script_name, script_path):
+            time.sleep(2)
+    threading.Thread(target=job).start()
+
+
+# Scheduler setup
 scheduler = BlockingScheduler()
 
-
-# Define the script execution functions with retries
-def task_allowed_extensions():
-    script_path = str(path) + r"/SCRIPTS/API_SCRIPTS/allowed_extensions.py"
-    print(script_path)
-    if run_script("allowed_extensions", script_path):
-        time.sleep(2)
-
-
-def task_analyze_brightness_shapness():
-    script_path = str(path) + r"/SCRIPTS/API_SCRIPTS/analyze_brightness_shapness.py"
-    if run_script("analyze_brightness_shapness", script_path):
-        time.sleep(2)
-
-
-def task_applicant_report():
-    script_path = str(path) + r"/SCRIPTS/API_SCRIPTS/applicant_report.py"
-    if run_script("applicant_report", script_path):
-        time.sleep(2)
-
-
-def task_chaining_of_2_tests():
-    script_path = str(path) + r"/SCRIPTS/API_SCRIPTS/chaining_2nd_login_generic.py"
-    if run_script("chaining of 2 tests", script_path):
-        time.sleep(2)
-
-
-def task_chaining_of_3_tests():
-    script_path = str(path) + r"/SCRIPTS/API_SCRIPTS/chaining_of_3_tests.py"
-    if run_script("chaining of 3 tests", script_path):
-        time.sleep(2)
-
-
-def task_code_compilation():
-    script_path = str(path) + r"/SCRIPTS/API_SCRIPTS/coding_compilation.py"
-    if run_script("Code Compilation", script_path):
-        time.sleep(2)
-
-
-def task_email_verification():
-    script_path = str(path) + r"/SCRIPTS/API_SCRIPTS/email_verification.py"
-    if run_script("Email Verification", script_path):
-        time.sleep(2)
-
-
-def task_encryption_check():
-    script_path = str(path) + r"/SCRIPTS/API_SCRIPTS/encryption_check.py"
-    if run_script("Encryption Check", script_path):
-        time.sleep(2)
-
-
-def task_plagiarism_report():
-    script_path = str(path) + r"/SCRIPTS/API_SCRIPTS/plagiarism_report.py"
-    if run_script("Encryption Check", script_path):
-        time.sleep(2)
-
-
-def task_question_search_with_boundary():
-    script_path = str(path) + r"/SCRIPTS/API_SCRIPTS/question_search_with_boundary.py"
-    if run_script("Question Search with Boundary", script_path):
-        time.sleep(2)
-
-
-def task_question_search_with_count():
-    script_path = str(path) + r"/SCRIPTS/API_SCRIPTS/question_search_with_count.py"
-    if run_script("Question Search with Count", script_path):
-        time.sleep(2)
-
-
-def task_reinitiate_automation():
-    script_path = str(path) + r"/SCRIPTS/API_SCRIPTS/reinitiate_automation.py"
-    if run_script("Reinitiate automation", script_path):
-        time.sleep(2)
-
-
-def task_reuse_test_score():
-    script_path = str(path) + r"/SCRIPTS/API_SCRIPTS/reuse_test_score.py"
-    if run_script("Reuse test score", script_path):
-        time.sleep(2)
-
-
-def task_ssrf_check():
-    script_path = str(path) + r"/SCRIPTS/API_SCRIPTS/ssrfCheck.py"
-    if run_script("SSRF check", script_path):
-        time.sleep(2)
-
-
-def task_mic_distortion():
-    script_path = str(path) + r"/SCRIPTS/API_SCRIPTS/vet_mic_distortion_check.py"
-    if run_script("Mic Distortion check", script_path):
-        time.sleep(2)
-
-
-def task_audio_transcript_report_cefr():
-    script_path = str(path) + r"/SCRIPTS/API_SCRIPTS/audio_transcript_report_cefr.py"
-    if run_script("Task Audio Transcript CEFR", script_path):
-        time.sleep(2)
-
-
-def task_behaviour_proctoring_evaluation_new():
-    script_path = str(path) + r"/SCRIPTS/API_SCRIPTS/behaviour_proctoring_evaluation_new.py"
-    if run_script("behaviour_proctoring_evaluation_new", script_path):
-        time.sleep(2)
-
-
-def task_device_proctoring_evaluation():
-    script_path = str(path) + r"/SCRIPTS/API_SCRIPTS/device_proctoring_evaluation.py"
-    if run_script("device_proctoring_evaluation", script_path):
-        time.sleep(2)
-
-
-def task_proctor_evaluation():
-    script_path = str(path) + r"/SCRIPTS/API_SCRIPTS/proctor_evaluation.py"
-    if run_script("proctor_evaluation", script_path):
-        time.sleep(2)
-
-
-def task_question_statistics_tests_old_cron():
-    script_path = str(path) + r"/SCRIPTS/API_SCRIPTS/question_statistics_tests_old_cron.py"
-    if run_script("question_statistics_tests_old_cron", script_path):
-        time.sleep(2)
-
-
-def task_question_statistics_with_hirepro_cron():
-    script_path = str(path) + r"/SCRIPTS/API_SCRIPTS/question_statistics_with_hirepro_cron.py"
-    if run_script("question_statistics_tests_old_cron", script_path):
-        time.sleep(2)
-
-
-def task_question_statistics_old_cron():
-    script_path = str(path) + r"/SCRIPTS/API_SCRIPTS/question_statistics_old_cron.py"
-    if run_script("question_statistics_tests_old_cron", script_path):
-        time.sleep(2)
-
-
-def task_question_statistics_tests_hirepro_cron():
-    script_path = str(path) + r"/SCRIPTS/API_SCRIPTS/question_statistics_tests_hirepro_cron.py"
-    if run_script("question_statistics_tests_old_cron", script_path):
-        time.sleep(2)
-
-
-def task_sa_web_transcript_report():
-    script_path = str(path) + r"/SCRIPTS/API_SCRIPTS/sa_web_transcript_report.py"
-    if run_script("sa_web_transcript_report", script_path):
-        time.sleep(2)
-
-
-def task_sanitizeapi():
-    script_path = str(path) + r"/SCRIPTS/API_SCRIPTS/sanitizeapi.py"
-    if run_script("sanitizeapi", script_path):
-        time.sleep(2)
-
-
-def task_typing_assessment_docket():
-    script_path = str(path) + r"/SCRIPTS/API_SCRIPTS/typing_assessment_docket.py"
-    if run_script("typing_assessment_docket", script_path):
-        time.sleep(2)
-
-
-def task_rate_controller():
-    script_path = str(path) + r"/SCRIPTS/SECURITY/rate_control.py"
-    if run_script("rate_control", script_path):
-        time.sleep(2)
-
-
-def task_xss():
-    script_path = str(path) + r"/SCRIPTS/SECURITY/xss.py"
-    if run_script("xss", script_path):
-        time.sleep(2)
-
-
-def task_response_encryption():
-    script_path = str(path) + r"/SCRIPTS/SECURITY/response_encryption.py"
-    if run_script("response_encryption", script_path):
-        time.sleep(2)
-
-
-custom_hour = 8
-custom_minute = 30
-scheduler.add_job(task_rate_controller, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-scheduler.add_job(task_chaining_of_2_tests, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-scheduler.add_job(task_chaining_of_3_tests, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-scheduler.add_job(task_behaviour_proctoring_evaluation_new, 'cron', hour=custom_hour, minute=custom_minute,
-                  max_instances=1)
-
-# next cron , 5 mins from 1st script
-custom_hour, custom_minute = (custom_hour + (custom_minute + 5) // 60) % 24, (custom_minute + 5) % 60
-scheduler.add_job(task_email_verification, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-scheduler.add_job(task_question_statistics_tests_old_cron, 'cron', hour=custom_hour, minute=custom_minute,
-                  max_instances=1)
-scheduler.add_job(task_question_statistics_tests_hirepro_cron, 'cron', hour=custom_hour, minute=custom_minute,
-                  max_instances=1)
-scheduler.add_job(task_question_statistics_old_cron, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-
-# next cron 10 mins from 1st script
-custom_hour, custom_minute = (custom_hour + (custom_minute + 5) // 60) % 24, (custom_minute + 5) % 60
-scheduler.add_job(task_question_statistics_with_hirepro_cron, 'cron', hour=custom_hour, minute=custom_minute,
-                  max_instances=1)
-
-scheduler.add_job(task_allowed_extensions, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-scheduler.add_job(task_analyze_brightness_shapness, 'cron', hour=custom_hour, minute=custom_minute,
-                  max_instances=1)
-
-# next cron 13 mins from 1st script
-custom_hour, custom_minute = (custom_hour + (custom_minute + 3) // 60) % 24, (custom_minute + 3) % 60
-scheduler.add_job(task_question_search_with_boundary, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-scheduler.add_job(task_question_search_with_count, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-scheduler.add_job(task_reuse_test_score, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-scheduler.add_job(task_proctor_evaluation, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-
-# next cron 16 mins from 1st script
-custom_hour, custom_minute = (custom_hour + (custom_minute + 3) // 60) % 24, (custom_minute + 3) % 60
-scheduler.add_job(task_reinitiate_automation, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-scheduler.add_job(task_ssrf_check, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-scheduler.add_job(task_mic_distortion, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-
-# next cron 19 mins from 1st script
-custom_hour, custom_minute = (custom_hour + (custom_minute + 3) // 60) % 24, (custom_minute + 3) % 60
-scheduler.add_job(task_sa_web_transcript_report, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-scheduler.add_job(task_response_encryption, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-scheduler.add_job(task_audio_transcript_report_cefr, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-
-# next cron 22 mins from 1st script
-custom_hour, custom_minute = (custom_hour + (custom_minute + 3) // 60) % 24, (custom_minute + 3) % 60
-
-scheduler.add_job(task_sanitizeapi, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-scheduler.add_job(task_typing_assessment_docket, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-scheduler.add_job(task_code_compilation, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-
-# next cron 25 mins from 1st script
-custom_hour, custom_minute = (custom_hour + (custom_minute + 3) // 60) % 24, (custom_minute + 3) % 60
-scheduler.add_job(task_device_proctoring_evaluation, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-scheduler.add_job(task_xss, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-scheduler.add_job(task_encryption_check, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-
-# next cron 28 mins from 1st script
-custom_hour, custom_minute = (custom_hour + (custom_minute + 3) // 60) % 24, (custom_minute + 3) % 60
-scheduler.add_job(task_plagiarism_report, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
-scheduler.add_job(task_applicant_report, 'cron', hour=custom_hour, minute=custom_minute, max_instances=1)
+# Job mappings
+jobs = [
+    ("coding_group_level", "/SCRIPTS/UI_SCRIPTS/CLIENT_RANDOMIZATION/coding_group_level.py"),
+    ("coding_section_level", "/SCRIPTS/UI_SCRIPTS/CLIENT_RANDOMIZATION/coding_section_level.py"),
+    ("coding_test_level", "/SCRIPTS/UI_SCRIPTS/CLIENT_RANDOMIZATION/coding_test_level.py"),
+    ("mca_group_level", "/SCRIPTS/UI_SCRIPTS/CLIENT_RANDOMIZATION/mca_group_level.py"),
+    ("mca_section_level", "/SCRIPTS/UI_SCRIPTS/CLIENT_RANDOMIZATION/mca_section_level.py"),
+    ("mca_test_level", "/SCRIPTS/UI_SCRIPTS/CLIENT_RANDOMIZATION/mca_test_level.py"),
+    ("mcq_group_level", "/SCRIPTS/UI_SCRIPTS/CLIENT_RANDOMIZATION/mcq_group_level.py"),
+    ("mcq_section_level", "/SCRIPTS/UI_SCRIPTS/CLIENT_RANDOMIZATION/mcq_section_level.py"),
+    ("mcq_test_level", "/SCRIPTS/UI_SCRIPTS/CLIENT_RANDOMIZATION/mcq_test_level.py"),
+    ("mcq_weightage_group_level", "/SCRIPTS/UI_SCRIPTS/CLIENT_RANDOMIZATION/mcq_weightage_group_level.py"),
+    ("mcq_weightage_section_level", "/SCRIPTS/UI_SCRIPTS/CLIENT_RANDOMIZATION/mcq_weightage_section_level.py"),
+    ("mcq_weightage_test_level", "/SCRIPTS/UI_SCRIPTS/CLIENT_RANDOMIZATION/mcq_weightage_test_level.py"),
+    ("subjective_group_level", "/SCRIPTS/UI_SCRIPTS/CLIENT_RANDOMIZATION/subjective_group_level.py"),
+    ("subjective_section_level", "/SCRIPTS/UI_SCRIPTS/CLIENT_RANDOMIZATION/subjective_section_level.py"),
+    ("subjective_test_level", "/SCRIPTS/UI_SCRIPTS/CLIENT_RANDOMIZATION/subjective_test_level.py"),
+]
+
+# Start time
+custom_hour = 18
+custom_minute = 45
+
+# Register jobs with scheduler
+for job_name, relative_path in jobs:
+    scheduler.add_job(
+        threaded_job,
+        args=[job_name, relative_path],
+        trigger='cron',
+        hour=custom_hour,
+        minute=custom_minute,
+        max_instances=1,
+        misfire_grace_time=300
+    )
+    # Update time for next job
+    custom_hour, custom_minute = (custom_hour + (custom_minute + 4) // 60) % 24, (custom_minute + 4) % 60
 
 # Start the scheduler
-scheduler.start()
-scheduler.shutdown()
-print("Check the report.")
+try:
+    print("Starting scheduler...")
+    scheduler.start()
+except (KeyboardInterrupt, SystemExit):
+    print("Shutting down scheduler...")
+    scheduler.shutdown()
