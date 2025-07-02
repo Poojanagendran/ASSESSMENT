@@ -94,6 +94,9 @@ input_path_ui_rtc_static = Path(input_common_dir + r'/UI/Assessment/rtc_static.x
 input_path_ui_marking_schema = Path(input_common_dir + r'/UI/Assessment/test_marking.xls')
 input_path_ui_self_assessment = Path(input_common_dir + r'/UI/Assessment/self_assessment.xls')
 input_path_ui_grid_actions = Path(input_common_dir + r'/UI/Assessment/Grid_Actions_input.xlsx')
+input_path_ui_static_mcq = Path(input_common_dir + r'/UI/Assessment/ui_relogin.xls')
+input_path_ui_static_mca = Path(input_common_dir + r'/UI/Assessment/mca_static.xls')
+
 # input_path_ui_fib_marking_schema = input_common_dir + 'UI\\Assessment\\test_marking_fib.xls'
 
 

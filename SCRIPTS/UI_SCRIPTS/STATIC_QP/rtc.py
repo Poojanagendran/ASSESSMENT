@@ -157,7 +157,8 @@ print(datetime.datetime.now())
 assessment_obj = OnlineAssessment()
 excel_read_obj.excel_read(input_path_ui_rtc_static, 0)
 excel_data = excel_read_obj.details
-crpo_token = crpo_common_obj.login_to_crpo('admin', 'At@2023$$', 'AT')
+crpo_token = crpo_common_obj.login_to_crpo(cred_crpo_admin_at.get('user'), cred_crpo_admin_at.get('password'),
+                                            cred_crpo_admin_at.get('tenant'))
 for current_excel_row in excel_data:
     print(current_excel_row)
     assessment_obj.rtc_assessment(current_excel_row, crpo_token)
