@@ -4,10 +4,12 @@ from SCRIPTS.COMMON.io_path import *
 from SCRIPTS.ASSESSMENT_COMMON.assessment_common import *
 from SCRIPTS.COMMON.environment import *
 from SCRIPTS.COMMON.parallel_execution import *
+import threading
 
 
 class CodingCompiler:
     def __init__(self):
+        self.write_lock = threading.Lock()
         self.main_domain = env_obj.domain
         requests.packages.urllib3.disable_warnings()
         self.started = datetime.datetime.now()
@@ -38,154 +40,155 @@ class CodingCompiler:
         print("____________________________________Started \n \n")
         print(excel_input.get('testCases'))
         print("____________________________________Completed \n \n")
-        write_excel_object.current_status_color = write_excel_object.green_color
-        write_excel_object.current_status = "Pass"
-        # write_excel_object.current_status_color = write_excel_object.green_color
-        code_compiler_request = {}
-        cid = "%s:%s:%s:%s" % (int(excel_input.get('tenantId')), int(excel_input.get('questionId')),
-                               int(excel_input.get('testId')), int(excel_input.get('candidateID')))
+        with self.write_lock:
+            write_excel_object.current_status_color = write_excel_object.green_color
+            write_excel_object.current_status = "Pass"
+            # write_excel_object.current_status_color = write_excel_object.green_color
+            code_compiler_request = {}
+            cid = "%s:%s:%s:%s" % (int(excel_input.get('tenantId')), int(excel_input.get('questionId')),
+                                   int(excel_input.get('testId')), int(excel_input.get('candidateID')))
 
-        code_data = json.loads(excel_input.get('code'))
-        code_data['cid'] = cid
-        code_data = json.dumps(code_data)
-        code_compiler_request = {
-            "action": excel_input.get('action'),
-            "TenantId": int(excel_input.get('tenantId')),
-            "UserId": "0",
-            "cid": cid,
-            "languageId": int(excel_input.get('languageId')),
-            "disableBlockUI": True,
-            "isForTestCaseResult": True,
-            "data": code_data
-        }
+            code_data = json.loads(excel_input.get('code'))
+            code_data['cid'] = cid
+            code_data = json.dumps(code_data)
+            code_compiler_request = {
+                "action": excel_input.get('action'),
+                "TenantId": int(excel_input.get('tenantId')),
+                "UserId": "0",
+                "cid": cid,
+                "languageId": int(excel_input.get('languageId')),
+                "disableBlockUI": True,
+                "isForTestCaseResult": True,
+                "data": code_data
+            }
 
-        code_token_result = assessment_common_obj.code_compiler(token.get('login_token'), request=code_compiler_request)
-        print(code_token_result)
-        code_token = code_token_result.get('codeToken')
-        if code_token:
-            compilation_result_request = {"codeToken": code_token, "TenantId": int(excel_input.get('tenantId')),
-                                          "UserId": "0",
-                                          "cid": cid,
-                                          "languageId": int(excel_input.get('languageId')), "disableBlockUI": True,
-                                          "isForTestCaseResult": True,
-                                          "debugTimeStamp": "2022-07-07T10:27:47.298Z"}
-            compilation_results = assessment_common_obj.code_compiler_get_result(token.get('login_token'),
-                                                                                 compilation_result_request)
-            # print(compilation_results)
-            compilation_message = compilation_results['codingCompileResponse']['compilationMessage']
-            testcases_results = compilation_results['testCaseResults']
-            total_tcs_results = []
-            for tcs in testcases_results:
-                tc_result = tcs.get("testCaseResult")
-                tc_memory = tcs.get("memory")
-                tc_time = tcs.get("time")
-                if not tcs.get("reason"):
-                    tc_reason = "EMPTY"
-                else:
-                    tc_reason = tcs.get("reason")
-
-                if not tcs['isSystem']:
-                    is_system = "NO"
-                    tc_output = tcs.get("output")
-                    tc_system_input = tcs.get("sysInput")
-                    tc_system_output = tcs.get("sysOutput")
-                    if not tcs.get("error"):
-                        tc_error = "EMPTY"
+            code_token_result = assessment_common_obj.code_compiler(token.get('login_token'), request=code_compiler_request)
+            print(code_token_result)
+            code_token = code_token_result.get('codeToken')
+            if code_token:
+                compilation_result_request = {"codeToken": code_token, "TenantId": int(excel_input.get('tenantId')),
+                                              "UserId": "0",
+                                              "cid": cid,
+                                              "languageId": int(excel_input.get('languageId')), "disableBlockUI": True,
+                                              "isForTestCaseResult": True,
+                                              "debugTimeStamp": "2022-07-07T10:27:47.298Z"}
+                compilation_results = assessment_common_obj.code_compiler_get_result(token.get('login_token'),
+                                                                                     compilation_result_request)
+                # print(compilation_results)
+                compilation_message = compilation_results['codingCompileResponse']['compilationMessage']
+                testcases_results = compilation_results['testCaseResults']
+                total_tcs_results = []
+                for tcs in testcases_results:
+                    tc_result = tcs.get("testCaseResult")
+                    tc_memory = tcs.get("memory")
+                    tc_time = tcs.get("time")
+                    if not tcs.get("reason"):
+                        tc_reason = "EMPTY"
                     else:
-                        tc_error = tcs.get("error")
+                        tc_reason = tcs.get("reason")
+
+                    if not tcs['isSystem']:
+                        is_system = "NO"
+                        tc_output = tcs.get("output")
+                        tc_system_input = tcs.get("sysInput")
+                        tc_system_output = tcs.get("sysOutput")
+                        if not tcs.get("error"):
+                            tc_error = "EMPTY"
+                        else:
+                            tc_error = tcs.get("error")
+                    else:
+                        is_system = "Yes"
+                        tc_output = "NA-SystemTC"
+                        tc_system_input = "NA-SystemTC"
+                        tc_system_output = "NA-SystemTC"
+                        tc_error = "NA-SystemTC"
+
+                    current_tcs_results = {"tc_result": tc_result, "tc_reason": tc_reason, "is_system": is_system,
+                                           "tc_output": tc_output, "tc_system_input": tc_system_input,
+                                           "tc_system_output": tc_system_output, "tc_error": tc_error, "memory": tc_memory,
+                                           "time": tc_time}
+                    total_tcs_results.append(current_tcs_results)
+
+                print(total_tcs_results)
+                write_excel_object.compare_results_and_write_vertically(excel_input.get('testCases'), None, self.row_size,
+                                                                        0)
+                write_excel_object.compare_results_and_write_vertically(excel_input.get('loginId'), None, self.row_size, 2)
+                write_excel_object.compare_results_and_write_vertically(excel_input.get('password'), None, self.row_size, 3)
+                write_excel_object.compare_results_and_write_vertically(excel_input.get('testId'), None, self.row_size, 4)
+                write_excel_object.compare_results_and_write_vertically(excel_input.get('candidateID'), None, self.row_size,
+                                                                        5)
+                write_excel_object.compare_results_and_write_vertically(excel_input.get('languageId'), None, self.row_size,
+                                                                        6)
+                write_excel_object.compare_results_and_write_vertically(excel_input.get('questionId'), None, self.row_size,
+                                                                        7)
+                write_excel_object.compare_results_and_write_vertically(excel_input.get('code'), None, self.row_size, 8)
+                write_excel_object.compare_results_and_write_vertically(excel_input.get('expectedCompilationMessage'),
+                                                                        compilation_message, self.row_size, 9)
+                write_excel_object.compare_results_and_write_vertically(excel_input.get('tc1Error'),
+                                                                        total_tcs_results[0]['tc_error'], self.row_size, 11)
+                write_excel_object.compare_results_and_write_vertically(excel_input.get('tc1IsSystem'),
+                                                                        total_tcs_results[0]['is_system'], self.row_size,
+                                                                        13)
+                write_excel_object.compare_results_and_write_vertically(excel_input.get('tc1Output'),
+                                                                        total_tcs_results[0]['tc_output'], self.row_size,
+                                                                        15)
+                if type(excel_input.get('tc1SystemInput')) != str:
+                    excel_tc1SystemInput = str(int(excel_input.get('tc1SystemInput')))
                 else:
-                    is_system = "Yes"
-                    tc_output = "NA-SystemTC"
-                    tc_system_input = "NA-SystemTC"
-                    tc_system_output = "NA-SystemTC"
-                    tc_error = "NA-SystemTC"
+                    excel_tc1SystemInput = excel_input.get('tc1SystemInput')
 
-                current_tcs_results = {"tc_result": tc_result, "tc_reason": tc_reason, "is_system": is_system,
-                                       "tc_output": tc_output, "tc_system_input": tc_system_input,
-                                       "tc_system_output": tc_system_output, "tc_error": tc_error, "memory": tc_memory,
-                                       "time": tc_time}
-                total_tcs_results.append(current_tcs_results)
+                write_excel_object.compare_results_and_write_vertically(excel_tc1SystemInput,
+                                                                        total_tcs_results[0]['tc_system_input'],
+                                                                        self.row_size, 17)
+                write_excel_object.compare_results_and_write_vertically(excel_input.get('tc1SystemOutput').strip(),
+                                                                        total_tcs_results[0]['tc_system_output'].strip(),
+                                                                        self.row_size, 19)
+                write_excel_object.compare_results_and_write_vertically(excel_input.get('tc1Result'),
+                                                                        total_tcs_results[0]['tc_result'], self.row_size,
+                                                                        21)
+                write_excel_object.compare_results_and_write_vertically(excel_input.get('tc1Reason'),
+                                                                        total_tcs_results[0]['tc_reason'], self.row_size,
+                                                                        23)
 
-            print(total_tcs_results)
-            write_excel_object.compare_results_and_write_vertically(excel_input.get('testCases'), None, self.row_size,
-                                                                    0)
-            write_excel_object.compare_results_and_write_vertically(excel_input.get('loginId'), None, self.row_size, 2)
-            write_excel_object.compare_results_and_write_vertically(excel_input.get('password'), None, self.row_size, 3)
-            write_excel_object.compare_results_and_write_vertically(excel_input.get('testId'), None, self.row_size, 4)
-            write_excel_object.compare_results_and_write_vertically(excel_input.get('candidateID'), None, self.row_size,
-                                                                    5)
-            write_excel_object.compare_results_and_write_vertically(excel_input.get('languageId'), None, self.row_size,
-                                                                    6)
-            write_excel_object.compare_results_and_write_vertically(excel_input.get('questionId'), None, self.row_size,
-                                                                    7)
-            write_excel_object.compare_results_and_write_vertically(excel_input.get('code'), None, self.row_size, 8)
-            write_excel_object.compare_results_and_write_vertically(excel_input.get('expectedCompilationMessage'),
-                                                                    compilation_message, self.row_size, 9)
-            write_excel_object.compare_results_and_write_vertically(excel_input.get('tc1Error'),
-                                                                    total_tcs_results[0]['tc_error'], self.row_size, 11)
-            write_excel_object.compare_results_and_write_vertically(excel_input.get('tc1IsSystem'),
-                                                                    total_tcs_results[0]['is_system'], self.row_size,
-                                                                    13)
-            write_excel_object.compare_results_and_write_vertically(excel_input.get('tc1Output'),
-                                                                    total_tcs_results[0]['tc_output'], self.row_size,
-                                                                    15)
-            if type(excel_input.get('tc1SystemInput')) != str:
-                excel_tc1SystemInput = str(int(excel_input.get('tc1SystemInput')))
-            else:
-                excel_tc1SystemInput = excel_input.get('tc1SystemInput')
+                write_excel_object.compare_results_and_write_vertically(None, total_tcs_results[0]['memory'], self.row_size,
+                                                                        25)
+                write_excel_object.compare_results_and_write_vertically(None, total_tcs_results[0]['time'], self.row_size,
+                                                                        26)
+                write_excel_object.compare_results_and_write_vertically(excel_input.get('tc2Error'),
+                                                                        total_tcs_results[1]['tc_error'], self.row_size, 27)
+                write_excel_object.compare_results_and_write_vertically(excel_input.get('tc2IsSystem'),
+                                                                        total_tcs_results[1]['is_system'], self.row_size,
+                                                                        29)
+                write_excel_object.compare_results_and_write_vertically(excel_input.get('tc2Output'),
+                                                                        total_tcs_results[1]['tc_output'], self.row_size,
+                                                                        31)
 
-            write_excel_object.compare_results_and_write_vertically(excel_tc1SystemInput,
-                                                                    total_tcs_results[0]['tc_system_input'],
-                                                                    self.row_size, 17)
-            write_excel_object.compare_results_and_write_vertically(excel_input.get('tc1SystemOutput').strip(),
-                                                                    total_tcs_results[0]['tc_system_output'].strip(),
-                                                                    self.row_size, 19)
-            write_excel_object.compare_results_and_write_vertically(excel_input.get('tc1Result'),
-                                                                    total_tcs_results[0]['tc_result'], self.row_size,
-                                                                    21)
-            write_excel_object.compare_results_and_write_vertically(excel_input.get('tc1Reason'),
-                                                                    total_tcs_results[0]['tc_reason'], self.row_size,
-                                                                    23)
+                if type(excel_input.get('tc2SystemInput')) != str:
+                    excel_tc2SystemInput = str(int(excel_input.get('tc2SystemInput')))
+                else:
+                    excel_tc2SystemInput = excel_input.get('tc2SystemInput')
 
-            write_excel_object.compare_results_and_write_vertically(None, total_tcs_results[0]['memory'], self.row_size,
-                                                                    25)
-            write_excel_object.compare_results_and_write_vertically(None, total_tcs_results[0]['time'], self.row_size,
-                                                                    26)
-            write_excel_object.compare_results_and_write_vertically(excel_input.get('tc2Error'),
-                                                                    total_tcs_results[1]['tc_error'], self.row_size, 27)
-            write_excel_object.compare_results_and_write_vertically(excel_input.get('tc2IsSystem'),
-                                                                    total_tcs_results[1]['is_system'], self.row_size,
-                                                                    29)
-            write_excel_object.compare_results_and_write_vertically(excel_input.get('tc2Output'),
-                                                                    total_tcs_results[1]['tc_output'], self.row_size,
-                                                                    31)
+                write_excel_object.compare_results_and_write_vertically(excel_tc2SystemInput,
+                                                                        total_tcs_results[1]['tc_system_input'],
+                                                                        self.row_size, 33)
+                write_excel_object.compare_results_and_write_vertically(excel_input.get('tc2SystemOutput').strip(),
+                                                                        total_tcs_results[1]['tc_system_output'].strip(),
+                                                                        self.row_size, 35)
+                write_excel_object.compare_results_and_write_vertically(excel_input.get('tc2Result'),
+                                                                        total_tcs_results[1]['tc_result'], self.row_size,
+                                                                        37)
+                write_excel_object.compare_results_and_write_vertically(excel_input.get('tc2Reason'),
+                                                                        total_tcs_results[1]['tc_reason'], self.row_size,
+                                                                        39)
 
-            if type(excel_input.get('tc2SystemInput')) != str:
-                excel_tc2SystemInput = str(int(excel_input.get('tc2SystemInput')))
-            else:
-                excel_tc2SystemInput = excel_input.get('tc2SystemInput')
+                write_excel_object.compare_results_and_write_vertically(None, total_tcs_results[1]['memory'], self.row_size,
+                                                                        41)
+                write_excel_object.compare_results_and_write_vertically(None, total_tcs_results[1]['time'], self.row_size,
+                                                                        42)
 
-            write_excel_object.compare_results_and_write_vertically(excel_tc2SystemInput,
-                                                                    total_tcs_results[1]['tc_system_input'],
-                                                                    self.row_size, 33)
-            write_excel_object.compare_results_and_write_vertically(excel_input.get('tc2SystemOutput').strip(),
-                                                                    total_tcs_results[1]['tc_system_output'].strip(),
-                                                                    self.row_size, 35)
-            write_excel_object.compare_results_and_write_vertically(excel_input.get('tc2Result'),
-                                                                    total_tcs_results[1]['tc_result'], self.row_size,
-                                                                    37)
-            write_excel_object.compare_results_and_write_vertically(excel_input.get('tc2Reason'),
-                                                                    total_tcs_results[1]['tc_reason'], self.row_size,
-                                                                    39)
-
-            write_excel_object.compare_results_and_write_vertically(None, total_tcs_results[1]['memory'], self.row_size,
-                                                                    41)
-            write_excel_object.compare_results_and_write_vertically(None, total_tcs_results[1]['time'], self.row_size,
-                                                                    42)
-
-        write_excel_object.compare_results_and_write_vertically(write_excel_object.current_status, None, self.row_size,
-                                                                1)
-        self.row_size += 1
+            write_excel_object.compare_results_and_write_vertically(write_excel_object.current_status, None, self.row_size,
+                                                                    1)
+            self.row_size += 1
 
 
 coding_compiler = CodingCompiler()
