@@ -339,6 +339,18 @@ class AssessmentCommon:
         return code_token
 
     @staticmethod
+    def code_compiler_explicit(token, request):
+        json_resp = {}
+        response = requests.post(
+            assessment_common_obj.main_domain + "/py/assessment/htmltest/api/v1/code-compiler-explicit/",
+            headers=token,
+            data=json.dumps(request, default=str), verify=False)
+        print(response)
+        print("Is Server by ECS - Code compiler", response.headers.get('X-ServedByEcs'))
+        code_token = response.json()
+        return code_token
+
+    @staticmethod
     def code_compiler_get_result(token, request):
         compilation_results = {}
         status = 'Pending'
@@ -352,6 +364,30 @@ class AssessmentCommon:
                     data=json.dumps(request, default=str), verify=False)
                 print("Is Server by ECS - Code compiler Result", response.headers.get('X-ServedByEcs'))
                 compilation_results = response.json()
+
+                if compilation_results['codingCompileResponse'] is None:
+                    time.sleep(5)
+                else:
+                    status = "SUCCESS"
+        else:
+            print("TimedOut")
+        return compilation_results
+
+    @staticmethod
+    def code_compiler_get_result_explicit(token, request):
+        compilation_results = {}
+        status = 'Pending'
+        counter = 1
+        if counter <= 12:
+            while status != 'SUCCESS':
+                counter += 1
+                response = requests.post(
+                    assessment_common_obj.main_domain + "/py/assessment/htmltest/api/v1/code-compiler-get-result-explicit/",
+                    headers=token,
+                    data=json.dumps(request, default=str), verify=False)
+                print("Is Server by ECS - Code compiler Result", response.headers.get('X-ServedByEcs'))
+                compilation_results = response.json()
+                print(compilation_results)
                 if compilation_results['codingCompileResponse'] is None:
                     time.sleep(5)
                 else:
