@@ -40,3 +40,5 @@ PythonWorkingScripts_Output/Email/*.xlsx
 /PythonWorkingScripts_Output/Assessment/UI/VET/*.xlsx
 /PythonWorkingScripts_Output/Assessment/UI/VET/*.xls
 chromedriver.exe
+**/.DS_Store
+*/.log

@@ -5,8 +5,8 @@ from SCRIPTS.CRPO_COMMON.credentials import *
 from SCRIPTS.COMMON.io_path import *
 from SCRIPTS.COMMON.api_requests_for_reports import *
 
-reports = {
-    'job_report': {'output_path': output_path_applicant_report, 'expected_input_path': input_path_applicant_report,
+reports_old = {
+    'job_report': {'output_path': output_path_applicant_report, 'expected_input_path': input_path_applicant_report_downloaded,
                    'actual_input_path': input_path_applicant_report_downloaded,
                    'request_payload': getall_applicant_request_payload, 'test_case_count': 48},
     'event_report': {'output_path': output_path_applicant_report_event,
@@ -21,6 +21,13 @@ reports = {
                           'expected_input_path': input_path_applicant_report_assessment,
                           'actual_input_path': input_path_applicant_report_downloaded_assessment,
                           'request_payload': getall_applicant_request_payload, 'test_case_count': 78}
+}
+
+
+reports = {
+    'job_report': {'output_path': output_path_applicant_report, 'expected_input_path': input_path_applicant_report,
+                   'actual_input_path': input_path_applicant_report_downloaded,
+                   'request_payload': getall_applicant_request_payload, 'test_case_count': 48}
 }
 crpo_headers = crpo_common_obj.login_to_crpo(cred_crpo_admin.get('user'), cred_crpo_admin.get('password'),
                                              cred_crpo_admin.get('tenant'))

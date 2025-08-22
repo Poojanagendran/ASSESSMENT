@@ -33,7 +33,8 @@ input_path_assessmentdocket_downloaded = input_common_dir + r'/Assessment/assess
 input_path_allowed_extension = input_common_dir + r'/allowed_extensions/allowed_extensions_inputfile.xls'
 input_path_suspicious_list = input_common_dir + '/MURALITEAM/sep8.xls'
 input_path_allowed_extension_files = input_common_dir + r'/allowed_extensions/%s'
-input_path_applicant_report = Path(input_common_dir + r'/Assessment/applicant_report/applicantreport.xlsx')
+input_path_applicant_report = Path(input_common_dir + r'/Assessment/applicant_report/appreport_new.xlsx')
+
 input_path_applicant_report_event = Path(input_common_dir + r'/Assessment/applicant_report/event_applicantreport.xlsx')
 input_path_applicant_report_assessment = Path(
     input_common_dir + r'/Assessment/applicant_report/assessment_applicantreport.xlsx')

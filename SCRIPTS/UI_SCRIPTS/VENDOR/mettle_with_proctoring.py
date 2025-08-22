@@ -39,6 +39,7 @@ class MettleAutomation:
         about_online_proctoring = assess_ui_common_obj.about_online_proctoring()
         assessment_terms_and_conditions = assess_ui_common_obj.assessment_terms_and_conditions()
         selfie = assess_ui_common_obj.selfie()
+        time.sleep(3)
         overall_status = 'pass'
         if login_details == 'SUCCESS':
             i_agreed = assess_ui_common_obj.select_i_agree()
