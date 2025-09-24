@@ -3,7 +3,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 def thread_context(invoking_object_and_function, token, excel_data):
     # if login token is required use below
-    with ThreadPoolExecutor() as executor:
+    with ThreadPoolExecutor(max_workers=1) as executor:
         futures = {executor.submit(invoking_object_and_function, token, data): data for data in excel_data}
         for future in as_completed(futures):
             data = futures[future]
