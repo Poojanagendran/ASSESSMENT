@@ -63,6 +63,7 @@ input_path_mic_distortion_files = input_common_dir + r'/Assessment/mic_distortio
 input_path_brightness_check = Path(input_common_dir + r'/Assessment/brightnesscheck/brightnesscheck.xls')
 input_path_brightness_check_files = input_common_dir + r'/Assessment/brightnesscheck/%s'
 input_coding_compiler = Path(input_common_dir + r'/Assessment/coding/codingcompiler.xls')
+input_coding_cache = Path(input_common_dir + r'/Assessment/coding/coding_cache.xls')
 input_question_statistics = Path(input_common_dir + r'/Assessment/question_statistics_for_questions.xls')
 input_question_statistics_tests = Path(input_common_dir + r'/Assessment/question_statistics_for_tests.xls')
 # input_question_statistics_hirepro_cron = input_common_dir + 'Assessment\\question_statistics_new_cron_1.xls'

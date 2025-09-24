@@ -1,4 +1,7 @@
 import hashlib
+import json
+
+from SCRIPTS.CRPO_COMMON.crpo_common import *
 from SCRIPTS.CRPO_COMMON.credentials import *
 from SCRIPTS.COMMON.read_excel import *
 from SCRIPTS.COMMON.write_excel_new import *
@@ -24,12 +27,30 @@ class CodingCompiler:
         write_excel_object.write_headers_for_scripts(0, 0, header, write_excel_object.black_color_bold)
         # 1st Row Header
         header = ["Test cases", "status", "Question ID","question_type","is_language_wise_schema","is_default_caching",
-                  "expected_input_Cache_format", "actual_input_Cache_format","input caching ttl",
-                  "expected_out_caching_format","actual_out_caching_format","op cache ttl"]
+                  "expected_input_Cache_format", "actual_input_Cache_format", "input ttl duration remaining",
+                  "exp_ttl_status","actual_ttl_status", "expected_output_caching_format","actual_output_caching_format",
+                  "output ttl duration remaining","exp_ttl_status","actual_ttl_statis"]
         write_excel_object.write_headers_for_scripts(1, 0, header, write_excel_object.black_color_bold)
 
 
     def coding_compilation_check(self, token, excel_input):
+        app_pref_proc_eval_id = 5903
+        crpo_token = crpo_common_obj.login_to_crpo(cred_crpo_admin.get('user'), cred_crpo_admin.get('password'),
+                                                   cred_crpo_admin.get('tenant'))
+        content = json.dumps({"cacheTestCases": {"isCachingEnabled": True, "cachingDurationInSeconds": 600,
+                                                 "taskWaitTimeInQueueInSeconds": 60,
+                                                 "maxTaskWaitTimeInQueueInSeconds": 60}})
+        if excel_input.get('defaultCaching') =='Yes':
+            app_pref_proc_eval_type = 'crpo.launchCsSlaveNode.config_del'
+            update_app_preference = CrpoCommon.save_apppreferences(crpo_token, content, app_pref_proc_eval_id,
+                                                                   app_pref_proc_eval_type)
+        else:
+            app_pref_proc_eval_type = 'crpo.launchCsSlaveNode.config'
+            update_app_preference = CrpoCommon.save_apppreferences(crpo_token, content, app_pref_proc_eval_id,
+                                                                   app_pref_proc_eval_type)
+        request = json.dumps({"Type":"crpo.launchCsSlaveNode.config","IsTenantGlobal":True})
+        #calling get app preferecne is required to remove the cache.
+        CrpoCommon.get_app_preference_generic(crpo_token, request)
         print("____________________________________Started \n \n")
         print(excel_input.get('testCases'))
         print("____________________________________Completed \n \n")
@@ -83,7 +104,7 @@ class CodingCompiler:
                     python_hash = 'CodingQuestionAttachmentContent' + ':' + hash_key
                     print(python_hash)
 
-                elif excel_input.get('qnType') == 'mysql':
+                elif excel_input.get('qnType') == 'sql':
                     hash_value = hash((question_id, tenant_id,language_id))
                     cs_hash_id = 'TestCaseInfoCaching' + ":" + str(hash_value)
                     print(cs_hash_id)
@@ -110,41 +131,51 @@ class CodingCompiler:
                 connect_to_py_server = connect_to_server(redis_connection, py_ssh_host, py_ssh_port, py_ssh_user,
                                                          py_private_key_path)
                 python_hash_details = run_redis_command(redis_connection, py_redis_host, python_hash, 'GET', redis_port=None)
+                python_ttl = run_redis_command(redis_connection, py_redis_host, python_hash, 'TTL', redis_port=None)
                 print("this is python get")
-                print(python_hash_details)
+                print(python_ttl)
 
                 connect_to_cs_master = connect_to_server(redis_connection, cs_ssh_host, cs_ssh_port, cs_ssh_user,
                                                          cs_private_key_path)
                 cs_hash_details = run_redis_command(redis_connection, cs_redis_host, cs_hash_id, 'GET', redis_port=cs_redis_port)
+                cs_ttl = run_redis_command(redis_connection, cs_redis_host, cs_hash_id, 'TTL', redis_port=cs_redis_port)
                 print("this is CS get")
-                print(cs_hash_details)
+                print(cs_ttl)
                 close_ssh_connection(redis_connection)
-
-                # ["Test cases", "status", "Question ID","question_type","is_language_wise_schema","is_default_caching",
-                #                   "expected_input_Cache_format", "actual_input_Cache_format","input caching ttl",
-                #                   "expected_out_caching_format","actual_out_caching_format","op cache ttl"]
-
                 write_excel_object.compare_results_and_write_vertically(excel_input.get('testCases'), None, self.row_size, 0)
                 write_excel_object.compare_results_and_write_vertically(excel_input.get('questionId'), None, self.row_size, 2)
                 write_excel_object.compare_results_and_write_vertically(excel_input.get('qnType'), None, self.row_size, 3)
                 write_excel_object.compare_results_and_write_vertically(excel_input.get('languageSchema'), None, self.row_size, 4)
                 write_excel_object.compare_results_and_write_vertically(excel_input.get('defaultCaching'), None, self.row_size,
                                                                         5)
-                # write_excel_object.compare_results_and_write_vertically(excel_input.get('expected_input_Cache_format'), None, self.row_size,
-                #                                                         6)
-                # write_excel_object.compare_results_and_write_vertically(excel_input.get('questionId'), None, self.row_size,
-                #                                                         7)
-                # write_excel_object.compare_results_and_write_vertically(excel_input.get('code'), None, self.row_size, 8)
-                write_excel_object.compare_results_and_write_vertically(excel_input.get('expectedInputCache'),
-                                                                        python_hash_details, self.row_size, 6)
 
-                # write_excel_object.compare_results_and_write_vertically(excel_input.get('expectedInputCache'),
-                #                                                         python_hash_details, self.row_size, 6)
+                write_excel_object.compare_results_and_write_vertically(excel_input.get('expectedInputCache'),
+                                                                        str(python_hash_details[0]), self.row_size, 6)
+
+                if int(python_ttl[0])>= int(excel_input.get('expectedInputTTL')):
+                    py_ttl_status = 'pass'
+                else:
+                    py_ttl_status = 'fail'
+                write_excel_object.compare_results_and_write_vertically(int(python_ttl[0]),
+                                                                        None, self.row_size, 8)
+                write_excel_object.compare_results_and_write_vertically(excel_input.get('expectedInputTtlStatus'),
+                                                                        py_ttl_status, self.row_size, 9)
+
+
                 write_excel_object.compare_results_and_write_vertically(excel_input.get('expectedOutputCache'),
-                                                                        cs_hash_details, self.row_size, 8)
-                # write_excel_object.compare_results_and_write_vertically(excel_input.get('tc1IsSystem'),
-                #                                                         total_tcs_results[0]['is_system'], self.row_size,
-                #                                                         13)
+                                                                        str(cs_hash_details[0]), self.row_size, 11)
+                if int(cs_ttl[0])>= int(excel_input.get('expectedOutputTTL')):
+                    cs_ttl_status = 'pass'
+                else:
+                    cs_ttl_status = 'fail'
+
+                write_excel_object.compare_results_and_write_vertically(int(python_ttl[0]),
+                                                                        None, self.row_size, 13)
+
+                write_excel_object.compare_results_and_write_vertically(excel_input.get('expectedOutputTtlStatus'),
+                                                                        cs_ttl_status, self.row_size, 14)
+
+
                 write_excel_object.compare_results_and_write_vertically(write_excel_object.current_status, None, self.row_size,
                                                                     1)
             self.row_size += 1
@@ -153,9 +184,12 @@ class CodingCompiler:
 coding_compiler = CodingCompiler()
 excel_read_obj.excel_read(input_coding_cache, 0)
 excel_data = excel_read_obj.details
+print(excel_data)
+
 login_token = assessment_common_obj.login_to_test_v3('Automation152371400389', 'passpass', 'Automation',
                                                      coding_compiler.main_domain)
 thread_context(coding_compiler.coding_compilation_check, login_token, excel_data)
+
 # for data in excel_data:
 #     coding_compiler.coding_compilation_check(data)
-write_excel_object.write_overall_status(testcases_count=2)
+write_excel_object.write_overall_status(testcases_count=10)
