@@ -22,7 +22,8 @@ amsin_crpodemo_crpo_login = domain + "/crpo/#/login/crpodemotest"
 
 automation_manage_actions = domain +"/crpo/#/automation/settings/common/roles/14495/manageActions"
 # Chromedriver Related
-chrome_driver_path = Path(chrome_driver_dir + r'/chromedriver.exe')
+# chrome_driver_path = Path(chrome_driver_dir + r'/chromedriver.exe')
+chrome_driver_path = chrome_driver_dir
 started = datetime.datetime.now()
 started = started.strftime("%d-%m-%Y")
 

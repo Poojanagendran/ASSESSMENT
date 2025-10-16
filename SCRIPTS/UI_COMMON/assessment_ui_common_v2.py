@@ -10,6 +10,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.service import Service
+from pathlib import Path
 
 
 # from selenium.webdriver.common.keys import Keys
@@ -30,12 +31,15 @@ class AssessmentUICommon:
         # chrome option is needed in VET cases - ( its handling permissions like mic access)
         print(path)
         if self.os_name == 'Windows':
-            path = path
-        elif self.os_name == 'Linux':
-            path = "/home/muthu/ASSESSMENT/chromedriver"
-        elif self.os_name == 'Darwin':
-            # This is for MAC OS.
-            path = "/Users/senthil/Desktop/ASSESSMENT/chromedriver"
+            path = Path(path + r'/chromedriver.exe')
+        elif self.os_name in  ('Linux','Darwin'):
+            path = Path(str(path) + str('/chromedriver'))
+            print("This is mac or ubuntu path")
+        # elif self.os_name == 'Darwin':
+        #     # This is for MAC OS.
+        #     path = Path(str(path) + str('/chromedriver'))
+        #     print("This is mac")
+        #     print(path)
         else:
             raise Exception(f"Unsupported OS: {self.os_name}")
         chrome_options = Options()

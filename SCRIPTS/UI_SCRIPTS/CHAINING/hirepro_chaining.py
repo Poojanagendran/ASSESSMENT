@@ -50,18 +50,6 @@ class HireproChainingOfTwoTests:
         self.ws.write(1, 17, "Actual overAllPageMessage", self.black_color_bold)
 
     def mcq_assessment(self, current_excel_data, row_value):
-        # screenshot_directory = "F:\\screenshot\\" + current_excel_data.get('testCases')
-        # path = os.path.join(screenshot_directory)
-        # if not os.path.exists(path):
-        #     os.mkdir(path)
-        # screenshot_directory = path + '\\screen_shot_' + self.date
-        # path = os.path.join(screenshot_directory)
-        # if not os.path.exists(path):
-        #     os.mkdir(path)
-        #
-        # self.common_path = path
-        # print(self.common_path)
-        print(chrome_driver_path)
         self.browser = assess_ui_common_obj.initiate_browser(amsin_automation_assessment_url, chrome_driver_path)
         login_details = assess_ui_common_obj.ui_login_to_test(current_excel_data.get('loginName'),
                                                               (current_excel_data.get('password')))
