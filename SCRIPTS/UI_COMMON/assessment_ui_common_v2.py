@@ -28,14 +28,14 @@ class AssessmentUICommon:
 
     def initiate_browser(self, url, path):
         # chrome option is needed in VET cases - ( its handling permissions like mic access)
-
+        print(path)
         if self.os_name == 'Windows':
             path = path
         elif self.os_name == 'Linux':
             path = "/home/muthu/ASSESSMENT/chromedriver"
         elif self.os_name == 'Darwin':
             # This is for MAC OS.
-            path = "/Users/cnet/Desktop/ASSESSMENT/chromedriver"
+            path = "/Users/senthil/Desktop/ASSESSMENT/chromedriver"
         else:
             raise Exception(f"Unsupported OS: {self.os_name}")
         chrome_options = Options()
@@ -117,7 +117,7 @@ class AssessmentUICommon:
 
     def about_online_proctoring(self):
         try:
-            self.driver.implicitly_wait(30)
+            self.driver.implicitly_wait(60)
             i_agree = self.driver.find_element(By.XPATH, "//*[@class ='custom-checkbox font-weight-700']")
             if i_agree.is_displayed() and i_agree.is_enabled():
                 i_agree.click()
@@ -148,7 +148,7 @@ class AssessmentUICommon:
     def selfie(self):
         time.sleep(30)
         selfie = self.driver.find_element(By.XPATH,
-                                          "//button[@class = 'btn btn-primary center-block ng-scope' and contains(text(), 'Click a Selfie')]")
+                                          "//button[@class = 'btn btn-primary center-block ng-scope ng-isolate-scope' and contains(text(), 'Click a Selfie')]")
         selfie.click()
         time.sleep(5)
         proceed_to_next = self.driver.find_element(By.XPATH,
@@ -226,6 +226,7 @@ class AssessmentUICommon:
     def start_test(self):
         # time.sleep(1)
         self.driver.find_element(By.NAME, 'btnStartTest').click()
+        time.sleep(5)
 
     def check_security_key_model_window_availability(self):
         status = 'Success'
@@ -245,7 +246,8 @@ class AssessmentUICommon:
 
     def end_test(self):
         time.sleep(3)
-        self.driver.find_element(By.XPATH, "//button[@class='btn btn-danger ng-scope']").click()
+        self.driver.find_element(By.XPATH, "//button[@class='btn btn-danger ng-scope ng-isolate-scope']").click()
+        time.sleep(3)
 
     def end_test_confirmation(self):
         try:
@@ -256,7 +258,7 @@ class AssessmentUICommon:
             print(e)
 
     def unanswer_question(self):
-        self.driver.find_element(By.XPATH, "//button[@class='btn btn-default btnUnanswer ng-scope']").click()
+        self.driver.find_element(By.XPATH, "//button[@class='btn btn-default btnUnanswer ng-scope ng-isolate-scope']").click()
         time.sleep(0.3)
         print("Un Answer Succeded")
 
