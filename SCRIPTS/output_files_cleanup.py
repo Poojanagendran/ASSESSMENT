@@ -8,6 +8,8 @@ print(folder_path)
 
 # Use glob to recursively find .xls and .xlsx files in all subfolders
 files_to_delete = glob.glob(os.path.join(folder_path, '**', '*.xls*'), recursive=True)
+files_to_delete += glob.glob(os.path.join(folder_path, '**', '*.log'), recursive=True)
+
 
 # Loop through the files and delete them
 for file in files_to_delete:
