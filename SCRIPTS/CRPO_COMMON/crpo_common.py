@@ -12,10 +12,12 @@ class CrpoCommon:
 
     @staticmethod
     def login_to_crpo(login_name, password, tenant):
+        print("Entered")
         logging.info('Entered in to  login to CRPO ')
         print(crpo_common_obj.domain)
         header = {"content-type": "application/json"}
         data = {"LoginName": login_name, "Password": password, "TenantAlias": tenant, "UserName": login_name}
+        print(data)
         response = requests.post(crpo_common_obj.domain + "/py/common/user/login_user/", headers=header,
                                  data=json.dumps(data), verify=False)
         login_response = response.json()
@@ -101,6 +103,7 @@ class CrpoCommon:
 
     @staticmethod
     def job_status_v2(token, contextguid):
+        print(contextguid)
         logging.info('Entered to jobstatus v2')
         request = {"ContextGUID": contextguid}
         job_state = 'PENDING'
@@ -394,6 +397,42 @@ class CrpoCommon:
         return question_id_details
 
     @staticmethod
+    def get_exported_question_data(token, question_id):
+        request = {"questionId": question_id}
+        response = requests.post(crpo_common_obj.domain + "/py/assessment/authoring/api/v1/getExportedQuestionData/",
+                                 headers=token,
+                                 data=json.dumps(request, default=str), verify=False)
+        exported_qn_details = response.json()
+        return exported_qn_details
+
+    @staticmethod
+    def get_question_dump(token, question_id, qtype):
+        request = {"questionIds":[question_id]}
+        api = "/py/assessment/authoring/api/v1/getQuestionsDump/"
+        if qtype.lower() == 'mcq':
+            response = requests.post(crpo_common_obj.domain + api,headers=token,
+                                     data=json.dumps(request, default=str), verify=False)
+        else:
+            api = "/py/assessment/authoring/api/v1/getQuestionsDump/" +qtype.lower()+'/'
+            response = requests.post(crpo_common_obj.domain + api,headers=token,
+                                     data=json.dumps(request, default=str), verify=False)
+        question_dump = response.json()
+        return question_dump
+
+    @staticmethod
+    def create_question_using_dump(token, request_data):
+        request =  {
+            "questionsDump": request_data,
+            "invokeSync": False
+        }
+        # request = {"questionIds": [question_id]}
+        response = requests.post(crpo_common_obj.domain + "/py/assessment/authoring/api/v1/createQuestionsUsingDump/",
+                                 headers=token,
+                                 data=json.dumps(request, default=str), verify=False)
+        question_id_details = response.json()
+        return question_id_details
+
+    @staticmethod
     def calculate_question_statistics(token, question_ids):
         request = {"isPagingRequired": True, "questionIds": question_ids, "isComputeOnly": False,
                    "questionConfig": {"dontUpdateSystemDifficulty": False}}
@@ -510,6 +549,17 @@ class CrpoCommon:
             "origFileUrl": s3_url,
             "relativePath": "at/proctor/image/10324/1367938", "isSync": True, "targetBucket": "recording-bucket",
             "metaData": None}]
+        response = requests.post(crpo_common_obj.pearson_domain +
+                                 "/py/common/filehandler/api/v2/persistent-save/",
+                                 headers=token,
+                                 data=json.dumps(request, default=str), verify=False)
+        resp = json.loads(response.content)
+        return resp
+
+    @staticmethod
+    def persistent_save_v2(token, request):
+        # request =  [{"relativePath":"AT/question",
+        #              "origFileUrl":s3_url,"isSync":True}]
         response = requests.post(crpo_common_obj.pearson_domain +
                                  "/py/common/filehandler/api/v2/persistent-save/",
                                  headers=token,
