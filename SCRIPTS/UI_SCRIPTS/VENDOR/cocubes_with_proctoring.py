@@ -11,7 +11,7 @@ class CocubesAutomation:
 
     def __init__(self):
         self.url = "https://qaassesscocubes.hirepro.in/hprotest/#/assess/login/eyJhbGlhcyI6ImF0In0="
-        self.path = '/Users/cnet/Desktop/ASSESSMENT/chromedriver'
+        self.path = '/Users/senthil/Desktop/ASSESSMENT'
         write_excel_object.save_result(output_path_ui_cocubes)
         # 0th Row Header
         header = ['Cocubes']
