@@ -75,6 +75,7 @@ input_path_sa_web_report = Path(
 
 # interview
 input_interview_proctoring_evaluation = Path(input_common_dir + r'/Interview/proctoring/proctoring.xls')
+inpiut_dump_questions = Path(input_common_dir + r'/Assessment/questiondump/question_dump.xls')
 
 # security
 input_path_ssrf_check = Path(input_common_dir + r'/SSRF/SSRF_Final1.xls')
@@ -111,6 +112,7 @@ input_adhoc_profile_validations = Path(input_common_dir + r"/INFRA/adhoc_profile
 output_path_audio_transcript = output_common_dir + r'/Assessment/audio_transcript/output_audio_transcript_cefr.xlsx'
 output_path_assessmentdocket = output_common_dir + r'/Assessment/assessment_docket/output_assessment_docket.xlsx'
 output_path_allowed_extension = output_common_dir + r'/API_allowed_extensions'
+output_path_dumped_questions = output_common_dir + r'/dumped_questions'
 output_path_suspicious_candidates = Path(output_common_dir + r'/allowed_extensions/suspicious(' + started + ').xlsx')
 output_path_applicant_report = output_common_dir + r'/Assessment/report/API_job_applicantreport'
 output_path_applicant_report_event = output_common_dir + r'/API_event_applicantreport'
