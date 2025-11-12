@@ -166,8 +166,8 @@ class SecurityCheck:
         encryption_obj.validate_api_result_with_excel_data(candidate_personal_details.get('USN'),
                                                            excel_data.get('usn'), rowvalue, 13)
 
-        encryption_obj.validate_api_result_with_excel_data(int(candidate_personal_details.get('AadhaarNo')),
-                                                           int(excel_data.get('aadharNumber')), rowvalue, 14)
+        encryption_obj.validate_api_result_with_excel_data(str(candidate_personal_details.get('AadhaarNo')),
+                                                           str(excel_data.get('aadharNumber')), rowvalue, 14)
         # encryption_obj.validate_api_result_with_excel_data(candidate_personal_details.get('AadhaarNo'),
         #                                                    excel_data.get('aadharNumber'), rowvalue, 15)
         # encryption_obj.validate_api_result_with_excel_data(candidate_personal_details.get('AadhaarNo'),
