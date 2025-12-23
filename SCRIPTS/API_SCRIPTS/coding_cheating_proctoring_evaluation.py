@@ -13,23 +13,19 @@ class CodingCheating:
         header = ['Proctoring Evaluation automation']
         # 1 Row Header
         write_excel_object.write_headers_for_scripts(0, 0, header, write_excel_object.black_color_bold)
-        header = ['Testcases', 'Status', 'Test ID', 'Candidate ID', 'Testuser ID', 'Expected Liveness proctoring status',
-                  'Actual Liveness proctoring status','Expected coding state', 'Actual coding state',
+        header = ['Testcases', 'Status', 'Test ID', 'Candidate ID', 'Testuser ID', 'Expected Coding Cheating Status',
+                  'Actual Coding Cheating Status','Expected coding state', 'Actual coding state',
                   'Expected overall proctoring status',
                   'Actual overall proctoring status', 'Expected overall rating', 'Actual overall rating',
-                  'Expected Video proctoring status', 'Actual Video Proctoring status']
+                  'Expected Behavioural proctoring status', 'Actual Behavioural Proctoring status']
         write_excel_object.write_headers_for_scripts(1, 0, header, write_excel_object.black_color_bold)
 
     def proctor_detail(self, row_count, current_excel_data, token):
         write_excel_object.current_status_color = write_excel_object.green_color
         write_excel_object.current_status = "Pass"
         tu_id = int(current_excel_data.get('testUserId'))
-        print("This is tuid")
-        print(tu_id)
         tu_id = {"tuId": tu_id}
-        print(tu_id)
         tu_proctor_details = crpo_common_obj.get_tu_proc_screen_data(token, tu_id)
-        print(tu_proctor_details)
         proctor_detail = tu_proctor_details['data']['getProctorDetail']
         coding_sus = proctor_detail.get('codingSuspiciousDetails')
         if coding_sus:
@@ -74,14 +70,14 @@ class CodingCheating:
                                                                 4)
 
 
-login_token = crpo_common_obj.login_to_crpo(cred_crpo_admin_at.get('user'),
-                                            cred_crpo_admin_at.get('password'),
-                                            cred_crpo_admin_at.get('tenant'))
-# content = json.dumps(automation_proctor_eval_app_pref)
-# app_pref_proc_eval_id = automation_tenant_proc_eval_id
-# app_pref_proc_eval_type = automation_tenant_proc_eval_type
-# update_app_preference = CrpoCommon.save_apppreferences(login_token, content, app_pref_proc_eval_id,
-#                                                        app_pref_proc_eval_type)
+login_token = crpo_common_obj.login_to_crpo(cred_crpo_admin.get('user'),
+                                            cred_crpo_admin.get('password'),
+                                            cred_crpo_admin.get('tenant'))
+content = json.dumps(automation_coding_cheating_proctor_eval_app_pref)
+app_pref_proc_eval_id = automation_tenant_proc_eval_id
+app_pref_proc_eval_type = automation_tenant_proc_eval_type
+update_app_preference = CrpoCommon.save_apppreferences(login_token, content, app_pref_proc_eval_id,
+                                                       app_pref_proc_eval_type)
 
 excel_read_obj.excel_read(input_path_proctor_evaluation, 5)
 excel_data = excel_read_obj.details
@@ -91,10 +87,11 @@ over_all_status = 'Pass'
 for fetch_tuids in excel_data:
     tuids.append(int(fetch_tuids.get('testUserId')))
 context_id = CrpoCommon.force_evaluate_proctoring(login_token, tuids)
+print("contextId : ")
 print(context_id)
+print("TestUserIds: ")
 print(tuids)
 context_id = context_id['data']['ContextId']
-print(context_id)
 current_job_status = 'Pending'
 
 while current_job_status != 'SUCCESS':
@@ -108,4 +105,4 @@ row_count = 2
 for data in excel_data:
     proctor_obj.proctor_detail(row_count, data, login_token)
     row_count = row_count + 1
-write_excel_object.write_overall_status(testcases_count=10)
+write_excel_object.write_overall_status(testcases_count=23)
