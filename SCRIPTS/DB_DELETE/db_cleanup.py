@@ -719,6 +719,23 @@ class DataCleanUp:
         db_connection.commit()
         db_connection.close()
 
+    @staticmethod
+    def delete_question_for_dump():
+        db_connection = ams_db_connection()
+        cursor = db_connection.cursor()
+        exported_questions = ("delete from exported_questions where question_id "
+                               "in ( 152719,151515,151519,151645,151641,151637,151633,"
+                               "151617,151613,151609,151603,151597,151511,151507);")
+        cursor.execute(exported_questions)
+        db_connection.commit()
+
+        update_question = ("update questions set foreign_question_id = Null "
+                           "where foreign_question_id in (152719,151515,151519,151645,"
+                           "151641,151637,151633,151617,151613,151609,151603,151597,151511,151507);")
+        cursor.execute(update_question)
+        db_connection.commit()
+        db_connection.close()
+
 
 data_clean_obj = DataCleanUp()
 # del_data.delete_assessment_test_users()
