@@ -5,6 +5,7 @@ from SCRIPTS.CRPO_COMMON.crpo_common import *
 from SCRIPTS.CRPO_COMMON.credentials import *
 from SCRIPTS.COMMON.io_path import *
 from SCRIPTS.COMMON.parallel_execution import *
+from SCRIPTS.DB_DELETE.db_cleanup import *
 import os
 import re
 from urllib.parse import urlparse, parse_qs
@@ -13,6 +14,7 @@ from urllib.parse import urlparse, parse_qs
 class DumpedQuestions:
 
     def __init__(self):
+        data_clean_obj.delete_question_for_dump()
         requests.packages.urllib3.disable_warnings()
         self.row_size = 2
         write_excel_object.save_result(output_path_dumped_questions)
@@ -379,7 +381,7 @@ parent_tenant_login_token = crpo_common_obj.login_to_crpo(cred_crpo_admin_hirepr
                                                           cred_crpo_admin_hirepro.get('tenant'))
 
 # Reading data from Excel file
-excel_read_obj.excel_read(inpiut_dump_questions, 0)
+excel_read_obj.excel_read(inpiut_dump_questions, 1)
 excel_data = excel_read_obj.details
 
 # Process questions in parallel using thread context
