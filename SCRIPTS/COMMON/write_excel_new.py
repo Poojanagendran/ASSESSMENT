@@ -147,8 +147,11 @@ class Excel:
                 # and execution time since its changing every execution this will vary so we dont have expected but
                 # we know something will be returned by the api so we need below check
 
-                if actual_data or (actual_data == 0 and is_act_zero_considered is True):
-                    write_excel_object.ws.write(row_index, column_index, actual_data, write_excel_object.green_color)
+                # if actual_data or (actual_data == 0 and is_act_zero_considered is True):
+                #     write_excel_object.ws.write(row_index, column_index, actual_data, write_excel_object.green_color)
+                if isinstance(actual_data, int) or isinstance(actual_data, float) or isinstance(actual_data, str):
+                    write_excel_object.ws.write(row_index, column_index, actual_data,
+                                                write_excel_object.green_color)
                 else:
                     write_excel_object.ws.write(row_index, column_index, actual_data, write_excel_object.red_color)
                     self.current_status = 'fail'
@@ -168,11 +171,11 @@ class Excel:
     @staticmethod
     def write_overall_status(testcases_count):
         ended = datetime.datetime.now()
-        ended = "Ended:- %s" % ended.strftime("%Y-%m-%d-%H-%M-%S")
+        ended =  ended.strftime("%Y-%m-%d-%H-%M-%S")
         # print(ended)
         write_excel_object.ws.write(0, 1, "Overall Status is - %s" % write_excel_object.overall_status,
                                     write_excel_object.overall_status_color)
-        write_excel_object.ws.write(0, 2, 'Started:- ' + write_excel_object.started,
+        write_excel_object.ws.write(0, 2,  write_excel_object.started,
                                     write_excel_object.green_color_bold)
         write_excel_object.ws.write(0, 3, ended, write_excel_object.green_color_bold)
         write_excel_object.ws.write(0, 4, "Total_Test case_Count:- %s" % testcases_count,
