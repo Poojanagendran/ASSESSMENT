@@ -4,7 +4,6 @@ import time
 from SCRIPTS.COMMON.environment import *
 import logging
 
-
 class CrpoCommon:
     domain = env_obj.domain
     pearson_domain = env_obj.pearson_domain
@@ -109,7 +108,7 @@ class CrpoCommon:
         job_state = 'PENDING'
         resp_dict = None
         counter = 0
-        while job_state != 'SUCCESS' and counter <25:
+        while job_state != 'SUCCESS' and counter < 10:
             counter = counter + 1
             response = requests.post(crpo_common_obj.domain + "/py/crpo/api/v1/getStatusOfAsyncAPI",
                                      headers=token, data=json.dumps(request, default=str), verify=False)
