@@ -14,49 +14,47 @@ class ResetTestUser:
         cursor = db_connection.cursor()
         print("---------------------Started Resetting Test users-----------------------------")
 
-        # CASE 1 : Vendor INITIATE_AUTOMATION
-        # Test level is_password_never_expire flag should not be enabled
         update_tuser1 = "update test_users set login_time = DATE_SUB(NOW(),INTERVAL 60 MINUTE), log_out_time = " \
                         "DATE_SUB(NOW(),INTERVAL 55 MINUTE), total_score = NULL, percentage = NULL, " \
-                        "automation_info = NULL, automation_task_id = NULL where id in (3748161,3748443) and " \
-                        "candidate_id in(1554121,1554229) and test_id = 18671;"
+                        "automation_info = NULL, automation_task_id = NULL where id in (3842257,3842261) and " \
+                        "candidate_id in (1586591,1586597) and test_id = 27041;"
         print(update_tuser1)
         cursor.execute(update_tuser1)
         db_connection.commit()
 
         update_test_users_partner_info1 = "update test_users_partner_info set score_status = NULL,task_id_score_fetch" \
                                           " = NULL, report_link = NULL, third_party_status = NULL, " \
-                                          "third_party_overall_status = NULL where testuser_id in(3748161,3748443);"
+                                          "third_party_overall_status = NULL where testuser_id in (3842257,3842261);"
         print(update_test_users_partner_info1)
         cursor.execute(update_test_users_partner_info1)
         db_connection.commit()
 
         update_applicant_status1 = "update applicant_statuss set current_status_id = 167301, comments = NULL where" \
-                                   " id in(1334979,1334791) and candidate_id in(1554121,1554229) and tenant_id= 1787;"
+                                   " id in (1411325,1411337) and candidate_id in (1586591,1586597) and tenant_id= 1787;"
         print(update_applicant_status1)
         cursor.execute(update_applicant_status1)
         db_connection.commit()
 
         # CASE 2 : Vendor SCORE_FETCH_RE_INITIATE_AUTOMATION
         # Test level is_password_never_expire flag should not be enabled
-        update_tuser2 = """update test_users set login_time = DATE_SUB(NOW(),INTERVAL 60 MINUTE), log_out_time = 
-        DATE_SUB(NOW(),INTERVAL 55 MINUTE), total_score = NULL, percentage = NULL, automation_info = '{"timestamp": 
-        "24-07-01 17:03:47", "adHocPrams": null, "apiResponse": {"isSuccess": true, "nextTestInfos": null, 
-        "nextTestLinks": null, "isAutoShortlisting": false}}' where id in (3748163,3748445) and candidate_id in (
-        1554123,1554231) and test_id = 18671; """
+        update_tuser2 = """update test_users set login_time = DATE_SUB(NOW(),INTERVAL 60 MINUTE), log_out_time =
+        DATE_SUB(NOW(),INTERVAL 55 MINUTE), total_score = NULL, percentage = NULL, automation_info = '{"timestamp":
+        "24-07-01 17:03:47", "adHocPrams": null, "apiResponse": {"isSuccess": true, "nextTestInfos": null,
+        "nextTestLinks": null, "isAutoShortlisting": false}}' where id in (3842275,3842277) and candidate_id in (
+        1586593,1586599) and test_id = 27041; """
         print(update_tuser2)
         cursor.execute(update_tuser2)
         db_connection.commit()
 
         update_test_users_partner_info2 = "update test_users_partner_info set score_status = 3, report_link = NULL," \
                                           " third_party_status = NULL, third_party_overall_status = NULL where" \
-                                          " testuser_id in (3748163,3748445);"
+                                          " testuser_id in (3842275,3842277);"
         print(update_test_users_partner_info2)
         cursor.execute(update_test_users_partner_info2)
         db_connection.commit()
 
         update_applicant_status2 = "update applicant_statuss set current_status_id = 167301 where id " \
-                                   "in (1334793,1334981) and candidate_id in (1554123,1554231) and tenant_id= 1787;"
+                                   "in (1411327,1411339) and candidate_id in (1586593,1586599) and tenant_id= 1787;"
         print(update_applicant_status2)
         cursor.execute(update_applicant_status2)
         db_connection.commit()
@@ -64,37 +62,37 @@ class ResetTestUser:
         # CASE 3 : Vendor SCORE_FETCH_INITIATE_AUTOMATION
         # Test level is_password_never_expire flag should not be enabled
         update_tuser3 = "update test_users set total_score = NULL, percentage = NULL, log_out_time = NULL, status = 4," \
-                        " automation_info = NULL, json_config = NULL where id in (3747819,3748447) and " \
-                        "candidate_id in (1554125,1554233) and test_id = 18671;"
+                        " automation_info = NULL, json_config = NULL where id in (3842279,3842281) and " \
+                        "candidate_id in (1586595,1586601) and test_id = 27041;"
         print(update_tuser3)
         cursor.execute(update_tuser3)
         db_connection.commit()
 
         update_test_users_partner_info3 = "update test_users_partner_info set score_status = NULL, " \
                                           "task_id_score_fetch = NULL, report_link = NULL, third_party_status = NULL," \
-                                          " third_party_overall_status  = NULL where testuser_id in (3747819,3748447);"
+                                          " third_party_overall_status  = NULL where testuser_id in (3842279,3842281);"
         print(update_test_users_partner_info3)
         cursor.execute(update_test_users_partner_info3)
         db_connection.commit()
 
         update_applicant_status3 = "update applicant_statuss set current_status_id = 167301, comments = NULL where" \
-                                   " id in (1334671,1334983) and candidate_id in (1554125,1554233) and tenant_id= 1787;"
+                                   " id in (1411329,1411341) and candidate_id in (1586595,1586601) and tenant_id= 1787;"
         print(update_applicant_status3)
         cursor.execute(update_applicant_status3)
         db_connection.commit()
 
         # CASE 4 (PASSWORD_EXPIRED_TO_PASSWORD_DISABLED) Attending_to_Password_Disabled
         # Test level is_password_never_expire flag should not be enabled
-        update_tuser4 = "update test_users set status = 4, is_password_disabled = 0 where id = 3741833 and test_id = " \
-                        "19299 and candidate_id = 1552023; "
+        update_tuser4 = "update test_users set status = 4, is_password_disabled = 0 where id = 3842487 and test_id = " \
+                        "27049 and candidate_id = 1586751; "
         print(update_tuser4)
         cursor.execute(update_tuser4)
         db_connection.commit()
 
         # CASE 5 (SUBMIT_PASSWORD_NEVER_EXPIRED) Attending_to_Attended
         # Test level is_password_never_expire flag should be enabled
-        update_tuser5 = "update test_users set status = 4, log_out_time = NULL where id = 3741855 and test_id = 19313 " \
-                        "and candidate_id = 1552025; "
+        update_tuser5 = "update test_users set status = 4, log_out_time = NULL where id = 3842485 and test_id = 27053 " \
+                        "and candidate_id = 1586753; "
         print(update_tuser5)
         cursor.execute(update_tuser5)
         db_connection.commit()
@@ -102,7 +100,7 @@ class ResetTestUser:
         # CASE 6 (SUBMIT_PASSWORD_DISABLED) Password_Disabled_to_Attended
         # Test level is_password_never_expire flag should not be enabled
         update_tuser6 = "update test_users set status = 5, is_password_disabled = 1, log_out_time = NULL where id = " \
-                        "3741837 and test_id = 19299 and candidate_id = 1552027; "
+                        "3842489 and test_id = 27049 and candidate_id = 1586755; "
         print(update_tuser6)
         cursor.execute(update_tuser6)
         db_connection.commit()
@@ -113,40 +111,61 @@ class ResetTestUser:
                         "correct_answers = NULL, in_correct_answers = NULL, un_attended_questions=NULL, " \
                         "is_partially_evaluated = NULL, eval_status = NULL, eval_by = NULL, eval_on = NULL, " \
                         "json_config = NULL, automation_task_id = NULL, automation_info = NULL, evaluation_info = " \
-                        "NULL where id in (3741839,3748455) and candidate_id in(1552029,1554241) and test_id = 19299"
+                        "NULL where id in (3842491,3842493) and candidate_id in(1586757,1586759) and test_id = 27049"
         print(update_tuser7)
         cursor.execute(update_tuser7)
         db_connection.commit()
 
         update_applicant_status7 = "update applicant_statuss set current_status_id = 167301, comments = NULL where id " \
-                                   "in(1330487,1334991) and candidate_id in(1552029,1554241) and tenant_id= 1787; "
+                                   "in(1411501,1411503) and candidate_id in(1586757,1586759) and tenant_id= 1787; "
         print(update_applicant_status7)
         cursor.execute(update_applicant_status7)
         db_connection.commit()
 
+
         # CASE 8 (SUBMIT_NOT_ATTENDED_INITIATE_AUTOMATION) Not_Attended_with_logintime_to_Attended_With_Inititate_Automation
 
         update_tuser8 = "update test_users set  login_time = DATE_SUB(NOW(),INTERVAL 60 MINUTE), log_out_time = " \
-                        "NULL, total_score = NULL, percentage = NULL, status = 0, time_spent = 65," \
+                        "NULL, total_score = NULL, percentage = NULL, status = 0, time_spent = 65,"\
                         "correct_answers = NULL, in_correct_answers = NULL, un_attended_questions=NULL, " \
                         "is_partially_evaluated = NULL, eval_status = NULL, eval_by = NULL, eval_on = NULL, " \
                         "json_config = NULL, automation_task_id = NULL, automation_info = NULL, evaluation_info = " \
-                        "NULL where id in (3842673, 3842675) and candidate_id in (1586789, 1586791) and test_id = 19299"
+                        "NULL where id in (3842629, 3842631) and candidate_id in (1586761, 1586763) and test_id = 27049"
         print(update_tuser8)
         cursor.execute(update_tuser8)
         db_connection.commit()
 
         update_applicant_status8 = "update applicant_statuss set current_status_id = 167301, comments = NULL where id " \
-                                   "in (1411531,1411533) and candidate_id in (1586789, 1586791) and tenant_id= 1787; "
+                                   "in (1411523,1411525) and candidate_id in (1586761, 1586763) and tenant_id= 1787; "
         print(update_applicant_status8)
         cursor.execute(update_applicant_status8)
         db_connection.commit()
 
+
+        # # CASE 9 (SUBMIT_REACTIVATED_INITIATE_AUTOMATION) Not_Attended_without_logintime_to_Attended_With_Inititate_Automation
+        #
+        # update_tuser9 = "update test_users set  login_time = NULL, log_out_time = " \
+        #                 "NULL, total_score = NULL, percentage = NULL, status = 0, time_spent = 65,"\
+        #                 "correct_answers = NULL, in_correct_answers = NULL, un_attended_questions=NULL, " \
+        #                 "is_partially_evaluated = NULL, eval_status = NULL, eval_by = NULL, eval_on = NULL, " \
+        #                 "json_config = NULL, automation_task_id = NULL, automation_info = NULL, evaluation_info = " \
+        #                 "NULL where id in (3842633, 3842635) and candidate_id in (1586785, 1586787) and test_id = 27049"
+        # print(update_tuser9)
+        # cursor.execute(update_tuser9)
+        # db_connection.commit()
+        #
+        # update_applicant_status9 = "update applicant_statuss set current_status_id = 167301, comments = NULL where id " \
+        #                            "in (1411527,1411529) and candidate_id in (1586785, 1586787) and tenant_id= 1787; "
+        # print(update_applicant_status9)
+        # cursor.execute(update_applicant_status9)
+        # db_connection.commit()
+
         db_connection.close()
+
 
         print("---------------------Resetting Test user Done Successfully-----------------------------")
 
 
 reset_test_user_obj = ResetTestUser()
 # print(datetime.datetime.now())
-reset_test_user_obj.reset_test_users()
+# reset_test_user_obj.reset_test_users()
