@@ -104,17 +104,34 @@ class CrpoCommon:
     def job_status_v2(token, contextguid):
         print(contextguid)
         logging.info('Entered to jobstatus v2')
-        request = {"ContextGUID": contextguid}
+
+        request = {"ContextGUID":contextguid}
         job_state = 'PENDING'
-        resp_dict = None
+        resp_dict = {}
         counter = 0
-        while job_state != 'SUCCESS' and counter < 10:
-            counter = counter + 1
-            response = requests.post(crpo_common_obj.domain + "/py/crpo/api/v1/getStatusOfAsyncAPI",
-                                     headers=token, data=json.dumps(request, default=str), verify=False)
-            resp_dict = json.loads(response.content)
-            job_state = resp_dict['data']['JobState']
+
+        while job_state != 'SUCCESS' and counter < 25:
+            counter += 1
+
+            response = requests.post(crpo_common_obj.domain + "/py/crpo/api/v1/getStatusOfAsyncAPI", headers=token,
+                data=json.dumps(request, default=str), verify=False)
+
+            # 🔐 SAFETY CHECK
+            if not response.content or not response.content.strip():
+                print("job_status_v2: Empty response received")
+                time.sleep(30)
+                continue
+
+            try:
+                resp_dict = json.loads(response.content)
+            except json.JSONDecodeError:
+                print(f"job_status_v2: Non-JSON response: {response.text}")
+                time.sleep(30)
+                continue
+
+            job_state = resp_dict.get('data', {}).get('JobState', 'PENDING')
             time.sleep(30)
+
         logging.info(resp_dict)
         return resp_dict
 
@@ -201,6 +218,59 @@ class CrpoCommon:
                                  data=json.dumps(request, default=str), verify=False)
         data = response.json()
         logging.info(data)
+        return data
+
+    @staticmethod
+    def sanitise_test_automation_test_level_execute(token, test_id):
+        token.pop('X-APPLMA', None)
+
+        request = {"invokeSync":True, "testId":test_id, "isDryRun":False}
+        response = requests.post(crpo_common_obj.domain + "/py/assessment/testuser/api/v1/sanitise_test_automation/",
+                                 headers=token, data=json.dumps(request, default=str), verify=False)
+        response = response.json()
+        print(response)
+
+        # Return full sanitisedData list
+        time.sleep(10)
+        return response['data']['sanitisedData']
+
+    @staticmethod
+    def sanitise_test_automation_test_level_dryrun(token, test_id):
+        token.pop('X-APPLMA', None)
+
+        request = {"invokeSync":True, "testId":test_id, "isDryRun":True}
+        response = requests.post(crpo_common_obj.domain + "/py/assessment/testuser/api/v1/sanitise_test_automation/",
+                                 headers=token, data=json.dumps(request, default=str), verify=False)
+        response = response.json()
+        print(response)
+
+        # Return full sanitisedData list
+        time.sleep(10)
+        return response['data']['sanitisedData']
+
+    @staticmethod
+    def sanitise_test_automation_testuser_execute(token, test_user_id, test_id):
+        token.pop('X-APPLMA', None)
+
+        # {"invokeSync":true,"testId":"27041","testUserIds":[3842257],"isDryRun":true}
+        # {"invokeSync":false,"testId":"18453","testUserIds":[3842245],"isDryRun":false}
+
+        request = {"invokeSync":True, "testId":test_id, "testUserIds":[test_user_id], "isDryRun":False}
+        response = requests.post(crpo_common_obj.domain + "/py/assessment/testuser/api/v1/sanitise_test_automation/",
+                                 headers=token, data=json.dumps(request, default=str), verify=False)
+        response = response.json()
+        data = response['data']['sanitisedData'][0]['response']
+        return data
+
+    @staticmethod
+    def sanitise_test_automation_testuser_dryrun(token, test_user_id, test_id):
+        token.pop('X-APPLMA', None)
+
+        request = {"invokeSync":True, "testId":test_id, "testUserIds":[test_user_id], "isDryRun":True}
+        response = requests.post(crpo_common_obj.domain + "/py/assessment/testuser/api/v1/sanitise_test_automation/",
+                                 headers=token, data=json.dumps(request, default=str), verify=False)
+        response = response.json()
+        data = response['data']['sanitisedData'][0]['response']
         return data
 
     @staticmethod
