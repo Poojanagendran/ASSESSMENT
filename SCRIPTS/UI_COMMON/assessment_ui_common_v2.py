@@ -322,8 +322,8 @@ class AssessmentUICommon:
                     next_test_message = self.driver.find_element(By.NAME, 'nextTestMsg').text
                     if button_message == 'Yes, Take me to the next test':
                         consent_message = self.driver.find_element(By.XPATH, "//*[@class='next-msg ng-scope']").text
-                        consent_yes = self.driver.find_element(By.XPATH, "//*[@class='btn btn-success btn-yes']").text
-                        consent_no = self.driver.find_element(By.XPATH, "//*[@class='btn btn-default red-button']").text
+                        consent_yes = self.driver.find_element(By.XPATH, "//*[@class='btn btn-success btn-yes ng-isolate-scope']").text
+                        consent_no = self.driver.find_element(By.XPATH, "//*[@class='btn btn-default red-button ng-isolate-scope']").text
                         data = {'is_next_test_available': 'Available', 'is_shortlisted': 'Shortlisted with Consent',
                                 'message': next_test_message, 'consent_yes': consent_yes, 'consent_no': consent_no,
                                 'consent_paragraph': consent_message, 'next_test_page_message': overall_page_message,
