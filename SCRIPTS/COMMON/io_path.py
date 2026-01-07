@@ -142,6 +142,8 @@ output_question_statistics_tests = output_common_dir + r'/Assessment/API_qn_stat
 output_question_statistics_new_cron = output_common_dir + r'/Assessment/API_qn_statisctis_new_cron'
 output_question_statistics_tests_hp_cron = output_common_dir + r'/Assessment/API_hp_qn_statisctis_tests'
 output_path_sanitize_automation = output_common_dir + r'/Assessment/reinitiate/API_sanitize - '
+output_path_sanitize_test_automation = output_common_dir + r'/Assessment/reinitiate/API_sanitize_test - '
+output_path_sanitize_testuser_automation = output_common_dir + r'/Assessment/reinitiate/API_sanitize_testuser - '
 output_path_emails = output_common_dir + r'/emails'
 output_path_sa_web_report = output_common_dir + r'/Assessment/API_sa_webreport - '
 
