@@ -44,12 +44,14 @@ class AssessmentUICommon:
             raise Exception(f"Unsupported OS: {self.os_name}")
         chrome_options = Options()
         chrome_options.add_argument("--use-fake-ui-for-media-stream")
+        chrome_options.add_experimental_option("detach", True)
         # chrome_options.add_argument("--headless")  # Enable headless mode
         # chrome_options.add_argument("--disable-gpu")  # Recommended to prevent GPU errors in headless mode
         # chrome_options.add_argument("--no-sandbox")  # Bypass OS security model, necessary for some systems
         # chrome_options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
-        service = Service(executable_path=path)
-        self.driver = webdriver.Chrome(service=service, options=chrome_options)
+        # service = Service(executable_path=path)
+        # self.driver = webdriver.Chrome(service=service, options=chrome_options)
+        self.driver = webdriver.Chrome(options=chrome_options)
 
         # self.driver = webdriver.Chrome(executable_path=path, chrome_options=chrome_options)
         self.driver.get(url)
@@ -62,7 +64,9 @@ class AssessmentUICommon:
         # chrome option is needed in VET cases - ( its handling permissions like mic access)
         chrome_options = Options()
         chrome_options.add_argument("--use-fake-ui-for-media-stream")
+        chrome_options.add_experimental_option("detach", True)
         self.driver = webdriver.Chrome(executable_path=path, chrome_options=chrome_options)
+        # self.driver = webdriver.Chrome(chrome_options=chrome_options)
         self.driver.get(url)
         self.driver.implicitly_wait(10)
         self.driver.maximize_window()
@@ -76,7 +80,10 @@ class AssessmentUICommon:
         self.driver.find_element(By.NAME, 'loginUsername').send_keys(user_name)
         self.driver.find_element(By.NAME, 'loginPassword').clear()
         self.driver.find_element(By.NAME, 'loginPassword').send_keys(password)
-        self.driver.find_element(By.NAME, 'btnLogin').click()
+        # self.driver.find_element(By.NAME, 'btnLogin').click()
+        wait = WebDriverWait(self.driver, 10)
+        login_btn = wait.until(EC.element_to_be_clickable((By.NAME, 'btnLogin')))
+        login_btn.click()
         # time.sleep(5)
         login_status = "None"
         try:
