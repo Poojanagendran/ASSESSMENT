@@ -9,7 +9,7 @@ from SCRIPTS.UI_COMMON.crpo_ui_common import *
 
 class OnlineReviewPage:
     def __init__(self):
-        self.browser = crpo_ui_obj.initiate_browser(amsin_at_crpo_login, chrome_driver_path)
+        self.browser = crpo_ui_obj.initiate_browser(amsin_at_crpo_login)
         crpo_ui_obj.ui_login_to_crpo('admin', 'At@2023$$')
         crpo_ui_obj.crpo_more_functionality()
         crpo_ui_obj.crpo_assessment_candidates()

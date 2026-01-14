@@ -48,7 +48,7 @@ class OnlineAssessment:
     def mcq_marking(self, tu_details, token):
         write_excel_object.current_status_color = write_excel_object.green_color
         write_excel_object.current_status = 'pass'
-        self.browser = assess_ui_common_obj.initiate_browser(amsin_automation_assessment_url, chrome_driver_path)
+        self.browser = assess_ui_common_obj.initiate_browser(amsin_automation_assessment_url)
         login_details = assess_ui_common_obj.ui_login_to_test(tu_details.get('loginName'), (tu_details.get('password')))
         if login_details == 'SUCCESS':
             i_agreed = assess_ui_common_obj.select_i_agree()

@@ -24,7 +24,7 @@ class WheeboxAutomation:
 
     def wheebox_technical(self, login_id, password, tkn, tu_request):
         overall_color = write_excel_object.green_color
-        browser = assess_ui_common_obj.initiate_browser(self.url, self.path)
+        browser = assess_ui_common_obj.initiate_browser(self.url)
         login_details = assess_ui_common_obj.ui_login_to_test(login_id, password)
         # self.browser.get_screenshot_as_file(self.common_path + "\\1_t1_afterlogin.png")
         overall_status = 'pass'

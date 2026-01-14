@@ -14,7 +14,7 @@ class OnlineAssessment:
         data_clean_obj.static_ui_automation_delete()
 
     def mcq_assessment(self, current_excel_data):
-        self.browser = assess_ui_common_obj.initiate_browser(self.url, self.path)
+        self.browser = assess_ui_common_obj.initiate_browser(self.url)
         login_details = assess_ui_common_obj.ui_login_to_test(current_excel_data.get('loginName'),
                                                               (current_excel_data.get('password')))
         if login_details == 'SUCCESS':

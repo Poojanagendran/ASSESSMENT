@@ -9,7 +9,7 @@ class EnableGridActions:
     @staticmethod
     def enable_all_actions():
         try:
-            browser = crpo_ui_obj.initiate_browser(amsin_automation_crpo_login, chrome_driver_path)
+            browser = crpo_ui_obj.initiate_browser(amsin_automation_crpo_login)
             crpo_ui_obj.ui_login_to_crpo(cred_crpo_pooja_automation.get('user'), cred_crpo_pooja_automation.get('password'))
             crpo_ui_obj.move_to_manage_actions_page(automation_manage_actions)
             crpo_ui_obj.select_and_save_all_actions()

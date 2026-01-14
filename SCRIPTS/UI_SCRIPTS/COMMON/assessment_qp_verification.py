@@ -25,7 +25,7 @@ class QPVerification:
     def verify_questions(self, candidate_details, qn_infos):
         self.row = self.row + 1
         delivered_questions = []
-        self.browser = assess_ui_common_obj.initiate_browser(amsin_at_assessment_url, chrome_driver_path)
+        self.browser = assess_ui_common_obj.initiate_browser(amsin_at_assessment_url)
         login_details = assess_ui_common_obj.ui_login_to_test(candidate_details.get('userName'),
                                                               candidate_details.get('password'))
         if login_details == 'SUCCESS':

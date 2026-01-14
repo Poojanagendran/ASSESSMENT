@@ -152,7 +152,7 @@ class QPVerification:
         self.relogin_questions = []
         self.actual_g1_questions = []
         self.actual_g2_questions = []
-        self.browser = assess_ui_common_obj.initiate_browser(amsin_automation_assessment_url, chrome_driver_path)
+        self.browser = assess_ui_common_obj.initiate_browser(amsin_automation_assessment_url)
         login_details = assess_ui_common_obj.ui_login_to_test(login_user, login_pass)
         if login_details == 'SUCCESS':
             i_agreed = assess_ui_common_obj.select_i_agree()

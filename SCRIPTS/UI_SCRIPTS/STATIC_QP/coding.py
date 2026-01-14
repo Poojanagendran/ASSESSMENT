@@ -15,7 +15,7 @@ class OnlineAssessment:
         # print(code)
         code = json.loads(current_excel_data.get('code'))
         original_code1 = code.get('Source')
-        self.browser = assess_ui_common_obj.initiate_browser(amsin_at_assessment_url, chrome_driver_path)
+        self.browser = assess_ui_common_obj.initiate_browser(amsin_at_assessment_url)
         login_details = assess_ui_common_obj.ui_login_to_test(current_excel_data.get('loginName'),
                                                               (current_excel_data.get('password')))
         if login_details == 'SUCCESS':

@@ -21,7 +21,7 @@ class TestSecurity:
         self.row = self.row + 1
         write_excel_object.current_status = 'Pass'
         write_excel_object.current_status_color = write_excel_object.green_color
-        self.browser = assess_ui_common_obj.initiate_browser(amsin_automation_assessment_url, chrome_driver_path)
+        self.browser = assess_ui_common_obj.initiate_browser(amsin_automation_assessment_url)
 
         login_details = assess_ui_common_obj.ui_login_to_test(candidate_details.get('userName'),
                                                               candidate_details.get('password'))

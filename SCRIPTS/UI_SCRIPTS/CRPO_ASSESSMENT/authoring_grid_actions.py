@@ -90,7 +90,7 @@ class AuthoringGridActions:
 
 
             # Initialize the browser and login
-            browser = crpo_ui_obj.initiate_browser(amsin_automation_crpo_login, chrome_driver_path)
+            browser = crpo_ui_obj.initiate_browser(amsin_automation_crpo_login)
             crpo_ui_obj.ui_login_to_crpo(cred_crpo_admin.get('user'), cred_crpo_admin.get('password'))
 
 

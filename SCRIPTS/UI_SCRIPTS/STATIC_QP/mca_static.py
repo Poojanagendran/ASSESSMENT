@@ -11,9 +11,9 @@ class OnlineAssessment:
         # data clean up is important, b'coz we need to create a candidate everytime to check the create is working fine.
         data_clean_obj.mca_static_automation_delete()
         self.url = amsin_at_assessment_url
-        self.path = chrome_driver_path
+
     def mca_assessment(self, current_excel_data):
-        self.browser = assess_ui_common_obj.initiate_browser(self.url, self.path)
+        self.browser = assess_ui_common_obj.initiate_browser(self.url)
         login_details = assess_ui_common_obj.ui_login_to_test(current_excel_data.get('loginName'),
                                                               (current_excel_data.get('password')))
         if login_details == 'SUCCESS':

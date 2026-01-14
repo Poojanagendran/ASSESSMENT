@@ -101,7 +101,7 @@ class SaTest:
     def self_assessment(self, username, password, q_test_cases):
         """Main self-assessment workflow."""
         try:
-            self.browser = self_assessment_obj.initiate_browser(amsin_crpodemo_crpo_login, chrome_driver_path)
+            self.browser = self_assessment_obj.initiate_browser(amsin_crpodemo_crpo_login)
             logging.info("Browser initiated successfully.")
 
             login_status = self_assessment_obj.ui_login_to_tenant(username, password)

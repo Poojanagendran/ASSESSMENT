@@ -116,7 +116,7 @@ class QPVerification:
         self.row = self.row + 1
         self.delivered_questions = []
         self.relogin_questions = []
-        self.browser = assess_ui_common_obj.initiate_browser(amsin_automation_assessment_url, chrome_driver_path)
+        self.browser = assess_ui_common_obj.initiate_browser(amsin_automation_assessment_url)
         login_details = assess_ui_common_obj.ui_login_to_test(tu_details.get('userName'),
                                                               tu_details.get('password'))
         if login_details == 'SUCCESS':

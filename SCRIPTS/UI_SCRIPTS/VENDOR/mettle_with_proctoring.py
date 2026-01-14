@@ -34,7 +34,7 @@ class MettleAutomation:
     def mettl_technical(self, login_id, password, tkn, tu_request):
         testuser_id = tu_request['testUserId']
         overall_color = write_excel_object.green_color
-        browser = assess_ui_common_obj.initiate_browser(self.url, self.path)
+        browser = assess_ui_common_obj.initiate_browser(self.url)
         login_details = assess_ui_common_obj.ui_login_to_test(login_id, password)
         about_online_proctoring = assess_ui_common_obj.about_online_proctoring()
         assessment_terms_and_conditions = assess_ui_common_obj.assessment_terms_and_conditions()
