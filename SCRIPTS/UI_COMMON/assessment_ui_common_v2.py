@@ -1,14 +1,17 @@
 import os
-import time
 import platform
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
+
+
+from selenium.common.exceptions import TimeoutException
+import time
 
 
 class AssessmentUICommon:
@@ -22,57 +25,27 @@ class AssessmentUICommon:
 
     def initiate_browser(self, url):
         chrome_options = Options()
+
+        # Auto allow mic/camera (VET / WebRTC)
         chrome_options.add_argument("--use-fake-ui-for-media-stream")
+
+        # Stability & speed
+        chrome_options.add_argument("--disable-notifications")
+        chrome_options.add_argument("--disable-infobars")
         chrome_options.add_experimental_option("detach", True)
 
-        # 'eager' returns control after DOM is ready (ignores images/styles)
-        chrome_options.page_load_strategy = 'eager'
-
-        # Optimization for Headless Mode
-        chrome_options.add_argument("--headless=new")  # Use 'new' for modern Chrome versions
-        chrome_options.add_argument("--window-size=1920,1080")  # Essential for headless
-        chrome_options.add_argument("--disable-notifications")
-
+        # 🚀 Selenium Manager handles driver automatically
         self.driver = webdriver.Chrome(options=chrome_options)
 
-        # Set a strict 30s timeout for the command executor
-        self.driver.set_page_load_timeout(30)
+        self.driver.get(url)
+        self.driver.maximize_window()
 
-        main_handle = self.driver.current_window_handle
+        # REQUIRED for your login code
+        self.wait = WebDriverWait(self.driver, 10)
 
-        try:
-            # Retry logic for the initial URL hit to prevent ReadTimeout crashes
-            try:
-                self.driver.get(url)
-            except Exception:
-                print("Initial page load timed out. Stopping window and retrying...")
-                self.driver.execute_script("window.stop();")
-                self.driver.get(url)
-
-            # Standardize window size (maximize_window often fails in headless)
-            self.driver.maximize_window()
-
-            # Increased wait for secondary window (common in chained tests)
-            self.wait = WebDriverWait(self.driver, 30)
-
-            print("Waiting for assessment window to appear...")
-            try:
-                # Wait for window count to increase
-                self.wait.until(lambda d: len(d.window_handles) > 1)
-
-                for handle in self.driver.window_handles:
-                    if handle != main_handle:
-                        self.driver.switch_to.window(handle)
-                        print(f"Switched to assessment window: {self.driver.title}")
-                        # Ensure the window is fully ready
-                        self.wait.until(lambda d: d.execute_script('return document.readyState') == 'complete')
-                        break
-            except Exception:
-                print("No secondary window detected within 30s; staying on main handle.")
-
-        except Exception as e:
-            print(f"Critical failure during browser initiation: {e}")
-            # If it crashes here, the driver might be 'zombie' - consider self.driver.quit()
+        # Safe window handling
+        if len(self.driver.window_handles) > 1:
+            self.driver.switch_to.window(self.driver.window_handles[-1])
 
         return self.driver
 
@@ -92,6 +65,7 @@ class AssessmentUICommon:
                 EC.presence_of_element_located((By.XPATH, error_xpath))
             )
             login_status = error_element.text
+            self.driver.quit()
         except Exception as e:
             # print(e)
             login_status = 'SUCCESS'
@@ -200,25 +174,23 @@ class AssessmentUICommon:
                 print(f"Failed to enable button: {e}")
 
     def select_answer_for_the_question(self, answer):
-        # Use a local wait of 5 seconds instead of the global 30s wait
-        short_wait = WebDriverWait(self.driver, 5)
-        xpath = f"//input[@name='answerOptions' and @value='{answer}']"
+        # This XPATH looks for a radio button with value 'A' OR
+        # a label containing the text 'A' next to a radio button.
+        xpath = f"//input[@name='answerOptions' and (@value='{answer}' or ..//text()='{answer}')]"
 
         try:
-            # Wait for presence, but only for 5 seconds
-            answered = short_wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
+            # Increase timeout slightly for the first question (e.g., 10s)
+            ans_el = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, xpath))
+            )
 
-            if not answered.is_selected():
-                try:
-                    # Scroll into view in case the question is long
-                    self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", answered)
-                    answered.click()
-                except Exception:
-                    # Fallback to JS click if the element is obscured by a label
-                    self.driver.execute_script("arguments[0].click();", answered)
+            if not ans_el.is_selected():
+                self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", ans_el)
+                self.driver.execute_script("arguments[0].click();", ans_el)
 
         except Exception as e:
-            print(f"TIMEOUT: Answer '{answer}' not found within 5s. Check Excel value or Page Load.")
+            print(f"TIMEOUT: Answer '{answer}' not found. Taking debug screenshot...")
+            self.driver.save_screenshot(f"error_ans_{answer}.png")
             raise e
     #
     # def select_answer_for_fib_question(self, answer):
