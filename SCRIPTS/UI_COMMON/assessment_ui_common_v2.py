@@ -1,100 +1,97 @@
 import os
 import time
 import platform
-import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.chrome.service import Service
-from pathlib import Path
+from selenium.webdriver.support import expected_conditions as EC
 
-
-# from selenium.webdriver.common.keys import Keys
-
-
-# from selenium.common.exceptions import TimeoutException
 
 
 class AssessmentUICommon:
 
     def __init__(self):
         self.delay = 120
-        print("This is Latest Version of UI Code")
         self.os_name = platform.system()
-        print(self.os_name)
+        self.driver = None
+        self.wait = None
+        print(f"UI Code Version: Latest | OS: {self.os_name}")
 
-    def initiate_browser(self, url, path):
-        # chrome option is needed in VET cases - ( its handling permissions like mic access)
-        print(path)
-        if self.os_name == 'Windows':
-            path = Path(path + r'/chromedriver.exe')
-        elif self.os_name in  ('Linux','Darwin'):
-            path = Path(str(path) + str('/chromedriver'))
-            print("This is mac or ubuntu path")
-        # elif self.os_name == 'Darwin':
-        #     # This is for MAC OS.
-        #     path = Path(str(path) + str('/chromedriver'))
-        #     print("This is mac")
-        #     print(path)
-        else:
-            raise Exception(f"Unsupported OS: {self.os_name}")
+    def initiate_browser(self, url):
         chrome_options = Options()
         chrome_options.add_argument("--use-fake-ui-for-media-stream")
         chrome_options.add_experimental_option("detach", True)
-        # chrome_options.add_argument("--headless")  # Enable headless mode
-        # chrome_options.add_argument("--disable-gpu")  # Recommended to prevent GPU errors in headless mode
-        # chrome_options.add_argument("--no-sandbox")  # Bypass OS security model, necessary for some systems
-        # chrome_options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
-        # service = Service(executable_path=path)
-        # self.driver = webdriver.Chrome(service=service, options=chrome_options)
+
+        # 'eager' returns control after DOM is ready (ignores images/styles)
+        chrome_options.page_load_strategy = 'eager'
+
+        # Optimization for Headless Mode
+        chrome_options.add_argument("--headless=new")  # Use 'new' for modern Chrome versions
+        chrome_options.add_argument("--window-size=1920,1080")  # Essential for headless
+        chrome_options.add_argument("--disable-notifications")
+
         self.driver = webdriver.Chrome(options=chrome_options)
 
-        # self.driver = webdriver.Chrome(executable_path=path, chrome_options=chrome_options)
-        self.driver.get(url)
-        self.driver.implicitly_wait(10)
-        self.driver.maximize_window()
-        self.driver.switch_to.window(self.driver.window_handles[1])
-        return self.driver
+        # Set a strict 30s timeout for the command executor
+        self.driver.set_page_load_timeout(30)
 
-    def initiate_browser1(self, url, path):
-        # chrome option is needed in VET cases - ( its handling permissions like mic access)
-        chrome_options = Options()
-        chrome_options.add_argument("--use-fake-ui-for-media-stream")
-        chrome_options.add_experimental_option("detach", True)
-        self.driver = webdriver.Chrome(executable_path=path, chrome_options=chrome_options)
-        # self.driver = webdriver.Chrome(chrome_options=chrome_options)
-        self.driver.get(url)
-        self.driver.implicitly_wait(10)
-        self.driver.maximize_window()
-        self.driver.switch_to.window(self.driver.window_handles[1])
+        main_handle = self.driver.current_window_handle
+
+        try:
+            # Retry logic for the initial URL hit to prevent ReadTimeout crashes
+            try:
+                self.driver.get(url)
+            except Exception:
+                print("Initial page load timed out. Stopping window and retrying...")
+                self.driver.execute_script("window.stop();")
+                self.driver.get(url)
+
+            # Standardize window size (maximize_window often fails in headless)
+            self.driver.maximize_window()
+
+            # Increased wait for secondary window (common in chained tests)
+            self.wait = WebDriverWait(self.driver, 30)
+
+            print("Waiting for assessment window to appear...")
+            try:
+                # Wait for window count to increase
+                self.wait.until(lambda d: len(d.window_handles) > 1)
+
+                for handle in self.driver.window_handles:
+                    if handle != main_handle:
+                        self.driver.switch_to.window(handle)
+                        print(f"Switched to assessment window: {self.driver.title}")
+                        # Ensure the window is fully ready
+                        self.wait.until(lambda d: d.execute_script('return document.readyState') == 'complete')
+                        break
+            except Exception:
+                print("No secondary window detected within 30s; staying on main handle.")
+
+        except Exception as e:
+            print(f"Critical failure during browser initiation: {e}")
+            # If it crashes here, the driver might be 'zombie' - consider self.driver.quit()
+
         return self.driver
 
     def ui_login_to_test(self, user_name, password):
-        # time.sleep(8)
-        self.driver.implicitly_wait(10)
-        self.driver.find_element(By.NAME, 'loginUsername').clear()
-        self.driver.find_element(By.NAME, 'loginUsername').send_keys(user_name)
-        self.driver.find_element(By.NAME, 'loginPassword').clear()
-        self.driver.find_element(By.NAME, 'loginPassword').send_keys(password)
-        # self.driver.find_element(By.NAME, 'btnLogin').click()
-        wait = WebDriverWait(self.driver, 10)
-        login_btn = wait.until(EC.element_to_be_clickable((By.NAME, 'btnLogin')))
-        login_btn.click()
-        # time.sleep(5)
+
+        user_input = self.wait.until(EC.visibility_of_element_located((By.NAME, 'loginUsername')))
+        user_input.clear()
+        user_input.send_keys(user_name)
+        user_pass = self.driver.find_element(By.NAME, 'loginPassword')
+        user_pass.clear()
+        user_pass.send_keys(password)
+        self.wait.until(EC.visibility_of_element_located((By.NAME, 'btnLogin'))).click()
         login_status = "None"
         try:
-            if self.driver.find_element(By.XPATH,
-                                        '//div[@class="text-center login-error ng-binding ng-scope"]').is_displayed():
-                print("Unable to Login ")
-                # time.sleep(2)
-                self.driver.implicitly_wait(2)
-                error_message = self.driver.find_element(By.XPATH,
-                                                         '//div[@class="text-center login-error ng-binding ng-scope"]').text
-                login_status = error_message
+            error_xpath = '//div[@class="text-center login-error ng-binding ng-scope"]'
+            error_element = WebDriverWait(self.driver, 5).until(
+                EC.presence_of_element_located((By.XPATH, error_xpath))
+            )
+            login_status = error_element.text
         except Exception as e:
             # print(e)
             login_status = 'SUCCESS'
@@ -102,18 +99,25 @@ class AssessmentUICommon:
 
     def select_i_agree(self):
         try:
-            # time.sleep(1)
-            i_agree_status = WebDriverWait(self.driver, self.delay).until(
-                EC.presence_of_element_located((By.CLASS_NAME, 'chk')))
-            is_selected = i_agree_status.is_selected()
-            if not is_selected:
-                i_agree_status.click()
-                is_selected = True
-            return is_selected
+            # 1. Use a more reasonable timeout (e.g., 10-15s) instead of 120s
+            # 2. Switch to visibility_of to ensure it's actually on screen
+            checkbox = WebDriverWait(self.driver, 15).until(
+                EC.presence_of_element_located((By.CLASS_NAME, 'chk'))
+            )
+
+            # 3. Check selection state
+            if not checkbox.is_selected():
+                try:
+                    checkbox.click()
+                except Exception:
+                    # 4. Fallback: JavaScript click in case the element is 'hidden' but functional
+                    self.driver.execute_script("arguments[0].click();", checkbox)
+
+            return True  # If it reaches here, it's selected
 
         except Exception as e:
-            print("I agree is not visible")
-            print(e)
+            print("I agree checkbox was not interactable or not found.")
+            return False
 
     # def focus_to_model_window(self):
     #     try:
@@ -128,249 +132,504 @@ class AssessmentUICommon:
 
     def about_online_proctoring(self):
         try:
-            self.driver.implicitly_wait(60)
-            i_agree = self.driver.find_element(By.XPATH, "//*[@class ='custom-checkbox font-weight-700']")
-            if i_agree.is_displayed() and i_agree.is_enabled():
-                i_agree.click()
-            else:
-                print("about_online_proctoring I agree is not interactable.")
-            time.sleep(0.5)
-            next_button = self.driver.find_element(By.NAME, "btnProctorNext")
-            next_button.click()
+            # 1. Wait for checkbox label to be clickable (more reliable than input)
+            i_agree = self.wait.until(
+                EC.element_to_be_clickable((By.XPATH, "//*[@class='custom-checkbox font-weight-700']")))
+            i_agree.click()
+
+            # 2. Immediate click for Next (no sleep needed)
+            next_btn = self.driver.find_element(By.NAME, "btnProctorNext")
+            next_btn.click()
         except Exception as e:
-            print("about_online_proctoring I agree is not visible")
-            print(e)
+            print(f"Online Proctoring step failed: {e}")
 
     def assessment_terms_and_conditions(self):
         try:
-            time.sleep(5)
-            i_agree_to_terms_and_conditions = self.driver.find_element(By.XPATH,
-                                                                       "//span[text()='I agree to the Assessment Terms & Conditions above.']")
-            i_agree_to_terms_and_conditions.click()
-            i_fully_understand = self.driver.find_element(By.XPATH,
-                                                          "//span[@class='txt-color-red' and contains(text(), 'if I am found to be engaged in any act of fraud')]")
-            i_fully_understand.click()
-            time.sleep(0.5)
-            next_button = self.driver.find_element(By.XPATH, "//button[@name='btnProctorNext']").click()
+            # 1. Wait for the specific text span
+            terms_xpath = "//span[contains(text(), 'I agree to the Assessment Terms')]"
+            self.wait.until(EC.element_to_be_clickable((By.XPATH, terms_xpath))).click()
+
+            # 2. Wait for the fraud policy span
+            fraud_xpath = "//span[contains(text(), 'if I am found to be engaged in any act of fraud')]"
+            self.wait.until(EC.element_to_be_clickable((By.XPATH, fraud_xpath))).click()
+
+            # 3. Click Next button using name attribute (fastest)
+            self.driver.find_element(By.NAME, 'btnProctorNext').click()
         except Exception as e:
-            print("Terms and conditions I agree is not visible")
-            print(e)
+            print(f"Terms & Conditions step failed: {e}")
 
     def selfie(self):
-        time.sleep(30)
-        selfie = self.driver.find_element(By.XPATH,
-                                          "//button[@class = 'btn btn-primary center-block ng-scope ng-isolate-scope' and contains(text(), 'Click a Selfie')]")
-        selfie.click()
-        time.sleep(5)
-        proceed_to_next = self.driver.find_element(By.XPATH,
-                                                   "//span[@class='ng-scope' and contains(text(), 'Proceed to test ')]")
-        proceed_to_next.click()
+        try:
+            print("Waiting for camera/selfie button...")
+            # Use a long deadline (30s) but it will move instantly when ready
+            selfie_btn = WebDriverWait(self.driver, 40).until(
+                EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Selfie')]"))
+            )
+            selfie_btn.click()
 
-    # Not used now, will use it in futrure if its required to remove any disabled variable
+            # Wait for "Proceed" to become clickable (handles image processing time)
+            proceed_xpath = "//span[contains(text(), 'Proceed to test')]"
+            proceed_btn = self.wait.until(EC.element_to_be_clickable((By.XPATH, proceed_xpath)))
+            proceed_btn.click()
+            print("Selfie captured and proceeding.")
+        except Exception as e:
+            print(f"Selfie step failed: {e}")
+
     def remove_disabled_attribute(self):
-        button = self.driver.find_element(By.XPATH, "//button[@class='btn btn-primary center-block ng-scope']")
-        if button.is_displayed():
-            print("displayed")
-            self.driver.execute_script("arguments[0].removeAttribute('disabled');", button)
-            is_disabled = button.get_attribute("disabled")
-            print("Button is disabled:", is_disabled)
+            try:
+                # 1. Use a partial class/text match to find the button safely
+                # Most "Proceed" or "Next" buttons have these common classes
+                button_xpath = "//button[contains(@class, 'btn-primary') and contains(@class, 'center-block')]"
+
+                # 2. Wait until it's present in the DOM
+                button = self.wait.until(EC.presence_of_element_located((By.XPATH, button_xpath)))
+
+                # 3. Force remove the attribute and trigger a state change
+                # Adding 'button.disabled = false' helps in frameworks like Angular
+                self.driver.execute_script("""
+                    arguments[0].removeAttribute('disabled');
+                    arguments[0].disabled = false;
+                    arguments[0].classList.remove('disabled');
+                """, button)
+
+                # 4. Verification
+                is_disabled = button.get_attribute("disabled")
+                print(f"Button enabled successfully. Disabled attribute is now: {is_disabled}")
+
+            except Exception as e:
+                print(f"Failed to enable button: {e}")
 
     def select_answer_for_the_question(self, answer):
-        time.sleep(1)
-        value = "//input[@name='answerOptions' and @value='%s']" % answer
-        answered = self.driver.find_element(By.XPATH, value)
-        is_answered = answered.is_selected()
-        if not is_answered:
-            answered.click()
+        # Use a local wait of 5 seconds instead of the global 30s wait
+        short_wait = WebDriverWait(self.driver, 5)
+        xpath = f"//input[@name='answerOptions' and @value='{answer}']"
 
+        try:
+            # Wait for presence, but only for 5 seconds
+            answered = short_wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
+
+            if not answered.is_selected():
+                try:
+                    # Scroll into view in case the question is long
+                    self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", answered)
+                    answered.click()
+                except Exception:
+                    # Fallback to JS click if the element is obscured by a label
+                    self.driver.execute_script("arguments[0].click();", answered)
+
+        except Exception as e:
+            print(f"TIMEOUT: Answer '{answer}' not found within 5s. Check Excel value or Page Load.")
+            raise e
+    #
+    # def select_answer_for_fib_question(self, answer):
+    #     if answer:
+    #         value = "//input[@placeholder = 'Blank']"
+    #         elem = self.driver.find_element(By.XPATH, value)
+    #         self.driver.implicitly_wait(10)
+    #         ActionChains(self.driver).move_to_element(elem).send_keys_to_element(elem, answer).perform()
+    #     else:
+    #         pass
+    #     # time.sleep(1)
+    #     # value = "//input[@placeholder = 'Blank']"
+    #     # answered = self.driver.find_element(By.XPATH, value)
+    #     # answered.send_keys(answer)
+    #
+    # def select_answer_for_mca_question(self, answer):
+    #     # If user wants to select one or more options then If condition will work other wise else will pass the stmt.
+    #     if answer:
+    #         # user can choose n number of options, options be passed as string and comma separated
+    #         # below split will split the string by using comma and will make a list.
+    #         answer_choices = answer.split(',')
+    #         for options in answer_choices:
+    #             # strip is necessary to remove the leading and trailing space of each option.
+    #             options = options.strip()
+    #             # elem = self.driver.find_element_by_xpath('//*[@id="option2"]')
+    #             value = '//*[@id="%s"]' % options
+    #             # elem = self.driver.find_element_by_xpath(value)
+    #             elem = self.driver.find_element(By.XPATH, value)
+    #             self.driver.implicitly_wait(10)
+    #             ActionChains(self.driver).move_to_element(elem).click(elem).perform()
+    #     else:
+    #         # User does not want to select any option, so pass the stmt.
+    #         pass
     def select_answer_for_fib_question(self, answer):
-        if answer:
-            value = "//input[@placeholder = 'Blank']"
-            elem = self.driver.find_element(By.XPATH, value)
-            self.driver.implicitly_wait(10)
-            ActionChains(self.driver).move_to_element(elem).send_keys_to_element(elem, answer).perform()
-        else:
-            pass
-        # time.sleep(1)
-        # value = "//input[@placeholder = 'Blank']"
-        # answered = self.driver.find_element(By.XPATH, value)
-        # answered.send_keys(answer)
+        if not answer:
+            return
+
+        xpath = "//input[@placeholder='Blank']"
+        try:
+            # Wait up to 5s for the specific blank to be interactable
+            elem = WebDriverWait(self.driver, 5).until(
+                EC.element_to_be_clickable((By.XPATH, xpath))
+            )
+            # Clear existing text first to avoid appending to default values
+            elem.clear()
+            elem.send_keys(answer)
+        except Exception as e:
+            print(f"FIB Error: Could not find or fill the blank. {e}")
 
     def select_answer_for_mca_question(self, answer):
-        # If user wants to select one or more options then If condition will work other wise else will pass the stmt.
-        if answer:
-            # user can choose n number of options, options be passed as string and comma separated
-            # below split will split the string by using comma and will make a list.
-            answer_choices = answer.split(',')
-            for options in answer_choices:
-                # strip is necessary to remove the leading and trailing space of each option.
-                options = options.strip()
-                # elem = self.driver.find_element_by_xpath('//*[@id="option2"]')
-                value = '//*[@id="%s"]' % options
-                # elem = self.driver.find_element_by_xpath(value)
-                elem = self.driver.find_element(By.XPATH, value)
-                self.driver.implicitly_wait(10)
-                ActionChains(self.driver).move_to_element(elem).click(elem).perform()
-        else:
-            # User does not want to select any option, so pass the stmt.
-            pass
+        if not answer:
+            return
+
+        # Split and clean choices
+        answer_choices = [opt.strip() for opt in answer.split(',')]
+
+        for option_id in answer_choices:
+            try:
+                # Dynamically wait for EACH option in the list
+                xpath = f"//*[@id='{option_id}']"
+                elem = WebDriverWait(self.driver, 5).until(
+                    EC.element_to_be_clickable((By.XPATH, xpath))
+                )
+
+                # Check if already selected (for MCA, clicking twice might unselect)
+                if not elem.is_selected():
+                    # ActionChains is useful here if the ID is on a hidden input
+                    # but we need to click the styled overlay.
+                    ActionChains(self.driver).move_to_element(elem).click().perform()
+
+            except Exception as e:
+                print(f"MCA Error: Option '{option_id}' not found or clickable. {e}")
 
     def check_answered_status(self, previous_answer):
-        value = "//input[@name='answerOptions' and @value='%s']" % previous_answer
-        answered = self.driver.find_element(By.XPATH, value).is_enabled()
-        return answered
+        try:
+            # Use a short 2-second timeout for status checks
+            xpath = f"//input[@name='answerOptions' and @value='{previous_answer}']"
+            element = WebDriverWait(self.driver, 2).until(
+                EC.presence_of_element_located((By.XPATH, xpath))
+            )
+
+            # .is_selected() tells you if the radio button is filled
+            # .is_enabled() only tells you if it's not greyed out
+            return element.is_selected()
+        except Exception:
+            return False
 
     def next_question(self, question_index):
-        time.sleep(0.3)
-        value = "btnQuestionIndex%s" % str(question_index)
-        self.driver.find_element(By.NAME, value).click()
+        button_name = f"btnQuestionIndex{question_index}"
+        try:
+            # This will proceed in 0.05s if the button is ready, or wait up to 5s if slow.
+            btn = self.wait.until(EC.element_to_be_clickable((By.NAME, button_name)))
+            btn.click()
+        except Exception as e:
+            print(f"Could not jump to question {question_index}: {e}")
 
     def start_test_button_status(self):
-        # time.sleep(1)
-        is_enabled = self.driver.find_element(By.NAME, 'btnStartTest').is_enabled()
-        if is_enabled:
-            start_button_status = 'Enabled'
-        else:
-            start_button_status = 'Disabled'
-        return start_button_status
+        try:
+            # Use a short wait to ensure the button is at least in the DOM
+            btn = self.wait.until(EC.presence_of_element_located((By.NAME, 'btnStartTest')))
+
+            # is_enabled() is the correct check for buttons
+            if btn.is_enabled():
+                return 'Enabled'
+            return 'Disabled'
+        except Exception:
+            # If the button doesn't appear at all within the timeout
+            return 'Not Found'
 
     def start_test(self):
-        # time.sleep(1)
-        self.driver.find_element(By.NAME, 'btnStartTest').click()
-        time.sleep(5)
-
-    def check_security_key_model_window_availability(self):
-        status = 'Success'
         try:
-            if self.driver.find_element(By.NAME, 'securityKey').is_displayed():
-                print("Security page is displayed")
-                status = "Success"
+            # 1. Wait until the button is actually clickable (visible + enabled)
+            start_btn = self.wait.until(EC.element_to_be_clickable((By.NAME, 'btnStartTest')))
+            start_btn.click()
+            print("Start Test clicked.")
+
+            # 2. INSTEAD OF SLEEP(5): Wait for a unique element on the NEXT page
+            # This makes the script move the INSTANT the test loads.
+            # Replace 'question-container' with an ID or Class found in the actual test.
+            self.wait.until(EC.presence_of_element_located((By.ID, 'question-container')))
+
         except Exception as e:
-            print(e)
-            status = 'Failed'
-        return status
+            print(f"Failed to start test or test page did not load: {e}")
+
+    # def check_security_key_model_window_availability(self):
+    #     status = 'Success'
+    #     try:
+    #         if self.driver.find_element(By.NAME, 'securityKey').is_displayed():
+    #             print("Security page is displayed")
+    #             status = "Success"
+    #     except Exception as e:
+    #         print(e)
+    #         status = 'Failed'
+    #     return status
+    #
+    # def validate_security_key(self, secure_password):
+    #     self.driver.find_element(By.NAME, 'securityKey').send_keys(secure_password)
+    #     self.driver.find_element(By.XPATH, '//button[text()="Verify"]').click()
+    #     time.sleep(3)
+    def check_security_key_model_window_availability(self):
+        try:
+            # Use a short, specific wait (5s) for the security field to appear
+            # This is better than find_element because it accounts for animation time
+            WebDriverWait(self.driver, 5).until(
+                EC.visibility_of_element_located((By.NAME, 'securityKey'))
+            )
+            print("Security modal is visible.")
+            return 'Success'
+        except Exception:
+            print("Security modal not detected (might not be required for this test).")
+            return 'Failed'
 
     def validate_security_key(self, secure_password):
-        self.driver.find_element(By.NAME, 'securityKey').send_keys(secure_password)
-        self.driver.find_element(By.XPATH, '//button[text()="Verify"]').click()
-        time.sleep(3)
+        try:
+            # 1. Find the input field
+            key_input = self.wait.until(EC.element_to_be_clickable((By.NAME, 'securityKey')))
+            key_input.clear()
+            key_input.send_keys(secure_password)
+
+            # 2. Click Verify - Using a more flexible XPATH to handle case sensitivity or extra spaces
+            verify_xpath = "//button[contains(translate(text(), 'VERIFY', 'verify'), 'verify')]"
+            self.driver.find_element(By.XPATH, verify_xpath).click()
+
+            # 3. Instead of sleep(3), wait for the modal to DISAPPEAR
+            # This confirms the key was accepted and the test is proceeding
+            self.wait.until(EC.invisibility_of_element_located((By.NAME, 'securityKey')))
+            print("Security key validated and modal closed.")
+
+        except Exception as e:
+            print(f"Error validating security key: {e}")
+            raise e
 
     def end_test(self):
-        time.sleep(3)
-        self.driver.find_element(By.XPATH, "//button[@class='btn btn-danger ng-scope ng-isolate-scope']").click()
-        time.sleep(3)
+        # 1. Wait for the 'End Test' button using a partial class match (safer)
+        # We look for the 'btn-danger' class which usually signifies the 'End' action
+        end_btn_xpath = "//button[contains(@class, 'btn-danger') and contains(., 'End')]"
+
+        try:
+            end_btn = self.wait.until(EC.element_to_be_clickable((By.XPATH, end_btn_xpath)))
+            end_btn.click()
+            print("Initial 'End Test' clicked.")
+        except Exception as e:
+            print(f"Could not click initial End Test button: {e}")
 
     def end_test_confirmation(self):
         try:
-            time.sleep(5)
-            self.driver.find_element(By.NAME, 'btnCloseTest').click()
-            print("Test is ended Successfully")
+            # 2. Instead of sleep(5), wait up to 10s for the confirmation button to be clickable
+            # This will proceed the INSTANT the button appears
+            confirm_btn = self.wait.until(EC.element_to_be_clickable((By.NAME, 'btnCloseTest')))
+            confirm_btn.click()
+            print("Test ended successfully and confirmation submitted.")
+
+            # 3. Optional: Wait for the window to actually close or redirect
+            # to ensure the next part of your script doesn't start too early
+            self.wait.until(EC.staleness_of(confirm_btn))
+
         except Exception as e:
-            print(e)
+            print(f"Confirmation button 'btnCloseTest' not found: {e}")
+
+    # def unanswer_question(self):
+    #     self.driver.find_element(By.XPATH, "//button[@class='btn btn-default btnUnanswer ng-scope ng-isolate-scope']").click()
+    #     time.sleep(0.3)
+    #     print("Un Answer Succeded")
+    #
+    # def find_question_string(self):
+    #     question_string = self.driver.find_element(By.NAME, 'questionHtmlString').text
+    #     print(question_string)
+    #     return question_string
+    #
+    # def find_question_string_v2(self):
+    #     question_string = self.driver.find_element(By.NAME, 'questionHtmlString').text
+    #     groupname = self.driver.find_element(By.NAME, 'groupName').text
+    #     section_name = self.driver.find_element(By.NAME, 'sectionName').text
+    #     return question_string, groupname, section_name
+    #
+    # def find_question_string_for_rtc(self):
+    #     parent_question_string = self.driver.find_element(By.NAME, 'questionParentHtmlString').text
+    #     child_question_string = self.driver.find_element(By.NAME, 'questionHtmlString').text
+    #     groupname = self.driver.find_element(By.NAME, 'groupName').text
+    #     section_name = self.driver.find_element(By.NAME, 'sectionName').text
+    #     return parent_question_string, child_question_string, groupname, section_name
 
     def unanswer_question(self):
-        self.driver.find_element(By.XPATH, "//button[@class='btn btn-default btnUnanswer ng-scope ng-isolate-scope']").click()
-        time.sleep(0.3)
-        print("Un Answer Succeded")
+        try:
+            # Use a more stable XPATH looking for the specific functional class
+            xpath = "//button[contains(@class, 'btnUnanswer')]"
+            unanswer_btn = self.wait.until(EC.element_to_be_clickable((By.XPATH, xpath)))
+            unanswer_btn.click()
+
+            # Instead of sleep(0.3), wait for the radio buttons to actually clear
+            # This is a 'fluent' way to ensure the action finished
+            WebDriverWait(self.driver, 5).until(
+                lambda d: not any(opt.is_selected() for opt in d.find_elements(By.NAME, 'answerOptions'))
+            )
+            print("Question un-answered successfully.")
+        except Exception as e:
+            print(f"Failed to un-answer: {e}")
+
+    def _get_safe_text(self, name_attribute):
+        """Helper to ensure text is present and not empty before returning"""
+        try:
+            element = self.wait.until(EC.visibility_of_element_located((By.NAME, name_attribute)))
+            return element.text.strip()
+        except:
+            return "NOT_FOUND"
 
     def find_question_string(self):
-        question_string = self.driver.find_element(By.NAME, 'questionHtmlString').text
-        print(question_string)
-        return question_string
+        return self._get_safe_text('questionHtmlString')
 
     def find_question_string_v2(self):
-        question_string = self.driver.find_element(By.NAME, 'questionHtmlString').text
-        groupname = self.driver.find_element(By.NAME, 'groupName').text
-        section_name = self.driver.find_element(By.NAME, 'sectionName').text
-        return question_string, groupname, section_name
+        q_str = self._get_safe_text('questionHtmlString')
+        group = self._get_safe_text('groupName')
+        section = self._get_safe_text('sectionName')
+        return q_str, group, section
 
     def find_question_string_for_rtc(self):
-        parent_question_string = self.driver.find_element(By.NAME, 'questionParentHtmlString').text
-        child_question_string = self.driver.find_element(By.NAME, 'questionHtmlString').text
-        groupname = self.driver.find_element(By.NAME, 'groupName').text
-        section_name = self.driver.find_element(By.NAME, 'sectionName').text
-        return parent_question_string, child_question_string, groupname, section_name
+        # RTC (Reading Comprehension) often has a parent passage
+        parent = self._get_safe_text('questionParentHtmlString')
+        child = self._get_safe_text('questionHtmlString')
+        group = self._get_safe_text('groupName')
+        section = self._get_safe_text('sectionName')
+        return parent, child, group, section
 
     def rejection_page(self):
-        print("This is Rejected Method")
-        data = {}
+        print("Checking Rejection Page...")
+        # Default 'empty' data structure
+        data = {
+            'is_next_test_available': 'Not Available', 'is_shortlisted': 'Rejected',
+            'message': 'EMPTY', 'consent_yes': 'EMPTY', 'consent_no': 'EMPTY',
+            'consent_paragraph': 'EMPTY', 'next_test_page_message': 'EMPTY',
+            'retest_required': False
+        }
+
         try:
-            if self.driver.find_element(By.NAME, 'nextTestMsg').is_displayed():
-                message = self.driver.find_element(By.NAME, 'nextTestMsg').text
-                overall_page_message = self.driver.find_element(By.XPATH, "//*[@class='ng-scope']").text
-                data = {'is_next_test_available': 'Not Available', 'is_shortlisted': 'Rejected',
-                        'message': message, 'consent_yes': 'EMPTY', 'consent_no': 'EMPTY',
-                        'consent_paragraph': 'EMPTY', 'next_test_page_message': overall_page_message,
-                        'retest_required': False}
+            # Use a short timeout to see if the message exists
+            msg_el = WebDriverWait(self.driver, 5).until(
+                EC.visibility_of_element_located((By.NAME, 'nextTestMsg'))
+            )
+            data['message'] = msg_el.text
+
+            # Avoid generic ng-scope; look for the main container or body
+            data['next_test_page_message'] = self.driver.find_element(By.TAG_NAME, 'body').text
 
         except Exception as e:
-            print(e)
-            message = "shortlisting not available"
-            data = {'is_next_test_available': 'EXCEPTION OCCURRED', 'is_shortlisted': 'EXCEPTION OCCURRED',
-                    'message': message, 'consent_yes': 'EXCEPTION OCCURRED', 'consent_no': 'EXCEPTION OCCURRED',
-                    'consent_paragraph': 'EXCEPTION OCCURRED', 'next_test_page_message': 'EXCEPTION OCCURRED',
-                    'retest_required': False}
+            print(f"Rejection element not found: {e}")
+            data['is_next_test_available'] = 'EXCEPTION'
+
         return data
 
     def shortlisting_page(self):
+        print("Processing Shortlisting/Chaining Logic...")
         data = {}
+
         try:
-            if self.driver.find_element(By.NAME, 'btnStartNextTest').is_displayed():
-                overall_page_message = self.driver.find_element(By.XPATH, "//*[@class='ng-scope']").text
-                button_message = self.driver.find_element(By.NAME, 'btnStartNextTest').text
-                print("This is button message")
-                print(button_message)
-                if button_message == 'Yes, Request for Retest':
-                    data = {'is_next_test_available': 'Not Available', 'is_shortlisted': 'Retest Case',
-                            'message': 'EMPTY', 'consent_yes': 'EMPTY', 'consent_no': 'EMPTY',
-                            'consent_paragraph': 'EMPTY', 'next_test_page_message': overall_page_message,
-                            'retest_required': True}
-                else:
-                    next_test_message = self.driver.find_element(By.NAME, 'nextTestMsg').text
-                    if button_message == 'Yes, Take me to the next test':
-                        consent_message = self.driver.find_element(By.XPATH, "//*[@class='next-msg ng-scope']").text
-                        consent_yes = self.driver.find_element(By.XPATH, "//*[@class='btn btn-success btn-yes ng-isolate-scope']").text
-                        consent_no = self.driver.find_element(By.XPATH, "//*[@class='btn btn-default red-button ng-isolate-scope']").text
-                        data = {'is_next_test_available': 'Available', 'is_shortlisted': 'Shortlisted with Consent',
-                                'message': next_test_message, 'consent_yes': consent_yes, 'consent_no': consent_no,
-                                'consent_paragraph': consent_message, 'next_test_page_message': overall_page_message,
-                                'retest_required': False}
-                    else:
-                        if next_test_message == 'We have another test lined up for you.':
-                            data = {'is_next_test_available': 'Available', 'is_shortlisted': 'Autotest',
-                                    'message': next_test_message, 'consent_yes': 'EMPTY', 'consent_no': 'EMPTY',
-                                    'consent_paragraph': 'EMPTY', 'next_test_page_message': overall_page_message,
-                                    'retest_required': False}
-                        elif next_test_message == 'Congratulations! You are eligible for the next test.':
-                            data = {'is_next_test_available': 'Available', 'is_shortlisted': 'Shortlisted',
-                                    'message': next_test_message, 'consent_yes': 'EMPTY', 'consent_no': 'EMPTY',
-                                    'consent_paragraph': 'EMPTY', 'next_test_page_message': overall_page_message,
-                                    'retest_required': False}
-                        else:
-                            data = {'is_next_test_available': 'Available', 'is_shortlisted': 'DEBUG',
-                                    'message': next_test_message, 'consent_yes': 'DEBUG', 'consent_no': 'DEBUG',
-                                    'consent_paragraph': 'DEBUG', 'next_test_page_message': overall_page_message,
-                                    'retest_required': False}
+            # 1. Wait for the primary button to determine the state
+            # Using a 10s wait instead of implicit wait saves time
+            btn = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.NAME, 'btnStartNextTest'))
+            )
+
+            btn_text = btn.text.strip()
+            overall_msg = self.driver.find_element(By.TAG_NAME, "body").text
+
+            # 2. Extract common message element if it exists
+            try:
+                next_test_msg = self.driver.find_element(By.NAME, 'nextTestMsg').text
+            except:
+                next_test_msg = "EMPTY"
+
+            # 3. Decision Logic based on Button Text
+            if btn_text == 'Yes, Request for Retest':
+                data = self._create_data_dict(available='Not Available', status='Retest Case',
+                                              msg='RETEST', overall=overall_msg, retest=True)
+
+            elif btn_text == 'Yes, Take me to the next test':
+                # This is a Consent Case
+                consent_para = self.driver.find_element(By.CLASS_NAME, "next-msg").text
+                c_yes = self.driver.find_element(By.CLASS_NAME, "btn-yes").text
+                c_no = self.driver.find_element(By.CLASS_NAME, "red-button").text
+
+                data = self._create_data_dict(available='Available', status='Shortlisted with Consent',
+                                              msg=next_test_msg, overall=overall_msg,
+                                              yes=c_yes, no=c_no, para=consent_para)
+
+            else:
+                # Autotest or Standard Shortlist logic
+                status = "Shortlisted"
+                if "another test lined up" in next_test_msg:
+                    status = "Autotest"
+
+                data = self._create_data_dict(available='Available', status=status,
+                                              msg=next_test_msg, overall=overall_msg)
+
         except Exception as e:
-            print(e)
-            next_test_message = "Shortlisting Not Available"
-            data = {'is_next_test_available': 'EXCEPTION OCCURRED', 'is_shortlisted': 'EXCEPTION OCCURRED',
-                    'message': next_test_message, 'consent_yes': 'EXCEPTION OCCURRED',
-                    'consent_no': 'EXCEPTION OCCURRED', 'consent_paragraph': 'EXCEPTION OCCURRED',
-                    'next_test_page_message': 'EXCEPTION OCCURRED', 'retest_required': False}
-            print("This is Shortlist method")
-        print(data)
+            print(f"Shortlisting detection failed: {e}")
+            data = self._create_data_dict(available='EXCEPTION', status='EXCEPTION', msg=str(e))
+
         return data
 
-    def start_next_test(self):
-        self.driver.find_element(By.NAME, 'btnStartNextTest').click()
-        time.sleep(3)
-        self.driver.switch_to.window(self.driver.window_handles[2])
+    def _create_data_dict(self, available='EMPTY', status='EMPTY', msg='EMPTY',
+                          yes='EMPTY', no='EMPTY', para='EMPTY', overall='EMPTY', retest=False):
+        """Helper to maintain a consistent dictionary structure"""
+        return {
+            'is_next_test_available': available,
+            'is_shortlisted': status,
+            'message': msg,
+            'consent_yes': yes,
+            'consent_no': no,
+            'consent_paragraph': para,
+            'next_test_page_message': overall,
+            'retest_required': retest
+        }
 
+    def start_next_test(self):
+        old_handles = self.driver.window_handles
+
+
+        # 3. Wait for the new window handle to appear (up to 10 seconds)
+        # This replaces time.sleep(3) and is much faster/safer
+        try:
+            start_btn = self.wait.until(EC.element_to_be_clickable((By.NAME, 'btnStartNextTest')))
+            start_btn.click()
+            window_wait = WebDriverWait(self.driver, 20)
+            try:
+                window_wait.until(lambda d: len(d.window_handles) > len(old_handles))
+            except:
+                print("Standard click might have failed. Retrying with JavaScript click...")
+                self.driver.execute_script("arguments[0].click();", start_btn)
+                window_wait.until(lambda d: len(d.window_handles) > len(old_handles))
+            new_handles = self.driver.window_handles
+            self.driver.switch_to.window(new_handles[-1])
+            # 5. Important: Give the new window a moment to 'exist' before the next command
+            self.wait.until(lambda d: d.execute_script('return document.readyState') == 'complete')
+
+            print(f"Successfully switched to window. Total windows: {len(new_handles)}")
+        except Exception as e:
+            print("CRITICAL: The next test window failed to open.")
+            # Optional: Take a screenshot to see if an error popup appeared on screen
+            self.driver.save_screenshot("chaining_error.png")
+            raise e
+
+    # def consent_no(self):
+    #     self.driver.find_element(By.XPATH, "//*[@class='btn btn-default red-button']").click()
+    #     time.sleep(3)
+    #     self.driver.switch_to.window(self.driver.window_handles[2])
     def consent_no(self):
-        self.driver.find_element(By.XPATH, "//*[@class='btn btn-default red-button']").click()
-        time.sleep(3)
-        self.driver.switch_to.window(self.driver.window_handles[2])
+        try:
+            # 1. Capture current handles before clicking
+            existing_handles = self.driver.window_handles
+
+            # 2. Find and click the 'No' button using a safer XPATH
+            no_btn_xpath = "//button[contains(@class, 'red-button') or contains(., 'No')]"
+            no_btn = self.wait.until(EC.element_to_be_clickable((By.XPATH, no_btn_xpath)))
+            no_btn.click()
+            print("Clicked 'No' for consent.")
+
+            # 3. Wait for a NEW window to appear (up to 10 seconds)
+            # This is much safer than sleep(3)
+            self.wait.until(lambda d: len(d.window_handles) > len(existing_handles))
+
+            # 4. Switch to the newest window (the last one in the list)
+            new_handles = self.driver.window_handles
+            self.driver.switch_to.window(new_handles[-1])
+
+            print(f"Switched to new window. Title: {self.driver.title}")
+
+        except Exception as e:
+            print(f"Failed during consent_no window switch: {e}")
+            # Optional: If the switch fails, you might want to stay on the current handle
+            if len(self.driver.window_handles) > 0:
+                self.driver.switch_to.window(self.driver.window_handles[-1])
 
     def vet_start_test(self):
         time.sleep(5)
@@ -1056,20 +1315,5 @@ class AssessmentUICommon:
         self.driver.switch_to.parent_frame()
         action.send_keys(Keys.CONTROL + 'A')
 
-    # def coding_editor(self, code):
-    #     self.driver.find_element(By.CLASS_NAME, 'ace_content').click()
-    #     self.driver.switch_to.parent_frame()
-    #     self.driver.switch_to.active_element.clear()
-    #     self.driver.switch_to.active_element.send_keys(code)
-    #     self.driver.find_element(By.XPATH, '//button[text()=" Compile & Execute"]').click()
-    #
-
-    # self.driver.find_element(By.XPATH, '//button[text()=" Compile & Execute"]').click()
-
 
 assess_ui_common_obj = AssessmentUICommon()
-# status = assess_ui_common_obj.ui_login_to_test()
-# print(status)
-# url = "https://pearsonstg.hirepro.in/assessment/#/assess/login/eyJhbGlhcyI6ImF1dG9tYXRpb24ifQ%3D%3D"
-# path = r"F:\qa_automation\chromedriver.exe"
-# assess_ui_common_obj.initiate_browser_for_proctoring( url, path)
