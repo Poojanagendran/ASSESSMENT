@@ -1,26 +1,46 @@
 import time
 import traceback
+import platform
+import os
+
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
-
+from pathlib import Path
 
 class CrpoCommon:
     def __init__(self):
         self.delay = 120
+        self.os_name = platform.system()
+        print(self.os_name)
 
-    def initiate_browser(self, url, path):
-        # chrome option is needed in VET cases - ( its handling permissions like mic access)
+    def initiate_browser(self, url):
         chrome_options = Options()
+
+        # Auto allow mic/camera (VET / WebRTC)
         chrome_options.add_argument("--use-fake-ui-for-media-stream")
-        self.driver = webdriver.Chrome(executable_path=path, chrome_options=chrome_options)
+
+        # Stability & speed
+        chrome_options.add_argument("--disable-notifications")
+        chrome_options.add_argument("--disable-infobars")
+        chrome_options.add_experimental_option("detach", True)
+
+        # 🚀 Selenium Manager handles driver automatically
+        self.driver = webdriver.Chrome(options=chrome_options)
+
         self.driver.get(url)
-        self.driver.implicitly_wait(10)
         self.driver.maximize_window()
-        # self.driver.switch_to.window(self.driver.window_handles[1])
+
+        # REQUIRED for your login code
+        self.wait = WebDriverWait(self.driver, 10)
+
+        # Safe window handling
+        if len(self.driver.window_handles) > 1:
+            self.driver.switch_to.window(self.driver.window_handles[-1])
+
         return self.driver
 
     def move_to_manage_actions_page(self , url):
