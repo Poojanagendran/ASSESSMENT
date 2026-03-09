@@ -878,5 +878,31 @@ class CrpoCommon:
         print(itua_resp)
         return itua_resp
 
+    # InterviewBot Grid
+    @staticmethod
+    def generate_feedback(token, interview_id):
+        logging.info('Entered Run Proctoring')
+        request = {"InterviewId": int(interview_id)}
+        response = requests.post(crpo_common_obj.domain +
+                                 "/py/interview_bot/generate_feedback/",
+                                 headers=token,
+                                 data=json.dumps(request, default=str), verify=False)
+        logging.info(response.json())
+        generate_feedback_resp = response.json()
+        return generate_feedback_resp
+
+    # InterviewBot Grid
+    @staticmethod
+    def get_interview_by_id(token, interview_id):
+        logging.info('Entered Run Proctoring')
+        request = {"InterviewId": int(interview_id)}
+        response = requests.post(crpo_common_obj.domain +
+                                 "/py/interview_bot/get_interview_by_id/",
+                                 headers=token,
+                                 data=json.dumps(request, default=str), verify=False)
+        logging.info(response.json())
+        get_interview_by_id_resp = response.json()
+        return get_interview_by_id_resp
+
 
 crpo_common_obj = CrpoCommon()
