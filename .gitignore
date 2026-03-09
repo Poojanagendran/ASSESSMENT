@@ -1,5 +1,6 @@
 .idea/
 venv/
+.venv/
 /PythonWorkingScripts_InputData/Assessment/applicant_report/downloaded/downloadedfile.xlsx
 /PythonWorkingScripts_InputData/Assessment/assessment_docket/*.txt
 /PythonWorkingScripts_InputData/Assessment/assessment_docket/*.zip
@@ -9,6 +10,8 @@ __pycache__/
 /PythonWorkingScripts_Output/*.xlsx
 /PythonWorkingScripts_Output/allowed_extensions/*.xls
 /PythonWorkingScripts_Output/allowed_extensions/*.xlsx
+/PythonWorkingScripts_Output/InterviewBot/*.xls
+/PythonWorkingScripts_Output/InterviewBot/*.xlsx
 /PythonWorkingScripts_Output/Assessment/*.xls
 /PythonWorkingScripts_Output/Assessment/*.xlsx
 /PythonWorkingScripts_Output/INFRA/*.xls
