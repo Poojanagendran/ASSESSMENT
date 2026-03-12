@@ -1,3 +1,9 @@
+"""
+Brightness and sharpness check: analyzes images for face detection, brightness, sharpness, confidence.
+
+Run directly: from project root, python -m SCRIPTS.API_SCRIPTS.analyze_brightness_shapness
+Safe to import: main logic runs only when executed as __main__ (pytest-friendly).
+"""
 from SCRIPTS.COMMON.read_excel import *
 from SCRIPTS.COMMON.write_excel_new import *
 from SCRIPTS.CRPO_COMMON.crpo_common import *
@@ -84,12 +90,13 @@ class AllowedFileExtensions:
         self.row_size += 1
 
 
-brightness_check = AllowedFileExtensions()
-login_token = crpo_common_obj.login_to_crpo(cred_crpo_admin.get('user'), cred_crpo_admin.get('password'),
-                                            cred_crpo_admin.get('tenant'))
-excel_read_obj.excel_read(input_path_brightness_check, 0)
-excel_data = excel_read_obj.details
+if __name__ == "__main__":
+    brightness_check = AllowedFileExtensions()
+    login_token = crpo_common_obj.login_to_crpo(cred_crpo_admin.get('user'), cred_crpo_admin.get('password'),
+                                                cred_crpo_admin.get('tenant'))
+    excel_read_obj.excel_read(input_path_brightness_check, 0)
+    excel_data = excel_read_obj.details
 
-thread_context(brightness_check.brightness_sharpness_check, login_token, excel_data)
+    thread_context(brightness_check.brightness_sharpness_check, login_token, excel_data)
 
-write_excel_object.write_overall_status(testcases_count=40)
+    write_excel_object.write_overall_status(testcases_count=40)

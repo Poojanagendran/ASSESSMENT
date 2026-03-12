@@ -1,3 +1,9 @@
+"""
+Question search with boundary: validates question search API with boundary value testing.
+
+Run directly: from project root, python -m SCRIPTS.API_SCRIPTS.question_search_with_boundary
+Safe to import: main logic runs only when executed as __main__ (pytest-friendly).
+"""
 from SCRIPTS.COMMON.read_excel import *
 import datetime
 import xlsxwriter
@@ -220,17 +226,18 @@ class QuestionSearch:
             self.overall_status = 'Fail'
 
 
-crpo_token = crpo_common_obj.login_to_crpo(cred_crpo_admin.get('user'), cred_crpo_admin.get('password'),
-                                           cred_crpo_admin.get('tenant'))
-qs = QuestionSearch()
-row_size = 1
-qs.write_headers()
-for req in qs.excel_requests:
-    row_size += 1
-    qs.api_total_count(crpo_token, req)
-    qs.db_total_count(json.loads(req.get('request')))
-    qs.data_comparision(req.get('request'), row_size)
+if __name__ == "__main__":
+    crpo_token = crpo_common_obj.login_to_crpo(cred_crpo_admin.get('user'), cred_crpo_admin.get('password'),
+                                               cred_crpo_admin.get('tenant'))
+    qs = QuestionSearch()
+    row_size = 1
+    qs.write_headers()
+    for req in qs.excel_requests:
+        row_size += 1
+        qs.api_total_count(crpo_token, req)
+        qs.db_total_count(json.loads(req.get('request')))
+        qs.data_comparision(req.get('request'), row_size)
 
-qs.ws.write(0, 1, qs.overall_status, qs.overall_status_color)
-qs.ws.write(0, 2, "Total Test Cases :- 73 ", qs.green_color)
-qs.write_excel.close()
+    qs.ws.write(0, 1, qs.overall_status, qs.overall_status_color)
+    qs.ws.write(0, 2, "Total Test Cases :- 73 ", qs.green_color)
+    qs.write_excel.close()

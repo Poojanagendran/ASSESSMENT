@@ -1,3 +1,9 @@
+"""
+Reinitiate automation: validates test reinitiation flow and next test status.
+
+Run directly: from project root, python -m SCRIPTS.API_SCRIPTS.reinitiate_automation
+Safe to import: main logic runs only when executed as __main__ (pytest-friendly).
+"""
 from SCRIPTS.COMMON.read_excel import *
 from SCRIPTS.COMMON.write_excel_new import *
 from SCRIPTS.CRPO_COMMON.credentials import *
@@ -72,29 +78,30 @@ class ReInitiateAutomation:
         self.row_size = self.row_size + 1
 
 
-re_initiate_obj = ReInitiateAutomation()
-excel_read_obj.excel_read(input_path_reinitiate_automation, 0)
-excel_data = excel_read_obj.details
-crpo_headers = crpo_common_obj.login_to_crpo(cred_crpo_admin.get('user'), cred_crpo_admin.get('password'),
-                                             cred_crpo_admin.get('tenant'))
+if __name__ == "__main__":
+    re_initiate_obj = ReInitiateAutomation()
+    excel_read_obj.excel_read(input_path_reinitiate_automation, 0)
+    excel_data = excel_read_obj.details
+    crpo_headers = crpo_common_obj.login_to_crpo(cred_crpo_admin.get('user'), cred_crpo_admin.get('password'),
+                                                 cred_crpo_admin.get('tenant'))
 
-untag_candidate_id_and_test_id = {}
-for data in excel_data:
-    test_id = int(data.get('primaryTestId'))
-    next_test_id = int(data.get('nextTestId'))
-    candiate_id = int(data.get('candidateId'))
-    if data.get('isUntaggedFromT2') == 'Yes':
-        tu_data = crpo_common_obj.search_test_user_by_cid_and_testid(crpo_headers, candiate_id, next_test_id)
-        tu_id = tu_data.get('testUserId')
-        if tu_id != 'NotExist':
-            print(tu_id)
-            untag_candidates_details = [{"testUserIds": [tu_id]}]
-            crpo_common_obj.untag_candidate(crpo_headers, untag_candidates_details)
+    untag_candidate_id_and_test_id = {}
+    for data in excel_data:
+        test_id = int(data.get('primaryTestId'))
+        next_test_id = int(data.get('nextTestId'))
+        candiate_id = int(data.get('candidateId'))
+        if data.get('isUntaggedFromT2') == 'Yes':
+            tu_data = crpo_common_obj.search_test_user_by_cid_and_testid(crpo_headers, candiate_id, next_test_id)
+            tu_id = tu_data.get('testUserId')
+            if tu_id != 'NotExist':
+                print(tu_id)
+                untag_candidates_details = [{"testUserIds": [tu_id]}]
+                crpo_common_obj.untag_candidate(crpo_headers, untag_candidates_details)
 
-    crpo_common_obj.re_initiate_automation(crpo_headers, test_id, candiate_id)
-    time.sleep(5)
-    assessment_headers = AssessmentCommon.login_to_test(login_name=data.get('loginName'), password=data.get('password'),
-                                                        tenant='automation')
-    re_initiate_obj.test_user_next_test_status(assessment_headers)
-    re_initiate_obj.excel_write(data)
-write_excel_object.write_overall_status(testcases_count=29)
+        crpo_common_obj.re_initiate_automation(crpo_headers, test_id, candiate_id)
+        time.sleep(5)
+        assessment_headers = AssessmentCommon.login_to_test(login_name=data.get('loginName'), password=data.get('password'),
+                                                            tenant='automation')
+        re_initiate_obj.test_user_next_test_status(assessment_headers)
+        re_initiate_obj.excel_write(data)
+    write_excel_object.write_overall_status(testcases_count=29)

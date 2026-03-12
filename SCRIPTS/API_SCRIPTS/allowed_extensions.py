@@ -1,3 +1,9 @@
+"""
+Allowed file extensions validation: reads input Excel, validates each file via CRPO API, writes results.
+
+Run directly: from project root, python -m SCRIPTS.API_SCRIPTS.allowed_extensions
+Safe to import: main logic runs only when executed as __main__ (pytest-friendly).
+"""
 # from concurrent.futures import ThreadPoolExecutor, as_completed
 from SCRIPTS.COMMON.write_excel_new import *
 from SCRIPTS.COMMON.read_excel import *
@@ -64,15 +70,16 @@ class AllowedFileExtensions:
         self.row_size += 1
 
 
-# Initializing AllowedFileExtensions object
-allowed_ext_obj = AllowedFileExtensions()
+if __name__ == "__main__":
+    # Initializing AllowedFileExtensions object
+    allowed_ext_obj = AllowedFileExtensions()
 
-# Logging in to CRPO
-login_token = crpo_common_obj.login_to_crpo(cred_crpo_admin.get('user'), cred_crpo_admin.get('password'),
-                                            cred_crpo_admin.get('tenant'))
+    # Logging in to CRPO
+    login_token = crpo_common_obj.login_to_crpo(cred_crpo_admin.get('user'), cred_crpo_admin.get('password'),
+                                                cred_crpo_admin.get('tenant'))
 
-# Reading data from Excel file
-excel_read_obj.excel_read(input_path_allowed_extension, 0)
-excel_data = excel_read_obj.details
-thread_context(allowed_ext_obj.validate_files, login_token, excel_data)
-write_excel_object.write_overall_status(testcases_count=len(excel_data))
+    # Reading data from Excel file
+    excel_read_obj.excel_read(input_path_allowed_extension, 0)
+    excel_data = excel_read_obj.details
+    thread_context(allowed_ext_obj.validate_files, login_token, excel_data)
+    write_excel_object.write_overall_status(testcases_count=len(excel_data))

@@ -1,3 +1,9 @@
+"""
+Coding compilation: validates code compilation and test case execution.
+
+Run directly: from project root, python -m SCRIPTS.API_SCRIPTS.coding_compilation
+Safe to import: main logic runs only when executed as __main__ (pytest-friendly).
+"""
 from SCRIPTS.COMMON.read_excel import *
 from SCRIPTS.COMMON.write_excel_new import *
 from SCRIPTS.COMMON.io_path import *
@@ -191,12 +197,13 @@ class CodingCompiler:
             self.row_size += 1
 
 
-coding_compiler = CodingCompiler()
-excel_read_obj.excel_read(input_coding_compiler, 0)
-excel_data = excel_read_obj.details
-login_token = assessment_common_obj.login_to_test_v3('Automation152371400389', 'passpass', 'Automation',
-                                                     coding_compiler.main_domain)
-thread_context(coding_compiler.coding_compilation_check, login_token, excel_data)
-# for data in excel_data:
-#     coding_compiler.coding_compilation_check(data)
-write_excel_object.write_overall_status(testcases_count=2)
+if __name__ == "__main__":
+    coding_compiler = CodingCompiler()
+    excel_read_obj.excel_read(input_coding_compiler, 0)
+    excel_data = excel_read_obj.details
+    login_token = assessment_common_obj.login_to_test_v3('Automation152371400389', 'passpass', 'Automation',
+                                                         coding_compiler.main_domain)
+    thread_context(coding_compiler.coding_compilation_check, login_token, excel_data)
+    # for data in excel_data:
+    #     coding_compiler.coding_compilation_check(data)
+    write_excel_object.write_overall_status(testcases_count=2)

@@ -1,3 +1,9 @@
+"""
+Dumped questions: validates question export/import between tenants.
+
+Run directly: from project root, python -m SCRIPTS.API_SCRIPTS.dumped_questions
+Safe to import: main logic runs only when executed as __main__ (pytest-friendly).
+"""
 # from SCRIPTS.API_SCRIPTS.test import parent_tenant_qn_details
 from SCRIPTS.COMMON.write_excel_new import *
 from SCRIPTS.COMMON.read_excel import *
@@ -369,24 +375,25 @@ class DumpedQuestions:
         self.row_size += 1
 
 
-dump_qn_obj = DumpedQuestions()
+if __name__ == "__main__":
+    dump_qn_obj = DumpedQuestions()
 
-# Logging in to CRPO
-dumped_tenant_login_token = crpo_common_obj.login_to_crpo(cred_crpo_admin_at.get('user'),
-                                                          cred_crpo_admin_at.get('password'),
-                                                          cred_crpo_admin_at.get('tenant'))
+    # Logging in to CRPO
+    dumped_tenant_login_token = crpo_common_obj.login_to_crpo(cred_crpo_admin_at.get('user'),
+                                                              cred_crpo_admin_at.get('password'),
+                                                              cred_crpo_admin_at.get('tenant'))
 
-parent_tenant_login_token = crpo_common_obj.login_to_crpo(cred_crpo_admin_hirepro.get('user'),
-                                                          cred_crpo_admin_hirepro.get('password'),
-                                                          cred_crpo_admin_hirepro.get('tenant'))
+    parent_tenant_login_token = crpo_common_obj.login_to_crpo(cred_crpo_admin_hirepro.get('user'),
+                                                              cred_crpo_admin_hirepro.get('password'),
+                                                              cred_crpo_admin_hirepro.get('tenant'))
 
-# Reading data from Excel file
-excel_read_obj.excel_read(inpiut_dump_questions, 1)
-excel_data = excel_read_obj.details
+    # Reading data from Excel file
+    excel_read_obj.excel_read(inpiut_dump_questions, 1)
+    excel_data = excel_read_obj.details
 
-# Process questions in parallel using thread context
-tokens = [dumped_tenant_login_token, parent_tenant_login_token]
-thread_context(dump_qn_obj.process_question, tokens, excel_data)
-write_excel_object.write_overall_status(testcases_count=len(excel_data))
+    # Process questions in parallel using thread context
+    tokens = [dumped_tenant_login_token, parent_tenant_login_token]
+    thread_context(dump_qn_obj.process_question, tokens, excel_data)
+    write_excel_object.write_overall_status(testcases_count=len(excel_data))
 
 

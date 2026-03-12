@@ -26,9 +26,9 @@ class Excel:
         self.over_all_status_failed = self.write_excel.add_format({'font_color': 'red', 'bold': True, 'font_size': 9})
         self.over_all_status_color = self.over_all_status_pass
         self.current_status = "Pass"
-        self.current_status_color = write_excel_object.green_color
+        self.current_status_color = self.green_color
         self.overall_status = "Pass"
-        self.overall_status_color = write_excel_object.green_color
+        self.overall_status_color = self.green_color
 
     def excelReadExpectedSheet(self, excepted_sheet_path):
         print(excepted_sheet_path)
@@ -56,12 +56,10 @@ class Excel:
     # this is not in USE
     def write_excel1(data_to_be_written_in_excel):
         # This is a normal write excel script without comparing any, so far not used anywhere
-        # 0th index is row
-        # 1st index is column
-        # 2nd index is value
-        # 3rd index is color coding
+        # 0th index is row, 1st index is column, 2nd index is value, 3rd index is color coding
+        excel = get_write_excel()
         for final_data in data_to_be_written_in_excel:
-            write_excel_object.ws.write(final_data[0], final_data[1], final_data[2], final_data[3])
+            excel.ws.write(final_data[0], final_data[1], final_data[2], final_data[3])
 
     def excelMatchValues(self, usecase_name, comparision_required_from_index, total_testcase_count):
         # This is for excel to excel comparision
@@ -111,76 +109,91 @@ class Excel:
                                              compare_but_write_actual_only=None, is_act_zero_considered=None):
         if column_index == 1:
             # this logic is used to write the row status
-            write_excel_object.ws.write(row_index, column_index, expected_data, self.current_status_color)
+            self.ws.write(row_index, column_index, expected_data, self.current_status_color)
         else:
             if expected_data is not None and actual_data is not None:
                 if not compare_but_write_actual_only:
-                    write_excel_object.ws.write(row_index, column_index, expected_data, write_excel_object.black_color)
+                    self.ws.write(row_index, column_index, expected_data, self.black_color)
                     if expected_data == actual_data:
-                        write_excel_object.ws.write(row_index, column_index + 1, actual_data,
-                                                    write_excel_object.green_color)
+                        self.ws.write(row_index, column_index + 1, actual_data, self.green_color)
                     else:
-                        write_excel_object.ws.write(row_index, column_index + 1, actual_data,
-                                                    write_excel_object.red_color)
+                        self.ws.write(row_index, column_index + 1, actual_data, self.red_color)
                         self.current_status = 'Fail'
                         self.overall_status = 'Fail'
-                        self.current_status_color = write_excel_object.red_color
-                        self.overall_status_color = write_excel_object.red_color
+                        self.current_status_color = self.red_color
+                        self.overall_status_color = self.red_color
                 # some cases we want to compare the expected and actual but don't want the expected to be written
                 # using this for co-cubes proctoring.
                 else:
                     if expected_data == actual_data:
-                        write_excel_object.ws.write(row_index, column_index, actual_data,
-                                                    write_excel_object.green_color)
+                        self.ws.write(row_index, column_index, actual_data, self.green_color)
                     else:
-                        write_excel_object.ws.write(row_index, column_index, actual_data,
-                                                    write_excel_object.red_color)
+                        self.ws.write(row_index, column_index, actual_data, self.red_color)
                         print("This is for co-cubes test")
                         self.current_status = 'Fail'
                         self.overall_status = 'Fail'
-                        self.current_status_color = write_excel_object.red_color
-                        self.overall_status_color = write_excel_object.red_color
+                        self.current_status_color = self.red_color
+                        self.overall_status_color = self.red_color
 
             elif expected_data is None:
                 # In some special cases we don't have the expected data but want to verify weather we are getting
                 # actual data in the response ex- code compiler we cannot compare memory
                 # and execution time since its changing every execution this will vary so we dont have expected but
                 # we know something will be returned by the api so we need below check
-
-                # if actual_data or (actual_data == 0 and is_act_zero_considered is True):
-                #     write_excel_object.ws.write(row_index, column_index, actual_data, write_excel_object.green_color)
                 if isinstance(actual_data, int) or isinstance(actual_data, float) or isinstance(actual_data, str):
-                    write_excel_object.ws.write(row_index, column_index, actual_data,
-                                                write_excel_object.green_color)
+                    self.ws.write(row_index, column_index, actual_data, self.green_color)
                 else:
-                    write_excel_object.ws.write(row_index, column_index, actual_data, write_excel_object.red_color)
+                    self.ws.write(row_index, column_index, actual_data, self.red_color)
                     self.current_status = 'fail'
                     self.overall_status = 'fail'
-                    self.current_status_color = write_excel_object.red_color
-                    self.overall_status_color = write_excel_object.red_color
+                    self.current_status_color = self.red_color
+                    self.overall_status_color = self.red_color
 
             elif expected_data in ['EMPTY', 'NULL', 'None', 'null', 'empty', 'Empty',] and not actual_data:
-                write_excel_object.ws.write(row_index, column_index, expected_data, write_excel_object.black_color)
-                write_excel_object.ws.write(row_index, column_index+1, 'EMPTY', write_excel_object.green_color)
+                self.ws.write(row_index, column_index, expected_data, self.black_color)
+                self.ws.write(row_index, column_index+1, 'EMPTY', self.green_color)
 
             else:
                 # this part used for writing data without comparison,
                 # some information does not need cmp but need to be written in every row
-                write_excel_object.ws.write(row_index, column_index, expected_data, write_excel_object.black_color)
+                self.ws.write(row_index, column_index, expected_data, self.black_color)
 
     @staticmethod
     def write_overall_status(testcases_count):
-        ended = datetime.datetime.now()
-        ended =  ended.strftime("%Y-%m-%d-%H-%M-%S")
-        # print(ended)
-        write_excel_object.ws.write(0, 1, "Overall Status is - %s" % write_excel_object.overall_status,
-                                    write_excel_object.overall_status_color)
-        write_excel_object.ws.write(0, 2,  write_excel_object.started,
-                                    write_excel_object.green_color_bold)
-        write_excel_object.ws.write(0, 3, ended, write_excel_object.green_color_bold)
-        write_excel_object.ws.write(0, 4, "Total_Test case_Count:- %s" % testcases_count,
-                                    write_excel_object.green_color_bold)
-        write_excel_object.write_excel.close()
+        ended = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        excel = get_write_excel()
+        excel.ws.write(0, 1, "Overall Status is - %s" % excel.overall_status, excel.overall_status_color)
+        excel.ws.write(0, 2, excel.started, excel.green_color_bold)
+        excel.ws.write(0, 3, ended, excel.green_color_bold)
+        excel.ws.write(0, 4, "Total_Test case_Count:- %s" % testcases_count, excel.green_color_bold)
+        excel.write_excel.close()
 
 
-write_excel_object = Excel()
+def get_write_excel():
+    """Return the Excel instance for this context (override if set via run_context), else the default singleton."""
+    from SCRIPTS.COMMON import run_context
+    override = run_context.get_write_excel_context()
+    return override if override is not None else _default_write_excel
+
+
+class _ExcelProxy:
+    """Proxy that delegates to get_write_excel() so existing code using write_excel_object uses context when set."""
+
+    def __init__(self):
+        # Use object.__setattr__ to avoid recursion when setting internal state
+        object.__setattr__(self, '_initialized', True)
+
+    def __getattr__(self, name):
+        return getattr(get_write_excel(), name)
+
+    def __setattr__(self, name, value):
+        # Allow setting internal attributes (like _initialized) without delegation
+        if not hasattr(self, '_initialized'):
+            object.__setattr__(self, name, value)
+        else:
+            # Delegate attribute assignment to the current Excel instance
+            setattr(get_write_excel(), name, value)
+
+
+_default_write_excel = Excel()
+write_excel_object = _ExcelProxy()

@@ -1,3 +1,9 @@
+"""
+SSRF check: validates Server-Side Request Forgery (SSRF) security vulnerabilities.
+
+Run directly: from project root, python -m SCRIPTS.API_SCRIPTS.ssrfCheck
+Safe to import: main logic runs only when executed as __main__ (pytest-friendly).
+"""
 import xlsxwriter
 from SCRIPTS.COMMON.read_excel import *
 from SCRIPTS.COMMON.io_path import *
@@ -122,28 +128,29 @@ class SecurityCheck:
             self.row_size += 1
 
 
-security_obj = SecurityCheck()
-security_data_excel = excel_read_obj.details
-crpo_headers = crpo_common_obj.login_to_crpo(cred_crpo_normal_user.get('user'), cred_crpo_normal_user.get('password'),
-                                             cred_crpo_normal_user.get('tenant'))
+if __name__ == "__main__":
+    security_obj = SecurityCheck()
+    security_data_excel = excel_read_obj.details
+    crpo_headers = crpo_common_obj.login_to_crpo(cred_crpo_normal_user.get('user'), cred_crpo_normal_user.get('password'),
+                                                 cred_crpo_normal_user.get('tenant'))
 
-candidate_headers = crpo_common_obj.login_to_crpo(cred_candidate_user.get('user'), cred_candidate_user.get('password'),
-                                                  cred_candidate_user.get('tenant'))
-source_headers = crpo_common_obj.login_to_crpo(cred_source_user.get('user'), cred_source_user.get('password'),
-                                               cred_source_user.get('tenant'))
-assessment_headers = AssessmentCommon.login_to_test(login_name='Automation89161268450', password='bEiATNLlO',
-                                                    tenant='automation')
-assessment_headers = {"content-type": "application/json", "X-AUTH-TOKEN": assessment_headers.get("Token"),
-                      "X-APPLMA": "true"}
-thread_context_for_ssrf_check(security_obj.security_check, crpo_headers, candidate_headers, assessment_headers,
-                              source_headers, security_data_excel)
-# for data in security_data_excel:
-#     security_obj.security_check(crpo_headers, candidate_headers, assessment_headers, source_headers, data)
+    candidate_headers = crpo_common_obj.login_to_crpo(cred_candidate_user.get('user'), cred_candidate_user.get('password'),
+                                                      cred_candidate_user.get('tenant'))
+    source_headers = crpo_common_obj.login_to_crpo(cred_source_user.get('user'), cred_source_user.get('password'),
+                                                   cred_source_user.get('tenant'))
+    assessment_headers = AssessmentCommon.login_to_test(login_name='Automation89161268450', password='bEiATNLlO',
+                                                        tenant='automation')
+    assessment_headers = {"content-type": "application/json", "X-AUTH-TOKEN": assessment_headers.get("Token"),
+                          "X-APPLMA": "true"}
+    thread_context_for_ssrf_check(security_obj.security_check, crpo_headers, candidate_headers, assessment_headers,
+                                  source_headers, security_data_excel)
+    # for data in security_data_excel:
+    #     security_obj.security_check(crpo_headers, candidate_headers, assessment_headers, source_headers, data)
 
-ended = datetime.datetime.now()
-ended = "Ended:- %s" % ended.strftime("%Y-%M-%d-%H-%M-%S")
-security_obj.ws.write(0, 1, security_obj.over_all_status, security_obj.over_all_status_color)
-security_obj.ws.write(0, 2, 'Started:- ' + security_obj.started, security_obj.black_color_bold)
-security_obj.ws.write(0, 3, ended, security_obj.black_color_bold)
-security_obj.ws.write(0, 4, "Total_Testcase_Count:- 138", security_obj.black_color_bold)
-security_obj.write_excel.close()
+    ended = datetime.datetime.now()
+    ended = "Ended:- %s" % ended.strftime("%Y-%M-%d-%H-%M-%S")
+    security_obj.ws.write(0, 1, security_obj.over_all_status, security_obj.over_all_status_color)
+    security_obj.ws.write(0, 2, 'Started:- ' + security_obj.started, security_obj.black_color_bold)
+    security_obj.ws.write(0, 3, ended, security_obj.black_color_bold)
+    security_obj.ws.write(0, 4, "Total_Testcase_Count:- 138", security_obj.black_color_bold)
+    security_obj.write_excel.close()
