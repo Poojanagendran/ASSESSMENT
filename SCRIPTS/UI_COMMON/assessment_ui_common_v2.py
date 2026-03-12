@@ -1410,5 +1410,147 @@ class AssessmentUICommon:
         self.driver.switch_to.parent_frame()
         action.send_keys(Keys.CONTROL + 'A')
 
+    # --- Login validation helpers (do not change ui_login_to_test above) ---
+
+    def fill_login_fields_without_submit(self, user_name, password):
+        """Clear and fill login username/password only; does not click Login."""
+        user_input = self.wait.until(
+            EC.visibility_of_element_located((By.NAME, 'loginUsername'))
+        )
+        user_input.clear()
+        if user_name:
+            user_input.send_keys(user_name)
+        user_pass = self.driver.find_element(By.NAME, 'loginPassword')
+        user_pass.clear()
+        if password:
+            user_pass.send_keys(password)
+        try:
+            WebDriverWait(self.driver, 10).until(
+                EC.invisibility_of_element_located(
+                    (By.CLASS_NAME, "block-ui-overlay")
+                )
+            )
+        except TimeoutException:
+            pass
+
+    def is_login_submit_button_enabled(self):
+        """True if Login button is enabled (clickable); False if disabled."""
+        try:
+            login_btn = self.driver.find_element(By.NAME, 'btnLogin')
+        except Exception:
+            return False
+        # disabled attribute present -> not enabled
+        if login_btn.get_attribute('disabled') is not None:
+            return False
+        if not login_btn.is_enabled():
+            return False
+        # Angular may use class instead of attribute
+        classes = (login_btn.get_attribute('class') or '').lower()
+        if 'disabled' in classes:
+            return False
+        return True
+
+    def is_still_on_login_page(self):
+        """True if login form is still visible (user has not navigated away)."""
+        try:
+            self.driver.find_element(By.NAME, 'loginUsername')
+            return True
+        except Exception:
+            return False
+
+    # Failure cases stay on login page; message is in:
+    # <div class="text-center login-error ng-binding ng-scope" ng-if="vm.loginInfo.IsException" ...>
+    _LOGIN_ERROR_CSS = 'div.login-error'
+    _LOGIN_ERROR_XPATH = '//div[contains(@class,"login-error") and contains(@class,"text-center")]'
+
+    def get_login_page_error_message(self):
+        """
+        Return visible login-error text if present, else None.
+        Message lives in div.login-error (ng-if vm.loginInfo.IsException) below the form.
+        """
+        try:
+            # Prefer CSS; multiple matches possible — use first displayed with non-empty text
+            for by, locator in (
+                (By.CSS_SELECTOR, self._LOGIN_ERROR_CSS),
+                (By.XPATH, self._LOGIN_ERROR_XPATH),
+            ):
+                for el in self.driver.find_elements(by, locator):
+                    try:
+                        if el.is_displayed():
+                            text = (el.text or '').strip()
+                            if text:
+                                return text
+                    except Exception:
+                        continue
+        except Exception:
+            pass
+        return None
+
+    def wait_for_login_error_message(self, timeout_seconds=10):
+        """
+        Wait until the login-error div is visible (failure path — still on login page).
+        Returns message text, or None if timeout.
+        """
+        try:
+            error_element = WebDriverWait(self.driver, timeout_seconds).until(
+                EC.visibility_of_element_located((By.CSS_SELECTOR, self._LOGIN_ERROR_CSS))
+            )
+            text = (error_element.text or '').strip()
+            return text if text else None
+        except TimeoutException:
+            return None
+
+    def validate_login_credentials(self, user_name, password):
+        """
+        Validate login without using ui_login_to_test.
+        - If login id or password is empty: returns ('BUTTON_DISABLED', None) when button
+          is correctly disabled, ('BUTTON_ENABLED', None) when it should not be enabled.
+        - If both provided: clicks Login when enabled, then returns
+          ('ERROR_ON_PAGE', message) if error shown on login page,
+          ('NAVIGATED_AWAY', None) if moved past login (no error on login page).
+        """
+        user_name = user_name if user_name is not None else ''
+        password = password if password is not None else ''
+
+        self.fill_login_fields_without_submit(user_name, password)
+        time.sleep(0.5)  # allow Angular to update button state
+
+        if not user_name.strip() or not password.strip():
+            if self.is_login_submit_button_enabled():
+                return 'BUTTON_ENABLED', None
+            return 'BUTTON_DISABLED', None
+
+        if not self.is_login_submit_button_enabled():
+            return 'BUTTON_DISABLED', None
+
+        login_btn = self.wait.until(
+            EC.presence_of_element_located((By.NAME, 'btnLogin'))
+        )
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", login_btn)
+        self.driver.execute_script("arguments[0].click();", login_btn)
+
+        # Failure: stay on login page; message appears in div.login-error when vm.loginInfo.IsException
+        err = self.wait_for_login_error_message(timeout_seconds=10)
+        if err:
+            return 'ERROR_ON_PAGE', err
+
+        # No error div yet — either navigating away or slow render; poll briefly
+        deadline = time.time() + 5
+        while time.time() < deadline:
+            if not self.is_still_on_login_page():
+                return 'NAVIGATED_AWAY', None
+            err = self.get_login_page_error_message()
+            if err:
+                return 'ERROR_ON_PAGE', err
+            time.sleep(0.3)
+
+        # Still on login page but no login-error visible
+        if self.is_still_on_login_page():
+            err = self.get_login_page_error_message()
+            if err:
+                return 'ERROR_ON_PAGE', err
+            return 'ERROR_ON_PAGE', '(still on login page; login-error div not visible)'
+        return 'NAVIGATED_AWAY', None
+
 
 assess_ui_common_obj = AssessmentUICommon()

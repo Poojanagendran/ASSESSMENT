@@ -1,18 +1,17 @@
 import datetime
 # import os
-from SCRIPTS.COMMON.environment import *
 from SCRIPTS.COMMON.io_user_directory import *
+from SCRIPTS.COMMON.run_context import get_env
 
-# path = os.getcwd()
-# print(path)
-# Assessment URLS
-
-domain = env_obj.domain
-pearson_domain = env_obj.pearson_domain
-eu_domain = env_obj.eu_domain
+# Assessment URLS (from run context so tests/parallel runs can override env)
+_env = get_env()
+domain = _env.domain
+pearson_domain = _env.pearson_domain
+eu_domain = _env.eu_domain
 amsin_at_assessment_url = domain + "/assessment/#/assess/login/eyJhbGlhcyI6ImF0In0="
 amsin_at_vet_url = pearson_domain + "/assessment/#/assess/login/eyJhbGlhcyI6ImF0In0="
 amsin_automation_assessment_url = domain + "/assessment/#/assess/login/eyJhbGlhcyI6ImF1dG9tYXRpb24ifQ=="
+amsin_agenticqa_assessment_url = domain + "/assessment/#/assess/login/eyJhbGlhcyI6ImFnZW50aWNxYSJ9"
 amsin_crpodemo_assessment_url = domain + "/assessment/#/assess/login/eyJhbGlhcyI6ImNycG9kZW1vIn0="
 
 # CRPO Login
@@ -167,6 +166,7 @@ output_path_ui_draw_randomization = output_common_dir + r'/UI/UI_draw_qprandomiz
 output_path_ui_assessment_verification = output_common_dir + r'/UI/UI_ui_assessment_relogin.xls'
 output_path_ui_qp_verification = output_common_dir + r"/UI/UI_QP_verification.xls"
 output_path_ui_test_security = output_common_dir + r"/UI/UI_Test_Security.xls"
+output_path_ui_assessment_login_validation = output_common_dir + r"/UI/assessment_login_results.xls"
 output_path_ui_hirepro_chaining = Path(output_common_dir + r'/UI/UI_hirepro_chaining - ' + started + '.xls')
 output_path_ui_vet_vet_chaining = Path(
     output_common_dir + r'/UI/UI_vet_vet_chaining_plus_retest_consent - ' + started + '.xls')
