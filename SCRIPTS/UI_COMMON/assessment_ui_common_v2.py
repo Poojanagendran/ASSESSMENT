@@ -4,13 +4,13 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
 
 
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, WebDriverException
 import time
 
 
@@ -49,23 +49,37 @@ class AssessmentUICommon:
 
         return self.driver
 
-    def ui_login_to_test(self, user_name, password):
+    def ui_login_to_test(self, user_name, password, reload_first=False):
+        """
+        Login on the assessment login page. If you already opened the URL and entered
+        values then reloaded (or want a clean form), pass reload_first=True to refresh
+        once before filling — avoids stale Angular state and stubborn prefilled fields.
+        """
+        if reload_first:
+            self.driver.refresh()
+            time.sleep(1)
 
-        # Username
+        # Username — wait again after refresh
         user_input = self.wait.until(
             EC.visibility_of_element_located((By.NAME, 'loginUsername'))
         )
-        user_input.clear()
+        user_input.click()
+        user_input.send_keys(Keys.CONTROL + 'a')
+        user_input.send_keys(Keys.BACKSPACE)
         user_input.send_keys(user_name)
 
-        # Password
-        user_pass = self.driver.find_element(By.NAME, 'loginPassword')
-        user_pass.clear()
+        # Password — Ctrl+A + Backspace clears better than .clear() on some Angular inputs
+        user_pass = self.wait.until(
+            EC.visibility_of_element_located((By.NAME, 'loginPassword'))
+        )
+        user_pass.click()
+        user_pass.send_keys(Keys.CONTROL + 'a')
+        user_pass.send_keys(Keys.BACKSPACE)
         user_pass.send_keys(password)
 
-        # ✅ WAIT for Angular block UI to disappear
+        # ✅ WAIT for Angular block UI to disappear (longer — overlay often blocks click)
         try:
-            WebDriverWait(self.driver, 10).until(
+            WebDriverWait(self.driver, 30).until(
                 EC.invisibility_of_element_located(
                     (By.CLASS_NAME, "block-ui-overlay")
                 )
@@ -73,11 +87,24 @@ class AssessmentUICommon:
         except TimeoutException:
             pass  # overlay might not appear every time
 
-        # ✅ WAIT for button to be CLICKABLE (not just visible)
-        login_btn = self.wait.until(
-            EC.element_to_be_clickable((By.NAME, 'btnLogin'))
-        )
-
+        # ✅ WAIT for button to be CLICKABLE — use longer wait; page can be slow after send_keys
+        login_wait = WebDriverWait(self.driver, 30)
+        try:
+            login_btn = login_wait.until(
+                EC.element_to_be_clickable((By.NAME, 'btnLogin'))
+            )
+        except TimeoutException:
+            # Fallback: button may exist but stay "not clickable" due to overlay/CSS; try JS click
+            try:
+                login_btn = self.driver.find_element(By.NAME, 'btnLogin')
+            except Exception:
+                # Help debug: URL + screenshot
+                try:
+                    print("Login timeout — current URL:", self.driver.current_url)
+                    self.driver.save_screenshot("login_btn_timeout.png")
+                except Exception:
+                    pass
+                raise
         # Extra safety for Chrome 143+
         self.driver.execute_script("arguments[0].scrollIntoView(true);", login_btn)
         self.driver.execute_script("arguments[0].click();", login_btn)
@@ -1398,6 +1425,287 @@ class AssessmentUICommon:
             is_element_successful = False
             wheebox_q1_ans = "Not answered"
         return wheebox_q1_ans, is_element_successful
+
+    def select_coding_catalog_if_enabled(self, language_text):
+        """
+        Select coding language/catalog (select name='codingLang') only when the control
+        is enabled. If disabled (ng-disabled / single language / executing), do nothing
+        and return False — caller should proceed straight to ACE editor.
+        """
+        if not language_text or not str(language_text).strip():
+            return False
+        label = str(language_text).strip()
+        try:
+            sel_el = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.NAME, 'codingLang'))
+            )
+        except TimeoutException:
+            return False
+        # Disabled: no selection — move on to ace_editor
+        if sel_el.get_attribute('disabled') is not None or not sel_el.is_enabled():
+            return False
+        try:
+            self.driver.execute_script(
+                "arguments[0].scrollIntoView({block:'center'});", sel_el
+            )
+            time.sleep(0.2)
+            select = Select(sel_el)
+            select.select_by_visible_text(label)
+            time.sleep(0.5)
+            return True
+        except Exception:
+            try:
+                select = Select(sel_el)
+                for opt in select.options:
+                    if opt.text and label.lower() == opt.text.strip().lower():
+                        select.select_by_visible_text(opt.text)
+                        time.sleep(0.5)
+                        return True
+            except Exception:
+                pass
+        return False
+
+    def set_ace_editor_value(self, text=None):
+        """
+        Set the ui-ace / Ace editor content to the given string.
+        Clear/empty is not supported here — pass text only. If text is None or '',
+        returns without doing anything.
+        """
+        if not text:
+            return
+
+        value = str(text)
+
+        # Ace root: prefer the editor that contains the visible ace_content surface
+        try:
+            editor = self.driver.find_element(
+                By.XPATH,
+                "//div[contains(@class,'ace_content')]/ancestor::div[contains(@class,'ace_editor')][1]",
+            )
+        except Exception:
+            editor = self.driver.find_element(
+                By.XPATH, "//div[contains(@class,'ace_editor')]"
+            )
+
+        # session.setValue keeps Ace document and ui-ace onChange in sync better than setValue alone
+        self.driver.execute_script(
+            """
+            var el = arguments[0], val = arguments[1];
+            var ed = (el.env && el.env.editor) ? el.env.editor : ace.edit(el);
+            if (ed && ed.session) {
+                ed.session.setValue(val);
+                ed.clearSelection();
+                ed.focus();
+            }
+            """,
+            editor,
+            value,
+        )
+
+    def wait_until_coding_execution_finishes(self, timeout=10):
+        """
+        After Run Code / Run Tests / Submit, the UI shows 'Executing...' while vm.isExecuting
+        is true. Wait until that indicator is no longer visible, or until timeout (default 10s).
+        If the session dies (navigation/new window), exits quietly so the caller can handle it.
+        """
+        deadline = time.time() + timeout
+        # Text shown next to spinner while vm.isExecuting is true
+        xpath = "//*[contains(normalize-space(),'Executing')]"
+        while time.time() < deadline:
+            try:
+                visible = False
+                for el in self.driver.find_elements(By.XPATH, xpath):
+                    try:
+                        if el.is_displayed():
+                            visible = True
+                            break
+                    except Exception:
+                        pass
+                if not visible:
+                    return
+            except WebDriverException:
+                # Session invalid / browser closed — don't re-raise; caller may still have quit() pending
+                return
+            time.sleep(0.25)
+        # Timed out — continue anyway so the script does not hang forever
+
+    def validate_run_code_finished(self, timeout=15, require_results_panel=False):
+        """
+        After **Run Code** completes (Executing... gone), validate the expected screen:
+        Run Code button is visible and enabled again, and optionally Test Cases Results
+        panel is visible (Sample TC / Pass, etc.).
+
+        Use after click_run_code(), not after click_run_tests().
+
+        Returns:
+            (True, None) if validation passes
+            (False, str) with reason if not
+        """
+        try:
+            run_code_xpath = (
+                "//div[contains(@class,'compile-execute-button-container')]"
+                "//button[normalize-space()='Run Code']"
+            )
+            btn = WebDriverWait(self.driver, timeout).until(
+                EC.visibility_of_element_located((By.XPATH, run_code_xpath))
+            )
+            if btn.get_attribute('disabled') is not None:
+                return (False, 'Run Code button has disabled attribute')
+            if not btn.is_enabled():
+                return (False, 'Run Code button is not enabled')
+            classes = (btn.get_attribute('class') or '').lower()
+            if 'disabled' in classes:
+                return (False, 'Run Code button has disabled class')
+            if require_results_panel:
+                try:
+                    WebDriverWait(self.driver, 5).until(
+                        EC.visibility_of_element_located(
+                            (By.XPATH, "//h4[contains(.,'Test Cases Results')]")
+                        )
+                    )
+                except TimeoutException:
+                    return (False, 'Test Cases Results panel not visible')
+            return (True, None)
+        except TimeoutException:
+            return (False, 'Run Code button not visible within timeout')
+        except WebDriverException as e:
+            return (False, str(e))
+
+    def validate_run_tests_finished(self, timeout=45, require_results_panel=False, require_pass_message=False):
+        """
+        After **Run Tests** completes (Executing... gone), validate the expected screen.
+        Run Tests can stay disabled while vm.isExecuting is true — we wait until the button
+        is clickable (enabled), not just visible, so validation does not run mid-execution.
+
+        Use after click_run_tests(), not after click_run_code().
+
+        Returns:
+            (True, None) if validation passes
+            (False, str) with reason if not
+        """
+        try:
+            run_tests_xpath = (
+                "//div[contains(@class,'compile-execute-button-container')]"
+                "//button[normalize-space()='Run Tests']"
+            )
+            # Wait until enabled — visibility alone fails while UI still executing
+            btn = WebDriverWait(self.driver, timeout).until(
+                EC.element_to_be_clickable((By.XPATH, run_tests_xpath))
+            )
+            classes = (btn.get_attribute('class') or '').lower()
+            if 'disabled' in classes:
+                return (False, 'Run Tests button has disabled class')
+            if require_results_panel:
+                try:
+                    WebDriverWait(self.driver, 5).until(
+                        EC.visibility_of_element_located(
+                            (By.XPATH, "//h4[contains(.,'Test Cases Results')]")
+                        )
+                    )
+                except TimeoutException:
+                    return (False, 'Test Cases Results panel not visible')
+            if require_pass_message:
+                # After Run Tests: green summary e.g. "Test case passed" or compiler success
+                try:
+                    WebDriverWait(self.driver, 5).until(
+                        EC.visibility_of_element_located(
+                            (
+                                By.XPATH,
+                                "//*[contains(.,'Test case passed') or contains(.,'Syntax Checking Successful')]",
+                            )
+                        )
+                    )
+                except TimeoutException:
+                    return (False, 'Pass / success message not visible after Run Tests')
+            return (True, None)
+        except TimeoutException:
+            return (False, 'Run Tests button not clickable within timeout (still executing or stuck disabled)')
+        except WebDriverException as e:
+            return (False, str(e))
+
+    def validate_submit_and_continue_finished(self, timeout=15, require_success_banner=True):
+        """
+        After **Submit & Continue Coding** completes (Executing... gone), validate success.
+        The app shows a green banner: "Your answer has been submitted successfully."
+
+        Use after click_submit_and_continue_coding(). If the app navigates away immediately,
+        require_success_banner can be False and you can instead check URL or next question.
+
+        Returns:
+            (True, None) if validation passes
+            (False, str) with reason if not
+        """
+        try:
+            if require_success_banner:
+                # Green banner at top after successful submit (HirePro)
+                WebDriverWait(self.driver, timeout).until(
+                    EC.visibility_of_element_located(
+                        (
+                            By.XPATH,
+                            "//*[contains(.,'submitted successfully') or contains(.,'Submitted successfully')]",
+                        )
+                    )
+                )
+            else:
+                # At least Submit button idle again (same page, no navigation)
+                submit_xpath = (
+                    "//div[contains(@class,'compile-execute-button-container')]"
+                    "//button[contains(.,'Submit') and contains(.,'Continue Coding')]"
+                )
+                btn = WebDriverWait(self.driver, timeout).until(
+                    EC.visibility_of_element_located((By.XPATH, submit_xpath))
+                )
+                if btn.get_attribute('disabled') is not None or not btn.is_enabled():
+                    return (False, 'Submit & Continue button still disabled after submit')
+            return (True, None)
+        except TimeoutException:
+            if require_success_banner:
+                return (False, 'Success banner (submitted successfully) not visible within timeout')
+            return (False, 'Submit button not visible within timeout')
+        except WebDriverException as e:
+            return (False, str(e))
+
+    def click_run_code(self):
+        """Click Run Code on the coding execution panel; waits until Executing... disappears (max 10s)."""
+        btn = WebDriverWait(self.driver, 15).until(
+            EC.presence_of_element_located(
+                (By.XPATH, "//div[contains(@class,'compile-execute-button-container')]//button[normalize-space()='Run Code']")
+            )
+        )
+        self.driver.execute_script(
+            "arguments[0].scrollIntoView({block:'center'}); arguments[0].click();",
+            btn,
+        )
+        self.wait_until_coding_execution_finishes(timeout=10)
+
+    def click_run_tests(self):
+        """Click Run Tests; wait for Executing... to finish. Run Tests often runs longer — 45s cap."""
+        btn = WebDriverWait(self.driver, 15).until(
+            EC.presence_of_element_located(
+                (By.XPATH, "//div[contains(@class,'compile-execute-button-container')]//button[normalize-space()='Run Tests']")
+            )
+        )
+        self.driver.execute_script(
+            "arguments[0].scrollIntoView({block:'center'}); arguments[0].click();",
+            btn,
+        )
+        self.wait_until_coding_execution_finishes(timeout=45)
+
+    def click_submit_and_continue_coding(self):
+        """Click Submit & Continue Coding; waits until Executing... disappears (max 10s)."""
+        btn = WebDriverWait(self.driver, 15).until(
+            EC.presence_of_element_located(
+                (
+                    By.XPATH,
+                    "//div[contains(@class,'compile-execute-button-container')]//button[contains(.,'Submit') and contains(.,'Continue Coding')]",
+                )
+            )
+        )
+        self.driver.execute_script(
+            "arguments[0].scrollIntoView({block:'center'}); arguments[0].click();",
+            btn,
+        )
+        self.wait_until_coding_execution_finishes(timeout=10)
 
     def coding_editor(self, code):
         self.driver.find_element(By.CLASS_NAME, 'ace_content').click()

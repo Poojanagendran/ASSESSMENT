@@ -13,7 +13,7 @@ amsin_at_vet_url = pearson_domain + "/assessment/#/assess/login/eyJhbGlhcyI6ImF0
 amsin_automation_assessment_url = domain + "/assessment/#/assess/login/eyJhbGlhcyI6ImF1dG9tYXRpb24ifQ=="
 amsin_agenticqa_assessment_url = domain + "/assessment/#/assess/login/eyJhbGlhcyI6ImFnZW50aWNxYSJ9"
 amsin_crpodemo_assessment_url = domain + "/assessment/#/assess/login/eyJhbGlhcyI6ImNycG9kZW1vIn0="
-
+amsin_crpodemotest_url = domain + "/assessment/#/assess/login/eyJhbGlhcyI6ImNycG9kZW1vdGVzdCJ9"
 # CRPO Login
 amsin_at_crpo_login = domain + "/crpo/#/login/AT"
 amsin_automation_crpo_login = domain + "/crpo/#/login/automation"
@@ -167,6 +167,7 @@ output_path_ui_draw_randomization = output_common_dir + r'/UI/UI_draw_qprandomiz
 output_path_ui_assessment_verification = output_common_dir + r'/UI/UI_ui_assessment_relogin.xls'
 output_path_ui_qp_verification = output_common_dir + r"/UI/UI_QP_verification.xls"
 output_path_ui_test_security = output_common_dir + r"/UI/UI_Test_Security.xls"
+output_path_ui_sql_compilation = output_common_dir + r"/UI/UI_sql_compilation.xls"
 output_path_ui_assessment_login_validation = output_common_dir + r"/UI/assessment_login_results.xls"
 output_path_ui_hirepro_chaining = Path(output_common_dir + r'/UI/UI_hirepro_chaining - ' + started + '.xls')
 output_path_ui_vet_vet_chaining = Path(
