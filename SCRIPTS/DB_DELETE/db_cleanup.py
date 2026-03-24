@@ -246,8 +246,7 @@ class DataCleanUp:
                                'client_system_info = NULL, total_score = NULL, test_start_time = NULL, percentage = NULL, ' \
                                'correct_answers = NULL, in_correct_answers = NULL, un_attended_questions=NULL,' \
                                ' is_partially_evaluated = NULL, eval_status = "NotEvaluated", eval_on = NULL' \
-                               ' where test_id in(16287) and ' \
-                               'login_time is not null;'
+                               ' where test_id in(16287);'
         print(update_tuser_statuss)
         cursor.execute(update_tuser_statuss)
         db_connection.commit()
@@ -422,8 +421,7 @@ class DataCleanUp:
         update_tuser_statuss = 'update test_users set login_time = NULL, log_out_time = NULL, status = 0, ' \
                                'client_system_info = NULL, time_spent = NULL, is_password_disabled = 0,config = NULL, ' \
                                'client_system_info = NULL, total_score = NULL, test_start_time = NULL, percentage = NULL ' \
-                               'where test_id in(10564,15254) and ' \
-                               'login_time is not null;'
+                               'where test_id in(10564,15254);'
         print(update_tuser_statuss)
         cursor.execute(update_tuser_statuss)
         db_connection.commit()
