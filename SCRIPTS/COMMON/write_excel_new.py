@@ -129,7 +129,6 @@ class Excel:
                         self.ws.write(row_index, column_index, actual_data, self.green_color)
                     else:
                         self.ws.write(row_index, column_index, actual_data, self.red_color)
-                        print("This is for co-cubes test")
                         self.current_status = 'Fail'
                         self.overall_status = 'Fail'
                         self.current_status_color = self.red_color
