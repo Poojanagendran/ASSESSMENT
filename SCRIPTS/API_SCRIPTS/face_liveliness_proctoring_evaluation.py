@@ -86,11 +86,11 @@ class FaceLiveliness:
         excel_overall_suspicious_value = round(current_excel_data.get('overallSuspiciousValue'), 4)
         write_excel_object.compare_results_and_write_vertically(excel_overall_suspicious_value,
                                                                 overall_suspicious_value, row_count, 11)
-        write_excel_object.compare_results_and_write_vertically(video_suspicious,current_excel_data.get('expectedVideoStatus'),
+        write_excel_object.compare_results_and_write_vertically(current_excel_data.get('expectedVideoStatus'),video_suspicious,
                                                                  row_count, 13)
-        write_excel_object.compare_results_and_write_vertically(reason_text,current_excel_data.get('ProctoringReason'),
+        write_excel_object.compare_results_and_write_vertically(current_excel_data.get('ProctoringReason'),reason_text,
                                                                  row_count, 15)
-        write_excel_object.compare_results_and_write_vertically(overall_reason_text,current_excel_data.get('overallProctoringReason'),
+        write_excel_object.compare_results_and_write_vertically(current_excel_data.get('overallProctoringReason'),overall_reason_text,
                                                                  row_count, 17)
         write_excel_object.compare_results_and_write_vertically(current_excel_data.get('testCase'), None, row_count, 0)
         write_excel_object.compare_results_and_write_vertically(write_excel_object.current_status, None, row_count, 1)
