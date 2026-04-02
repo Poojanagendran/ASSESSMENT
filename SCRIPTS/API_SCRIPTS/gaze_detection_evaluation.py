@@ -26,21 +26,18 @@ class GazeDetectionEvaluation:
                   'Expected Reason Path', 'Actual Reason Path']
         write_excel_object.write_headers_for_scripts(1, 0, header, write_excel_object.black_color_bold)
 
-    def suspicious_or_not_suspicious(self, data, overall_proctoring_status_value):
-        if data is True:
-            if overall_proctoring_status_value is False:
-                self.status = 'Suspicious'
-            else:
-                if overall_proctoring_status_value >= 0.66:
-                    self.status = 'Highly Suspicious'
-                elif overall_proctoring_status_value >= 0.35:
-                    self.status = 'Medium'
-                elif overall_proctoring_status_value > 0:
-                    self.status = 'Low'
-                else:
-                    self.status = 'Not Suspicious'
-        else:
+    def suspicious_or_not_suspicious(self, overall_proctoring_status_value):
+        if overall_proctoring_status_value ==0:
             self.status = 'Not Suspicious'
+        elif overall_proctoring_status_value >= 0.66:
+                self.status = 'Highly Suspicious'
+        elif overall_proctoring_status_value >= 0.35:
+            self.status = 'Medium'
+        elif overall_proctoring_status_value > 0:
+            self.status = 'Low'
+        else:
+            self.status = 'Suspicious'
+
 
     def proctor_detail(self, row_count, current_excel_data, token):
         write_excel_object.current_status_color = write_excel_object.green_color
@@ -90,10 +87,10 @@ class GazeDetectionEvaluation:
             current_excel_data.get('expectedGazeStatus'), gaze_suspicious, row_count, 5)
 
         video_suspicious = proctor_detail.get('faceSuspicious')
-        overall_proctoring_status = proctor_detail.get('finalDecision')
+        
         overall_suspicious_value = proctor_detail.get('systemOverallDecision')
         
-        self.suspicious_or_not_suspicious(overall_proctoring_status, overall_suspicious_value)
+        self.suspicious_or_not_suspicious( overall_suspicious_value)
         
         write_excel_object.compare_results_and_write_vertically(current_excel_data.get('overallProctoringStatus'),
                                                                 self.status, row_count, 7)
